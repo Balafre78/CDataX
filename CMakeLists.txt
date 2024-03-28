@@ -3,4 +3,6 @@ project(CDataX C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(CDataX main.c)
+add_executable(CDataX main.c
+        CDataFrame.c
+        CDataFrame.h)
