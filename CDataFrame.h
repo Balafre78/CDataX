@@ -15,6 +15,8 @@ struct column {
 
 typedef struct column Column;
 
+typedef struct column* CDataframe;
+
 /**
   * @brief : Create a column
   * @param title : Column title
@@ -73,5 +75,32 @@ int get_occurrences_superior(Column *col, int x);
  * @return : Number of occurrences
  * */
 int get_occurrences_equal(Column *col, int x);
+
+
+CDataframe *create_cdataframe(int size);
+
+void write_cdataframe(CDataframe *cDataframe,int size);
+
+void read_cdataframe(CDataframe *cDataframe, int size);
+
+void read_cdataframe_lines(CDataframe *cDataframe, int from, int to, int line_size);
+
+void read_cdataframe_columns(CDataframe *cDataframe, int from, int to, int column_size);
+
+void add_cdataframe_newline(CDataframe *cDataframe);
+
+void add_cdataframe_newcolumn(CDataframe *cDataframe);
+
+void del_cdataframe_line(CDataframe *cDataframe, int line);
+
+void del_cdataframe_column(CDataframe *cDataframe, int column);
+
+void rename_cdataframe_column(CDataframe *cDataframe, int column);
+
+void findin_cdataframe(CDataframe *cDataframe, int var);
+
+void readname_cdataframe_allcolumns(CDataframe *cDataframe);
+
+void get_cdataframe_var(CDataframe *cDataframe, int line, int column);
 
 #endif //CDATAX_CDATAFRAME_H
