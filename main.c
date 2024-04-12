@@ -54,4 +54,8 @@ void test() {
     printf("Inferior to 50 (mycol) : %d\n", get_occurrences_inferior(secondcol, 50));
     printf("Superior to 50 (mycol) : %d\n", get_occurrences_superior(secondcol, 50));
     printf("Equal to 3 (mycol) : %d\n", get_occurrences_equal(secondcol, 3));
+
+    CDataframe *cdf = create_cdataframe();
+    write_cdataframe(cdf);
+
 }

@@ -8,6 +8,17 @@
  */
 int ensure_allocation_size(Column *col);
 
+/**
+ * @brief : Empty the stdin buffer the right way
+ */
+void fflush_stdin();
+
+
+void fflush_stdin() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
 int ensure_allocation_size(Column *col) {
     if (col->size + 1 > col->physical_size) {
         int *newPtr;
@@ -135,6 +146,35 @@ CDataframe *create_cdataframe() {
 }
 
 void write_cdataframe(CDataframe *cDataframe) {
-    printf("Saisir le nombre de colonnes ssouhaités : ");
-    scanf("")
+    int nbCol, nbLig;
+    printf("Enter the amount of wanted columns : ");
+    scanf("%d", &nbCol);
+    printf("Enter the amount of lines wanted across the entire dataframe : ");
+    scanf("%d", &nbLig); // next is gets
+
+    // Try to malloc
+    CDataframe newptr = malloc(nbCol * sizeof(Column));
+    if (newptr == NULL) {
+        fprintf(stderr, "%s", "Cannot allocate the memory\n");
+        exit(1);
+    } else
+        *cDataframe = newptr;
+
+    int var;
+    for (int i = 0; i < nbCol; i++) {
+        char *title;
+        printf("Saisir le titre de la colonne : ");
+        fflush_stdin();
+        gets(title);
+        cDataframe[i] = create_column(title);
+        for (int j = 0; j < nbLig; j++) {
+            printf("[%d] <- ", j);
+            scanf("%d", &var);
+            if (!insert_value(cDataframe[i], var)) {
+                fprintf(stderr, "%s", "Cannot allocate the memory\n");
+                exit(1);
+            }
+        }
+        printf("\n");
+    }
 }
