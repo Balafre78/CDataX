@@ -1,5 +1,7 @@
 #include "CDataFrame.h"
 
+/* Internal functions */
+
 /**
  * @brief : Check if it's necessary to realloc a new chunk of data
  * @param1 : Column
@@ -25,6 +27,7 @@ int ensure_allocation_size(Column *col) {
     return 1;
 }
 
+/* Column Interactions */
 
 Column *create_column(char *title) {
     Column *col = malloc(sizeof(Column));
@@ -114,4 +117,10 @@ int get_occurrences_equal(Column *col, int x) {
         exit(1);
     }
     return occ;
+}
+
+/* CDataFrame Interactions */
+
+CDataframe *create_cdataframe(int size) {
+
 }
