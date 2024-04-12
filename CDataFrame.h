@@ -103,4 +103,14 @@ void readname_cdataframe_allcolumns(CDataframe *cDataframe);
 
 void get_cdataframe_var(CDataframe *cDataframe, int line, int column);
 
+int get_cdataframe_lines_amount(CDataframe *cDataframe);
+
+int get_cdataframe_columns_amount(CDataframe *cDataframe);
+
+int get_cdataframe_occurrences_equal(CDataframe *cDataframe, int var);
+
+int get_cdataframe_occurrences_superior(CDataframe *cDataframe, int var);
+
+int get_cdataframe_occurrences_inferior(CDataframe *cDataframe, int var);
+
 #endif //CDATAX_CDATAFRAME_H
