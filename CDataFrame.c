@@ -122,5 +122,9 @@ int get_occurrences_equal(Column *col, int x) {
 /* CDataFrame Interactions */
 
 CDataframe *create_cdataframe(int size) {
-    return (CDataframe *) malloc(sizeof(CDataframe));
+    return (CDataframe *) malloc(size * sizeof(CDataframe));
+}
+
+void write_cdataframe(CDataframe *cDataframe, int size) {
+
 }

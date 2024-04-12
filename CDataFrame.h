@@ -15,7 +15,7 @@ struct column {
 
 typedef struct column Column;
 
-typedef struct column* CDataframe;
+typedef struct column *CDataframe;
 
 /**
   * @brief : Create a column
@@ -79,7 +79,8 @@ int get_occurrences_equal(Column *col, int x);
 
 CDataframe *create_cdataframe(int size);
 
-void write_cdataframe(CDataframe *cDataframe,int size);
+/*NB: L'implémenter aussi en dur ...*/
+void write_cdataframe(CDataframe *cDataframe, int size);
 
 void read_cdataframe(CDataframe *cDataframe, int size);
 
