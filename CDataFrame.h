@@ -77,16 +77,16 @@ int get_occurrences_superior(Column *col, int x);
 int get_occurrences_equal(Column *col, int x);
 
 
-CDataframe *create_cdataframe(int size);
+CDataframe *create_cdataframe();
 
 /*NB: L'implémenter aussi en dur ...*/
-void write_cdataframe(CDataframe *cDataframe, int size);
+void write_cdataframe(CDataframe *cDataframe);
 
-void read_cdataframe(CDataframe *cDataframe, int size);
+void read_cdataframe(CDataframe *cDataframe, int size, int column_size);
 
-void read_cdataframe_lines(CDataframe *cDataframe, int from, int to, int line_size);
+void read_cdataframe_lines(CDataframe *cDataframe, int from, int to, int column_size);
 
-void read_cdataframe_columns(CDataframe *cDataframe, int from, int to, int column_size);
+void read_cdataframe_columns(CDataframe *cDataframe, int from, int to);
 
 void add_cdataframe_newline(CDataframe *cDataframe);
 

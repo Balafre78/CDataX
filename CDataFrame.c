@@ -31,6 +31,10 @@ int ensure_allocation_size(Column *col) {
 
 Column *create_column(char *title) {
     Column *col = malloc(sizeof(Column));
+    if (col == NULL) {
+        fprintf(stderr, "%s", "Cannot allocate the memory\n");
+        exit(1);
+    }
     col->title = title;
     col->physical_size = 0;
     col->size = 0;
@@ -121,10 +125,16 @@ int get_occurrences_equal(Column *col, int x) {
 
 /* CDataFrame Interactions */
 
-CDataframe *create_cdataframe(int size) {
-    return (CDataframe *) malloc(size * sizeof(CDataframe));
+CDataframe *create_cdataframe() {
+    CDataframe *pointer = (CDataframe *) malloc(sizeof(CDataframe));
+    if (pointer == NULL) {
+        fprintf(stderr, "%s", "Cannot allocate the memory\n");
+        exit(1);
+    } else
+        return pointer;
 }
 
-void write_cdataframe(CDataframe *cDataframe, int size) {
-
+void write_cdataframe(CDataframe *cDataframe) {
+    printf("Saisir le nombre de colonnes ssouhaités : ");
+    scanf("")
 }
