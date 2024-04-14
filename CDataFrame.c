@@ -145,7 +145,10 @@ CDataframe *create_cdataframe() {
         return pointer;
 }
 
-void write_cdataframe(CDataframe *cDataframe) {
+/*
+ * This function should be implement with other functions ...
+ * (now it's not working SEGFAULT returned)
+ void write_cdataframe(CDataframe *cDataframe) {
     int nbCol, nbLig;
     printf("Enter the amount of wanted columns : ");
     scanf("%d", &nbCol);
@@ -178,3 +181,4 @@ void write_cdataframe(CDataframe *cDataframe) {
         printf("\n");
     }
 }
+*/
