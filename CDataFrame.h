@@ -15,7 +15,12 @@ struct column {
 
 typedef struct column Column;
 
-typedef struct column *CDataframe;
+struct cdataframe {
+    Column *data;
+    int size;
+};
+
+typedef struct cdataframe Cdataframe;
 
 /**
   * @brief : Create a column
@@ -77,41 +82,41 @@ int get_occurrences_superior(Column *col, int x);
 int get_occurrences_equal(Column *col, int x);
 
 
-CDataframe *create_cdataframe();
+Cdataframe *create_cdataframe();
 
 /*NB: L'implémenter aussi en dur ...*/
-void write_cdataframe(CDataframe *cDataframe);
+void write_cdataframe(Cdataframe *cdf);
 
-void read_cdataframe(CDataframe *cDataframe);
+void read_cdataframe(Cdataframe *cdf);
 
-void read_cdataframe_lines(CDataframe *cDataframe, int from, int to);
+void read_cdataframe_lines(Cdataframe *cdf, int from, int to);
 
-void read_cdataframe_columns(CDataframe *cDataframe, int from, int to);
+void read_cdataframe_columns(Cdataframe *cdf, int from, int to);
 
-void add_cdataframe_newline(CDataframe *cDataframe);
+void add_cdataframe_newline(Cdataframe *cdf);
 
-void add_cdataframe_newcolumn(CDataframe *cDataframe);
+void add_cdataframe_newcolumn(Cdataframe *cdf);
 
-void del_cdataframe_line(CDataframe *cDataframe, int line);
+void del_cdataframe_line(Cdataframe *cdf, int line);
 
-void del_cdataframe_column(CDataframe *cDataframe, int column);
+void del_cdataframe_column(Cdataframe *cdf, int column);
 
-void rename_cdataframe_column(CDataframe *cDataframe, int column);
+void rename_cdataframe_column(Cdataframe *cdf, int column);
 
-void findin_cdataframe(CDataframe *cDataframe, int var);
+void findin_cdataframe(Cdataframe *cdf, int var);
 
-void readname_cdataframe_allcolumns(CDataframe *cDataframe);
+void readname_cdataframe_allcolumns(Cdataframe *cdf);
 
-void get_cdataframe_var(CDataframe *cDataframe, int line, int column);
+void get_cdataframe_var(Cdataframe *cdf, int line, int column);
 
-int get_cdataframe_lines_amount(CDataframe *cDataframe);
+int get_cdataframe_lines_amount(Cdataframe *cdf);
 
-int get_cdataframe_columns_amount(CDataframe *cDataframe);
+int get_cdataframe_columns_amount(Cdataframe *cdf);
 
-int get_cdataframe_occurrences_equal(CDataframe *cDataframe, int var);
+int get_cdataframe_occurrences_equal(Cdataframe *cdf, int var);
 
-int get_cdataframe_occurrences_superior(CDataframe *cDataframe, int var);
+int get_cdataframe_occurrences_superior(Cdataframe *cdf, int var);
 
-int get_cdataframe_occurrences_inferior(CDataframe *cDataframe, int var);
+int get_cdataframe_occurrences_inferior(Cdataframe *cdf, int var);
 
 #endif //CDATAX_CDATAFRAME_H
