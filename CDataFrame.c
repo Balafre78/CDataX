@@ -182,3 +182,19 @@ CDataframe *create_cdataframe() {
     }
 }
 */
+
+int get_cdataframe_lines_amount(CDataframe *cDataframe) {
+
+}
+
+int get_cdataframe_columns_amount(CDataframe *cDataframe) {
+
+}
+
+void add_cdataframe_newline(CDataframe *cDataframe) {
+
+}
+
+void add_cdataframe_newcolumn(CDataframe *cDataframe) {
+
+}

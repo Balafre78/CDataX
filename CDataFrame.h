@@ -82,9 +82,9 @@ CDataframe *create_cdataframe();
 /*NB: L'implémenter aussi en dur ...*/
 void write_cdataframe(CDataframe *cDataframe);
 
-void read_cdataframe(CDataframe *cDataframe, int size, int column_size);
+void read_cdataframe(CDataframe *cDataframe);
 
-void read_cdataframe_lines(CDataframe *cDataframe, int from, int to, int column_size);
+void read_cdataframe_lines(CDataframe *cDataframe, int from, int to);
 
 void read_cdataframe_columns(CDataframe *cDataframe, int from, int to);
 
