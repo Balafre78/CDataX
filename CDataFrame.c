@@ -152,10 +152,10 @@ void write_cdataframe(CDataframe *cDataframe) {
     printf("Enter the amount of lines wanted across the entire dataframe : ");
     scanf("%d", &nbLig); // next is gets
 
-    // Try to malloc
-    CDataframe newptr = malloc(nbCol * sizeof(Column));
+    // Try to realloc
+    CDataframe newptr = realloc(cDataframe, nbCol);
     if (newptr == NULL) {
-        fprintf(stderr, "%s", "Cannot allocate the memory\n");
+        fprintf(stderr, "%s", "Cannot reallocate the memory\n");
         exit(1);
     } else
         *cDataframe = newptr;
