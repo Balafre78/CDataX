@@ -25,7 +25,7 @@ typedef struct cdataframe CDataframe;
 /**
   * @brief : Create a column
   * @param title : Column title
-  * @return : Pointer to created column
+  * @return : Pointer to created column or NULL pointer on failure
   */
 Column *create_column(char *title);
 
@@ -81,42 +81,116 @@ int get_occurrences_superior(Column *col, int x);
  * */
 int get_occurrences_equal(Column *col, int x);
 
-
+/**
+ * @brief : Create an empty Cdataframe
+ * @return : Pointer to the newly created Cdataframe or the NULL pointer if it cannot allocate memory
+ */
 CDataframe *create_cdataframe();
 
-/*NB: L'implémenter aussi en dur ...*/
-void write(CDataframe *cdf);
+/*NB: L'implémenter aussi en dur*/
+/**
+ * @brief : Write all data to a new cdf (from user input)
+ * @param cdf : Cdataframe pointer (should be empty)
+ * @return : 1 if there's an error with memory allocation, 0 else
+ */
+int write(CDataframe *cdf);
 
+/**
+ * @brief : Print all data to an existing cdf
+ * @param cdf : Cdataframe pointer
+ */
 void print_all(CDataframe *cdf);
 
-void print_lines(CDataframe *cdf, int from, int to);
+/**
+ * @brief : Print all lines from a start to an end from an existing cdf
+ * @param cdf : Cdataframe pointer
+ * @param from : Starting point
+ * @param to : Ending point (excluded)
+ * @return : 2 if there's an error with the section selected, 0 else
+ */
+int print_lines(CDataframe *cdf, int from, int to);
 
-void print_columns(CDataframe *cdf, int from, int to);
+/**
+ * @brief : Print all columns from a start to an end from an existing cdf
+ * @param cdf : Cdataframe pointer
+ * @param from : Starting point
+ * @param to : Ending point (excluded)
+ * @return : 2 if there's an error with the section selected, 0 else
+ */
+int print_columns(CDataframe *cdf, int from, int to);
 
-void add_newline(CDataframe *cdf);
+/**
+ * @brief : Add a new line to an existing cdf
+ * @param cdf : Cdataframe pointer
+ * @param values : Tab of integers to insert to the new line
+ * @param size : Size of the previous tab, should be the exact same size as the cdf size
+ * @return : 3 if the cdf is empty, 2 if it's the size, 1 if it's the memory allocation, 0 else
+ */
+int add_newline(CDataframe *cdf, int *values, int size);
 
-void add_newcolumn(CDataframe *cdf);
+/**
+ * @brief : Add a new line to an existing cdf
+ * @param cdf : Cdataframe pointer
+ * @param values : Tab of integers to insert to the new line
+ * @param size : Size of the previous tab, should be the exact same size as the cdf size
+ * @return : 2 if there's an error with the size, 1 if there's an error with memory allocation, 0 else
+ */
+int add_newcolumn(CDataframe *cdf, int *values, int size, char *title);
 
 void del_line(CDataframe *cdf, int line);
 
 void del_column(CDataframe *cdf, int column);
 
-void rename_column(CDataframe *cdf, int column, char *newTitle);
+/**
+ * @brief : Rename one column name
+ * @param cdf : Cdataframe pointer
+ * @return 0 on sucess, 2 if there's an error the column parameter
+ */
+int rename_column(CDataframe *cdf, int column, char *newTitle);
 
 void find_in(CDataframe *cdf, int var);
 
+/**
+ * @brief : Print all column names
+ * @param cdf : Cdataframe pointer
+ */
 void print_columns_names(CDataframe *cdf);
 
 void get_var(CDataframe *cdf, int line, int column);
 
+/**
+ * @brief : Get the amount of lines
+ * @param cdf : Cdataframe pointer
+ * @return : an int
+ */
 int get_lines_amount(CDataframe *cdf);
 
+/**
+ * @brief : Get the amount of lines
+ * @param cdf : Cdataframe pointer
+ * @return : an int
+ */
 int get_columns_amount(CDataframe *cdf);
 
+/**
+ * @brief : Get the occurences of a var in a Cdataframe
+ * @param cdf : Cdataframe pointer
+ * @retunr : the amount of occurences
+ */
 int get_occurrences(CDataframe *cdf, int var);
 
+/**
+ * @brief : Get the occurences of a var superior to a var in a Cdataframe
+ * @param cdf : Cdataframe pointer
+ * @retunr : the amount of occurences
+ */
 int get_superior_occurrences(CDataframe *cdf, int var);
 
+/**
+ * @brief : Get the occurences of a var inferior to a var in a Cdataframe
+ * @param cdf : Cdataframe pointer
+ * @retunr : the amount of occurences
+ */
 int get_inferior_occurrences(CDataframe *cdf, int var);
 
 #endif //CDATAX_CDATAFRAME_H

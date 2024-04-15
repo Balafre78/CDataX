@@ -46,9 +46,9 @@ int ensure_allocation_size(Column *col) {
 }
 
 void print_section(CDataframe *cdf, int col_from, int col_to, int line_from, int line_to) {
-    Column** columns = cdf->columns;
-    for(int i = line_from; i < line_to; i++) {
-        for(int j = col_from; j < col_to; j++) {
+    Column **columns = cdf->columns;
+    for (int i = line_from; i < line_to; i++) {
+        for (int j = col_from; j < col_to; j++) {
             printf("%d\t", get_value(columns[j], i));
         }
         printf("\n");
@@ -56,8 +56,8 @@ void print_section(CDataframe *cdf, int col_from, int col_to, int line_from, int
 }
 
 void print_columns_names_section(CDataframe *cdf, int col_from, int col_to) {
-    Column** columns = cdf->columns;
-    for(int j = col_from; j < col_to; j++) {
+    Column **columns = cdf->columns;
+    for (int j = col_from; j < col_to; j++) {
         printf("%s\t", columns[j]->title);
     }
     printf("\n");
@@ -67,19 +67,20 @@ void print_columns_names_section(CDataframe *cdf, int col_from, int col_to) {
 
 Column *create_column(char *title) {
     Column *col = malloc(sizeof(Column));
-    if (col == NULL) {
-        fprintf(stderr, "%s", "Cannot allocate the memory\n");
-        exit(1);
+    if (col != NULL) {
+        //fprintf(stderr, "%s", "Cannot allocate the memory\n");
+        //exit(1);
+        col->title = title;
+        col->physical_size = 0;
+        col->size = 0;
+        col->data = NULL;
     }
-    col->title = title;
-    col->physical_size = 0;
-    col->size = 0;
-    col->data = NULL;
     return col;
 }
 
 int insert_value(Column *col, int value) {
-    if (!ensure_allocation_size(col)) return 0;
+    if (!ensure_allocation_size(col))
+        return 0;
 
     // Insertion
     col->data[col->size] = value;
@@ -113,7 +114,6 @@ int get_value(Column *col, int index) {
     }
 }
 
-
 int get_occurrences_inferior(Column *col, int x) {
     int occ = 0;
     if (col->data != NULL) {
@@ -122,10 +122,11 @@ int get_occurrences_inferior(Column *col, int x) {
                 occ++;
             }
         }
-    } else {
-        fprintf(stderr, "%s", "Empty Array\n");
-        exit(1);
     }
+    //else {
+    //  fprintf(stderr, "%s", "Empty Array\n");
+    //  exit(1);
+    //}
     return occ;
 }
 
@@ -137,10 +138,11 @@ int get_occurrences_superior(Column *col, int x) {
                 occ++;
             }
         }
-    } else {
-        fprintf(stderr, "%s", "Empty Array\n");
-        exit(1);
     }
+    //else {
+    //    fprintf(stderr, "%s", "Empty Array\n");
+    //    exit(1);
+    //}
     return occ;
 }
 
@@ -152,84 +154,49 @@ int get_occurrences_equal(Column *col, int x) {
                 occ++;
             }
         }
-    } else {
-        fprintf(stderr, "%s", "Empty Array\n");
-        return 0;
     }
+    //else {
+    //    fprintf(stderr, "%s", "Empty Array\n");
+    //    return 0;
+    //}
     return occ;
 }
 
 /* CDataFrame Interactions */
 
 CDataframe *create_cdataframe() {
-    CDataframe *pointer = (CDataframe *) malloc(sizeof(CDataframe));
-    if (pointer == NULL) {
-        fprintf(stderr, "%s", "Cannot allocate the memory\n");
-        exit(1);
+    CDataframe *pointer = malloc(sizeof(CDataframe));
+    if (pointer != NULL) {
+        pointer->columns = NULL;
+        pointer->size = 0;
     }
-    pointer->columns = NULL;
-    pointer->size = 0;
     return pointer;
 }
 
-/*
- * This function should be implement with other functions ...
- * (now it's not working SEGFAULT returned)
- void write_cdataframe(CDataframe *cDataframe) {
-    int nbCol, nbLig;
-    printf("Enter the amount of wanted columns : ");
-    scanf("%d", &nbCol);
-    printf("Enter the amount of lines wanted across the entire dataframe : ");
-    scanf("%d", &nbLig); // next is gets
-
-    // Try to realloc
-    CDataframe newptr = realloc(cDataframe, nbCol);
-    if (newptr == NULL) {
-        fprintf(stderr, "%s", "Cannot reallocate the memory\n");
-        exit(1);
-    } else
-        *cDataframe = newptr;
-
-    int var;
-    for (int i = 0; i < nbCol; i++) {
-        char *title;
-        printf("Saisir le titre de la colonne : ");
-        fflush_stdin();
-        gets(title);
-        cDataframe[i] = create_column(title);
-        for (int j = 0; j < nbLig; j++) {
-            printf("[%d] <- ", j);
-            scanf("%d", &var);
-            if (!insert_value(cDataframe[i], var)) {
-                fprintf(stderr, "%s", "Cannot allocate the memory\n");
-                exit(1);
-            }
-        }
-        printf("\n");
-    }
-}
-*/
-
 void print_all(CDataframe *cdf) {
+    if (cdf == NULL) {
+        printf("The CDataFrame is empty.");
+        return;
+    }
     print_lines(cdf, 0, get_lines_amount(cdf));
 }
 
-void print_lines(CDataframe *cdf, int from, int to) {
-    if(from < 0 || to < from || to > get_lines_amount(cdf)) {
-        fprintf(stderr, "%s", "Line(s) out of range\n");
-        exit(1);
+int print_lines(CDataframe *cdf, int from, int to) {
+    if (from < 0 || to < from || to > get_lines_amount(cdf)) {
+        return 2;
     }
     print_columns_names(cdf);
     print_section(cdf, 0, cdf->size, from, to);
+    return 0;
 }
 
-void print_columns(CDataframe *cdf, int from, int to) {
-    if(from < 0 || to < from || to > cdf->size) {
-        fprintf(stderr, "%s", "Column(s) out of range\n");
-        exit(1);
+int print_columns(CDataframe *cdf, int from, int to) {
+    if (from < 0 || to < from || to > cdf->size) {
+        return 2;
     }
     print_columns_names_section(cdf, from, to);
     print_section(cdf, from, to, 0, get_lines_amount(cdf));
+    return 0;
 }
 
 void print_columns_names(CDataframe *cdf) {
@@ -247,8 +214,8 @@ int get_columns_amount(CDataframe *cdf) {
 
 int get_occurrences(CDataframe *cdf, int var) {
     int occ = 0;
-    for(int c = 0; c < cdf->size; c++) {
-        for(int i = 0; i < cdf->columns[c]->size; i++) {
+    for (int c = 0; c < cdf->size; c++) {
+        for (int i = 0; i < cdf->columns[c]->size; i++) {
             if (get_value(cdf->columns[c], i) == var) {
                 occ++;
             }
@@ -259,8 +226,8 @@ int get_occurrences(CDataframe *cdf, int var) {
 
 int get_superior_occurrences(CDataframe *cdf, int var) {
     int occ = 0;
-    for(int c = 0; c < cdf->size; c++) {
-        for(int i = 0; i < cdf->columns[c]->size; i++) {
+    for (int c = 0; c < cdf->size; c++) {
+        for (int i = 0; i < cdf->columns[c]->size; i++) {
             if (get_value(cdf->columns[c], i) > var) {
                 occ++;
             }
@@ -271,8 +238,8 @@ int get_superior_occurrences(CDataframe *cdf, int var) {
 
 int get_inferior_occurrences(CDataframe *cdf, int var) {
     int occ = 0;
-    for(int c = 0; c < cdf->size; c++) {
-        for(int i = 0; i < cdf->columns[c]->size; i++) {
+    for (int c = 0; c < cdf->size; c++) {
+        for (int i = 0; i < cdf->columns[c]->size; i++) {
             if (get_value(cdf->columns[c], i) < var) {
                 occ++;
             }
@@ -281,10 +248,51 @@ int get_inferior_occurrences(CDataframe *cdf, int var) {
     return occ;
 }
 
-void rename_column(CDataframe *cdf, int column, char *newTitle) {
-    if(column < 0 || column >= cdf->size) {
-        fprintf(stderr, "%s", "Column(s) out of range\n");
-        exit(1);
+int rename_column(CDataframe *cdf, int column, char *newTitle) {
+    if (column < 0 || column >= cdf->size) {
+        //fprintf(stderr, "%s", "Column(s) out of range\n");
+        return 2;
     }
     cdf->columns[column]->title = newTitle;
+}
+
+int add_newline(CDataframe *cdf, int *values, int size) {
+    if (cdf->size == 0) {
+        //fprintf(stderr, "%s", "Empty CDataFrame\n");
+        return 3;
+    }
+    if (cdf->size != size) {
+        //fprintf(stderr, "%s", "Inconsistent values tab size\n");
+        return 2;
+    }
+
+    for (int i = 0; i < cdf->size; i++) {
+        if (!insert_value(cdf->columns[i], values[i]))
+            return 1;
+    }
+    return 0
+}
+
+int add_newcolumn(CDataframe *cdf, int *values, int size, char *title) {
+    if (cdf->size == 0) {
+        cdf->columns = malloc(size * sizeof(Column));
+    } else {
+        if (cdf->size != size) {
+            //fprintf(stderr, "%s", "Inconsistent values tab size\n");
+            return 2;
+        }
+        Column **pointer = realloc(cdf->columns, cdf->size + 1);
+        if (pointer == NULL) {
+            //fprintf(stderr, "%s", "Cannot re-allocate the memory\n");
+            return 1;
+        }
+        cdf->columns = pointer;
+    }
+    cdf->size++;
+    cdf->columns[cdf->size] = create_column(title);
+    for (int i = 0; i < size; i++) {
+        if (!insert_value(cdf->columns[cdf->size], values[i]))
+            return 1;
+    }
+    return 0;
 }
