@@ -19,7 +19,7 @@ int main() {
 
 
 void printColumnInfo(Column *column) {
-    printf("Column 0x%p:\n - title = \"%s\";\n - physical_size = %d;\n - size = %d;\n - data address = 0x%p;\n",
+    printf("Column 0x%p:\n - title = \"%s\";\n - physical_size = %d;\n - size = %d;\n - columns address = 0x%p;\n",
            column, column->title, column->physical_size, column->size, column->data);
 }
 
@@ -56,6 +56,6 @@ void test() {
     printf("Equal to 3 (mycol) : %d\n", get_occurrences_equal(secondcol, 3));
 
     CDataframe *cdf = create_cdataframe();
-    write_cdataframe(cdf);
+    print_all(cdf);
 
 }

@@ -3,16 +3,23 @@
 /* Internal functions */
 
 /**
- * @brief : Check if it's necessary to realloc a new chunk of data
- * @param1 : Column
+ * @brief Check if it's necessary to realloc a new chunk of columns
+ * @param1 Column
  */
 int ensure_allocation_size(Column *col);
 
 /**
- * @brief : Empty the stdin buffer the right way
+ * @brief Empty the stdin buffer the right way
  */
 void fflush_stdin();
 
+
+/**
+ * @brief Print a section of a CDataframe
+ */
+void print_section(CDataframe *cdf, int col_from, int col_to, int line_from, int line_to);
+
+void print_columns_names_section(CDataframe *cdf, int col_from, int col_to);
 
 void fflush_stdin() {
     int c;
@@ -36,6 +43,23 @@ int ensure_allocation_size(Column *col) {
         col->data = newPtr;
     }
     return 1;
+}
+
+void print_section(CDataframe *cdf, int col_from, int col_to, int line_from, int line_to) {
+    Column** columns = cdf->columns;
+    for(int i = line_from; i < line_to; i++) {
+        for(int j = col_from; j < col_to; j++) {
+            printf("%d\t", get_value(columns[j], i));
+        }
+        printf("\n");
+    }
+}
+
+void print_columns_names_section(CDataframe *cdf, int col_from, int col_to) {
+    Column** columns = cdf->columns;
+    for(int j = col_from; j < col_to; j++) {
+        printf("%s\t", columns[j]->title);
+    }
 }
 
 /* Column Interactions */
@@ -83,7 +107,7 @@ int get_value(Column *col, int index) {
     if (0 <= index && index <= col->size)
         return col->data[index];
     else {
-        fprintf(stderr, "%s", "Invalid Idx\n");
+        fprintf(stderr, "%s", "Invalid Index\n");
         exit(1);
     }
 }
@@ -136,14 +160,14 @@ int get_occurrences_equal(Column *col, int x) {
 
 /* CDataFrame Interactions */
 
-Cdataframe *create_cdataframe() {
-    Cdataframe *pointer = (Cdataframe *) malloc(sizeof(Cdataframe));
+CDataframe *create_cdataframe() {
+    CDataframe *pointer = (CDataframe *) malloc(sizeof(CDataframe));
     if (pointer == NULL) {
         fprintf(stderr, "%s", "Cannot allocate the memory\n");
         exit(1);
     }
+    pointer->columns = NULL;
     pointer->size = 0;
-    pointer->data = NULL;
     return pointer;
 }
 
@@ -185,21 +209,37 @@ Cdataframe *create_cdataframe() {
 }
 */
 
-int get_cdataframe_lines_amount(Cdataframe *cdf) {
-    if (cdf->size == 0)
-        return 0;
-    else
-        return cdf->data[0].size;
+void print_all(CDataframe *cdf) {
+    print_lines(cdf, 0, get_lines_amount(cdf));
 }
 
-int get_cdataframe_columns_amount(Cdataframe *cdf) {
+void print_lines(CDataframe *cdf, int from, int to) {
+    if(from < 0 || to < from || to > get_lines_amount(cdf)) {
+        fprintf(stderr, "%s", "Line(s) out of range\n");
+        exit(1);
+    }
+    print_columns_names(cdf);
+    print_section(cdf, 0, cdf->size, from, to);
+}
+
+void print_columns(CDataframe *cdf, int from, int to) {
+    if(from < 0 || to < from || to > cdf->size) {
+        fprintf(stderr, "%s", "Column(s) out of range\n");
+        exit(1);
+    }
+    print_columns_names_section(cdf, from, to);
+    print_section(cdf, from, to, 0, get_lines_amount(cdf));
+}
+
+void print_columns_names(CDataframe *cdf) {
+    print_columns_names_section(cdf, 0, cdf->size);
+}
+
+int get_lines_amount(CDataframe *cdf) {
+    if (cdf->size == 0) return 0;
+    return cdf->columns[0]->size;
+}
+
+int get_columns_amount(CDataframe *cdf) {
     return cdf->size;
-}
-
-void add_cdataframe_newline(Cdataframe *cdf) {
-
-}
-
-void add_cdataframe_newcolumn(Cdataframe *cdf) {
-
 }
