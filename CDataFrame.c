@@ -129,20 +129,22 @@ int get_occurrences_equal(Column *col, int x) {
         }
     } else {
         fprintf(stderr, "%s", "Empty Array\n");
-        exit(1);
+        return 0;
     }
     return occ;
 }
 
 /* CDataFrame Interactions */
 
-CDataframe *create_cdataframe() {
-    CDataframe *pointer = (CDataframe *) malloc(sizeof(CDataframe));
+Cdataframe *create_cdataframe() {
+    Cdataframe *pointer = (Cdataframe *) malloc(sizeof(Cdataframe));
     if (pointer == NULL) {
         fprintf(stderr, "%s", "Cannot allocate the memory\n");
         exit(1);
-    } else
-        return pointer;
+    }
+    pointer->size = 0;
+    pointer->data = NULL;
+    return pointer;
 }
 
 /*
@@ -183,18 +185,21 @@ CDataframe *create_cdataframe() {
 }
 */
 
-int get_cdataframe_lines_amount(CDataframe *cDataframe) {
+int get_cdataframe_lines_amount(Cdataframe *cdf) {
+    if (cdf->size == 0)
+        return 0;
+    else
+        return cdf->data[0].size;
+}
+
+int get_cdataframe_columns_amount(Cdataframe *cdf) {
+    return cdf->size;
+}
+
+void add_cdataframe_newline(Cdataframe *cdf) {
 
 }
 
-int get_cdataframe_columns_amount(CDataframe *cDataframe) {
-
-}
-
-void add_cdataframe_newline(CDataframe *cDataframe) {
-
-}
-
-void add_cdataframe_newcolumn(CDataframe *cDataframe) {
+void add_cdataframe_newcolumn(Cdataframe *cdf) {
 
 }
