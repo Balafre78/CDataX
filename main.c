@@ -35,7 +35,13 @@ void test() {
     delete_column(&mycol);
     printf("0x%p\n", mycol);
 
-    Column *secondcol = create_column("My column");
+    Column *firstcol = create_column("Col 1");
+    insert_value(firstcol, 1);
+    insert_value(firstcol, 2);
+    insert_value(firstcol, 3);
+    print_col(firstcol);
+
+    Column *secondcol = create_column("Col 2");
     insert_value(secondcol, 52);
     insert_value(secondcol, 44);
     insert_value(secondcol, 15);
@@ -44,9 +50,9 @@ void test() {
     printf("Value@1  :%d\n", get_value(secondcol, 1));
     // printf("Value@48 :%d\n", get_value(secondcol, 48));
 
-    insert_value(secondcol, 72);
+    /*insert_value(secondcol, 72);
     insert_value(secondcol, 64);
-    insert_value(secondcol, 3);
+    insert_value(secondcol, 3);*/
 
     Column *emptycol = create_column("Empty column");
 
@@ -55,7 +61,14 @@ void test() {
     printf("Superior to 50 (mycol) : %d\n", get_occurrences_superior(secondcol, 50));
     printf("Equal to 3 (mycol) : %d\n", get_occurrences_equal(secondcol, 3));
 
+
     CDataframe *cdf = create_cdataframe();
+    cdf->columns = malloc(sizeof(Column) * 2);
+    cdf->columns[0] = firstcol;
+    cdf->columns[1] = secondcol;
+    cdf->size = 2;
     print_all(cdf);
+
+    printf("Values superior to 2 : %d", get_superior_occurrences(cdf, 2));
 
 }

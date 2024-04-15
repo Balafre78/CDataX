@@ -60,6 +60,7 @@ void print_columns_names_section(CDataframe *cdf, int col_from, int col_to) {
     for(int j = col_from; j < col_to; j++) {
         printf("%s\t", columns[j]->title);
     }
+    printf("\n");
 }
 
 /* Column Interactions */
@@ -242,4 +243,48 @@ int get_lines_amount(CDataframe *cdf) {
 
 int get_columns_amount(CDataframe *cdf) {
     return cdf->size;
+}
+
+int get_occurrences(CDataframe *cdf, int var) {
+    int occ = 0;
+    for(int c = 0; c < cdf->size; c++) {
+        for(int i = 0; i < cdf->columns[c]->size; i++) {
+            if (get_value(cdf->columns[c], i) == var) {
+                occ++;
+            }
+        }
+    }
+    return occ;
+}
+
+int get_superior_occurrences(CDataframe *cdf, int var) {
+    int occ = 0;
+    for(int c = 0; c < cdf->size; c++) {
+        for(int i = 0; i < cdf->columns[c]->size; i++) {
+            if (get_value(cdf->columns[c], i) > var) {
+                occ++;
+            }
+        }
+    }
+    return occ;
+}
+
+int get_inferior_occurrences(CDataframe *cdf, int var) {
+    int occ = 0;
+    for(int c = 0; c < cdf->size; c++) {
+        for(int i = 0; i < cdf->columns[c]->size; i++) {
+            if (get_value(cdf->columns[c], i) < var) {
+                occ++;
+            }
+        }
+    }
+    return occ;
+}
+
+void rename_column(CDataframe *cdf, int column, char *newTitle) {
+    if(column < 0 || column >= cdf->size) {
+        fprintf(stderr, "%s", "Column(s) out of range\n");
+        exit(1);
+    }
+    cdf->columns[column]->title = newTitle;
 }

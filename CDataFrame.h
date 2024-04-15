@@ -101,7 +101,7 @@ void del_line(CDataframe *cdf, int line);
 
 void del_column(CDataframe *cdf, int column);
 
-void rename_column(CDataframe *cdf, int column);
+void rename_column(CDataframe *cdf, int column, char *newTitle);
 
 void find_in(CDataframe *cdf, int var);
 
@@ -113,10 +113,10 @@ int get_lines_amount(CDataframe *cdf);
 
 int get_columns_amount(CDataframe *cdf);
 
-int get_var_occurrences_equal(CDataframe *cdf, int var);
+int get_occurrences(CDataframe *cdf, int var);
 
-int get_var_occurrences_superior(CDataframe *cdf, int var);
+int get_superior_occurrences(CDataframe *cdf, int var);
 
-int get_var_occurrences_inferior(CDataframe *cdf, int var);
+int get_inferior_occurrences(CDataframe *cdf, int var);
 
 #endif //CDATAX_CDATAFRAME_H
