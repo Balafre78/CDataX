@@ -54,6 +54,7 @@ void print_col(Column *col);
  * @param col The pointer to the column
  * @param idx The index to look for
  * @return that value
+ * @warning exit the program if invalid index provided
  */
 int get_value(Column *col, int index);
 

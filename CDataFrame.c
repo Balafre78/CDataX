@@ -270,7 +270,7 @@ int add_newline(CDataframe *cdf, int *values, int size) {
         if (!insert_value(cdf->columns[i], values[i]))
             return 1;
     }
-    return 0
+    return 0;
 }
 
 int add_newcolumn(CDataframe *cdf, int *values, int size, char *title) {
