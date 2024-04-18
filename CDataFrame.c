@@ -98,6 +98,16 @@ void delete_column(Column **col) {
     *col = NULL;
 }
 
+int delete_value_at_index(Column *col, int index) {
+    if (0 < index || index >= col->size)
+        return 1;
+    for (int i = 0; i < col->size; i++)
+        if (i >= index)
+            col->data[i] = col->data[i + 1];
+    col->size--;
+    return 0;
+}
+
 void print_col(Column *col) {
     if (col->data != NULL) {
         for (int i = 0; i < col->size; i++) {
@@ -335,4 +345,21 @@ int write(CDataframe *cdf) {
         //printf("%p", cdf->columns[0]->data);
     }
     //printf("Wrote.\n");
+}
+
+int del_line(CDataframe *cdf, int line) {
+    for (int i = 0; i < cdf->size; i++) {
+        if (delete_value_at_index(cdf->columns[i], line))
+            return 2;
+    }
+    return 0;
+}
+
+int del_column(CDataframe *cdf, int column) {
+    if (0 < column || column >= cdf->size)
+        return 2;
+    for (int i = 0; i < cdf->size; i++)
+        if (i >= column)
+            cdf->columns[i] = cdf->columns[i + 1];
+    cdf->size--;
 }

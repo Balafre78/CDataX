@@ -44,6 +44,14 @@ int insert_value(Column *col, int value);
 void delete_column(Column **col);
 
 /**
+ * @brief Delete last value of the column
+ * @param col Pointer to a column
+ * @param index Index to remove from the list
+ * @return 1 if the index is invalid, 0 else
+ */
+int delete_value_at_index(Column *col, int index);
+
+/**
   * @brief Print a column content
   * @param col Pointer to a column
   */
@@ -144,7 +152,7 @@ int add_newcolumn(CDataframe *cdf, int *values, int size, char *title);
  * @param line line to remove
  * @return 0 on success, 2 if there's an error the line parameter
  */
-void del_line(CDataframe *cdf, int line);
+int del_line(CDataframe *cdf, int line);
 
 /**
  * @brief Delete one column of the Cdataframe
@@ -152,7 +160,7 @@ void del_line(CDataframe *cdf, int line);
  * @param column column to remove
  * @return 0 on success, 2 if there's an error the column parameter
  */
-void del_column(CDataframe *cdf, int column);
+int del_column(CDataframe *cdf, int column);
 
 /**
  * @brief Rename one column name
