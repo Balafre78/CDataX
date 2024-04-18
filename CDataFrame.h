@@ -18,6 +18,7 @@ typedef struct column Column;
 struct cdataframe {
     Column **columns;
     int size;
+    int colsize;
 };
 
 typedef struct cdataframe CDataframe;
@@ -171,7 +172,13 @@ int del_column(CDataframe *cdf, int column);
  */
 int rename_column(CDataframe *cdf, int column, char *newTitle);
 
-void find_in(CDataframe *cdf, int var);
+/**
+ * @brief Rename one column name
+ * @param cdf Cdataframe pointer
+ * @param var
+ * @return A pointer to the value (first found by column) if it's found, the NULL pointer else
+ */
+int *find_in(CDataframe *cdf, int var);
 
 /**
  * @brief Print all column names
@@ -179,7 +186,14 @@ void find_in(CDataframe *cdf, int var);
  */
 void print_columns_names(CDataframe *cdf);
 
-void get_var(CDataframe *cdf, int line, int column);
+/**
+ * @brief Rename one column name
+ * @param cdf Cdataframe pointer
+ * @param line the line index
+ * @param column the column index
+ * @return A pointer to the value (first found by column) if it's found, the NULL pointer else
+ */
+int *get_var(CDataframe *cdf, int column, int line);
 
 /**
  * @brief Get the amount of lines

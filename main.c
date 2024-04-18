@@ -59,7 +59,7 @@ void test() {
     //printf("Inferior to 5 (mycol) : %d\n", get_occurrences_inferior(emptycol, 5));
     printf("Inferior to 50 (mycol) : %d\n", get_occurrences_inferior(secondcol, 50));
     printf("Superior to 50 (mycol) : %d\n", get_occurrences_superior(secondcol, 50));
-    printf("Equal to 3 (mycol) : %d\n", get_occurrences_equal(secondcol, 3));
+    printf("Equal to 3 (mycol): %d\n", get_occurrences_equal(secondcol, 3));
 
 
     CDataframe *cdf = create_cdataframe();
@@ -69,6 +69,16 @@ void test() {
     cdf->size = 2;
     print_all(cdf);
 
-    printf("Values superior to 2 : %d", get_superior_occurrences(cdf, 2));
+    printf("Values superior to 2 : %d\n", get_superior_occurrences(cdf, 2));
+
+    CDataframe *excel = create_cdataframe();
+    write(excel);
+    //printf("%s", cdf->columns[0]->title);
+    //printf(" & %s\n", cdf->columns[1]->title);
+    //printf("[0,0] = %d & [1,0] = %d\n", cdf->columns[0]->data[0], cdf->columns[1]->data[0]);
+    //printf("[0,1] = %d & [1,1] = %d\n", cdf->columns[0]->data[1], cdf->columns[1]->data[1]);
+    //printf("[0,2] = %d & [1,2] = %d\n", cdf->columns[0]->data[2], cdf->columns[1]->data[2]);
+    //printf("SIZE=%d\n", cdf->size);
+    print_all(excel);
 
 }

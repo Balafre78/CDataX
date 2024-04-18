@@ -182,6 +182,7 @@ CDataframe *create_cdataframe() {
     if (pointer != NULL) {
         pointer->columns = NULL;
         pointer->size = 0;
+        pointer->colsize = 0;
     }
     return pointer;
 }
@@ -283,6 +284,7 @@ int add_newline(CDataframe *cdf, int *values, int size) {
         if (!insert_value(cdf->columns[i], values[i]))
             return 1;
     }
+    cdf->colsize++;
     return 0;
 }
 
@@ -291,7 +293,7 @@ int add_newcolumn(CDataframe *cdf, int *values, int size, char *title) {
     if (cdf->size == 0) {
         cdf->columns = malloc(size * sizeof(Column));
     } else {
-        if (cdf->columns[0]->size != size) {
+        if (cdf->colsize != size) {
             //fprintf(stderr, "%s", "Inconsistent values tab size\n");
             return 2;
         }
@@ -309,6 +311,8 @@ int add_newcolumn(CDataframe *cdf, int *values, int size, char *title) {
             return 1;
     }
     //printf("END\n");
+    if (cdf->size == 0)
+        cdf->colsize = cdf->columns[0]->size;
     cdf->size++;
     return 0;
 }
@@ -352,6 +356,7 @@ int del_line(CDataframe *cdf, int line) {
         if (delete_value_at_index(cdf->columns[i], line))
             return 2;
     }
+    cdf->colsize--;
     return 0;
 }
 
@@ -362,4 +367,22 @@ int del_column(CDataframe *cdf, int column) {
         if (i >= column)
             cdf->columns[i] = cdf->columns[i + 1];
     cdf->size--;
+}
+
+int *find_in(CDataframe *cdf, int var) {
+    int *ptr = NULL;
+    for (int i = 0; i < cdf->size; i++) {
+        for (int j = 0; j < cdf->colsize; j++) {
+            ptr = get_var(cdf, i, j);
+            if (*ptr == var)
+                return ptr;
+        }
+    }
+    return NULL;
+}
+
+int *get_var(CDataframe *cdf, int column, int line) {
+    if (0 < line || line >= cdf->colsize || 0 < column || column >= cdf->size)
+        return NULL;
+    return &(cdf->columns[column]->data[line]);
 }
