@@ -56,9 +56,12 @@ void print_section(CDataframe *cdf, int col_from, int col_to, int line_from, int
 }
 
 void print_columns_names_section(CDataframe *cdf, int col_from, int col_to) {
-    Column **columns = cdf->columns;
+    //Column **columns = cdf->columns;
+    // printf("%d & %d\n", col_from, col_to);
+    // printf("title : %p\n", (cdf->columns[0]));
+    // printf("title : %p\n", (cdf->columns[1]));
     for (int j = col_from; j < col_to; j++) {
-        printf("%s\t", columns[j]->title);
+        printf("%s\t", cdf->columns[j]->title);
     }
     printf("\n");
 }
@@ -274,10 +277,11 @@ int add_newline(CDataframe *cdf, int *values, int size) {
 }
 
 int add_newcolumn(CDataframe *cdf, int *values, int size, char *title) {
+    //printf("START\n");
     if (cdf->size == 0) {
         cdf->columns = malloc(size * sizeof(Column));
     } else {
-        if (cdf->size != size) {
+        if (cdf->columns[0]->size != size) {
             //fprintf(stderr, "%s", "Inconsistent values tab size\n");
             return 2;
         }
@@ -288,11 +292,47 @@ int add_newcolumn(CDataframe *cdf, int *values, int size, char *title) {
         }
         cdf->columns = pointer;
     }
-    cdf->size++;
+    //printf("MIDLLE\n");
     cdf->columns[cdf->size] = create_column(title);
     for (int i = 0; i < size; i++) {
         if (!insert_value(cdf->columns[cdf->size], values[i]))
             return 1;
     }
+    //printf("END\n");
+    cdf->size++;
     return 0;
+}
+
+int write(CDataframe *cdf) {
+    int nbCol, nbLig;
+    printf("Enter the amount of wanted columns : ");
+    scanf("%d", &nbCol);
+    printf("Enter the amount of lines wanted across the entire dataframe : ");
+    scanf("%d", &nbLig); // next is gets
+
+    for (int i = 0; i < nbCol; i++) {
+        char *title = calloc(sizeof(char), 1);
+        printf("Saisir le titre de la colonne : ");
+        fflush_stdin();
+        scanf("%[^\n]", title);
+        //fgets(title, 50, stdin);
+        //gets(title);
+        fflush_stdin();
+        int values[nbLig];
+        for (int j = 0; j < nbLig; j++) {
+            printf("[%d] <- ", j);
+            scanf("%d", values + j);
+        }
+        // for (int j = 0; j < nbLig; j++) printf("%d ", *(values + j));
+        printf("\n");
+        int rc = add_newcolumn(cdf, values, nbLig, title);
+        if (rc == 2) {
+            fprintf(stderr, "%s", "Internal Error");
+            exit(1);
+        } else if (rc == 1) {
+            return 1;
+        }
+        //printf("%p", cdf->columns[0]->data);
+    }
+    //printf("Wrote.\n");
 }
