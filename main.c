@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "CDataFrame.h"
+#include "cdataframe.h"
 
 /**
  * @brief Debug the column by dumping all infos
@@ -8,12 +8,21 @@
 void printColumnInfo(Column *column);
 
 /**
- * @brief Series of test
+ * @brief Series of column tests
 */
-void test();
+void test_column();
+
+/**
+ * @brief Series of cdataframe tests
+*/
+void test_cdataframe();
+
 
 int main() {
-    test();
+    printf("Testing Columns");
+    test_column();
+    printf("Testing CDataframe");
+    test_cdataframe();
     return 0;
 }
 
@@ -23,62 +32,66 @@ void printColumnInfo(Column *column) {
            column, column->title, column->physical_size, column->size, column->data);
 }
 
-void test() {
+void test_column() {
     Column *mycol = create_column("My column");
     printColumnInfo(mycol);
+
     int val = 5;
     if (insert_value(mycol, val))
         printf("Value added successfully to my column\n");
     else
         printf("Error adding value to my column\n");
-    printColumnInfo(mycol);
+
+    insert_value(mycol, 4);
+    insert_value(mycol, 1);
+    print_col(mycol);
+
+    int x = 4;
+    printf("Occurrences equals to %d : %d", x, get_occurrences_equal(mycol, 4));
+    printf("Occurrences inferior to %d : %d", x, get_occurrences_inferior(mycol, 4));
+    printf("Occurrences superior to %d : %d", x, get_occurrences_superior(mycol, 4));
+
+    delete_value_at_index(mycol, 2);
+
     delete_column(&mycol);
     printf("0x%p\n", mycol);
+}
 
-    Column *firstcol = create_column("Col 1");
-    insert_value(firstcol, 1);
-    insert_value(firstcol, 2);
-    insert_value(firstcol, 3);
-    print_col(firstcol);
-
-    Column *secondcol = create_column("Col 2");
-    insert_value(secondcol, 52);
-    insert_value(secondcol, 44);
-    insert_value(secondcol, 15);
-    print_col(secondcol);
-
-    printf("Value@1  :%d\n", get_value(secondcol, 1));
-    // printf("Value@48 :%d\n", get_value(secondcol, 48));
-
-    /*insert_value(secondcol, 72);
-    insert_value(secondcol, 64);
-    insert_value(secondcol, 3);*/
-
-    Column *emptycol = create_column("Empty column");
-
-    //printf("Inferior to 5 (mycol) : %d\n", get_occurrences_inferior(emptycol, 5));
-    printf("Inferior to 50 (mycol) : %d\n", get_occurrences_inferior(secondcol, 50));
-    printf("Superior to 50 (mycol) : %d\n", get_occurrences_superior(secondcol, 50));
-    printf("Equal to 3 (mycol): %d\n", get_occurrences_equal(secondcol, 3));
-
-
+void test_cdataframe() {
+    // Creation functions
     CDataframe *cdf = create_cdataframe();
-    cdf->columns = malloc(sizeof(Column) * 2);
-    cdf->columns[0] = firstcol;
-    cdf->columns[1] = secondcol;
-    cdf->size = 2;
+    write(cdf);
+
+    // Printing functions
+    printf("Header :");
+    print_columns_names(cdf);
+    printf("All data :");
     print_all(cdf);
+    printf("First column");
+    print_columns(cdf, 0, 1);
+    printf("First line");
+    print_lines(cdf, 0, 1);
 
-    printf("Values superior to 2 : %d\n", get_superior_occurrences(cdf, 2));
+    // Analysis functions
+    printf("Columns : %d", get_columns_amount(cdf));
+    printf("Lines : %d", get_lines_amount(cdf));
+    int x = 4;
+    printf("Cells equals to %d : %d", x, get_occurrences(cdf, x));
+    printf("Cells inferior to %d : %d", x, get_inferior_occurrences(cdf, x));
+    printf("Cells superior to %d : %d", x, get_superior_occurrences(cdf, x));
 
-    CDataframe *excel = create_cdataframe();
-    write(excel);
-    //printf("%s", cdf->columns[0]->title);
-    //printf(" & %s\n", cdf->columns[1]->title);
-    //printf("[0,0] = %d & [1,0] = %d\n", cdf->columns[0]->data[0], cdf->columns[1]->data[0]);
-    //printf("[0,1] = %d & [1,1] = %d\n", cdf->columns[0]->data[1], cdf->columns[1]->data[1]);
-    //printf("[0,2] = %d & [1,2] = %d\n", cdf->columns[0]->data[2], cdf->columns[1]->data[2]);
-    //printf("SIZE=%d\n", cdf->size);
-    print_all(excel);
+    // Operation functions
+    int vals[] = {1, 2, 3, 4, 5, 6};
+    add_newcolumn(cdf, vals, 6, "Index");
+
+    int li[] = {15, 23, 47};
+    add_newline(cdf, li, 3);
+
+    del_line(cdf, 0);
+    del_column(cdf, 0);
+    rename_column(cdf, 1, "Column 1");
+
+    int *fifteen_cell = find_in(cdf, 15);
+    int *selected_cell = get_var(cdf, 3, 6);
 
 }

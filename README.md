@@ -25,7 +25,7 @@ Le projet se base sur une API divisé en deux fichiers `column.h` et `cdataframe
 * `cdataframe.h` est une interface finale pensée pour la gestion de donnnées sous format "tableau". Ce module est la 
   gestion des données sous forme d'une liste de colonnes, il regroupe également toutes les fonctions liés.
 
-Le programme inclue également un set de test dans le fichier principal : `main.c`.
+Le programme inclue également un set de test_column dans le fichier principal : `main.c`.
 Il est toujours up-to-date avec les dernières modifications du projet.
 
 ## Dépendances

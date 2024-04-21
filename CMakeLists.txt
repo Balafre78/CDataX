@@ -4,5 +4,7 @@ project(CDataX C)
 set(CMAKE_C_STANDARD 11)
 
 add_executable(CDataX main.c
-        CDataFrame.c
-        CDataFrame.h)
+        cdataframe.c
+        cdataframe.h
+        column.c
+        column.h)
