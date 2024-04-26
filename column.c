@@ -142,6 +142,7 @@ int print_col(Column *col) {
             newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
             if (newPtr == NULL) {
                 free(buffer);
+                free(newPtr);
                 return 1;
             }
             buffer_size += STD_BUFF_SIZE;
