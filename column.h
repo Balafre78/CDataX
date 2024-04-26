@@ -6,81 +6,54 @@
 
 #define REALOC_SIZE 256
 
+enum enum_type
+{
+    NULLVAL = 1 , UINT, INT, CHAR, FLOAT, DOUBLE, STRING, STRUCTURE
+};
+typedef enum enum_type Enum_type;
+
+union column_type {
+    unsigned int uint_value;
+    signed int int_value;
+    char char_value;
+    float float_value;
+    double double_value;
+    char* string_value;
+    void* struct_value;
+};
+typedef union column_type Col_type;
+
 struct column {
-    char *title;
-    int physical_size;
-    int size;
-    int *data;
+    char *title; // title
+    unsigned int size; // logical size
+    unsigned int max_size; // physical size
+    Enum_type column_type; // data type
+    Col_type **data; // array of pointers to stored data
+    unsigned long long int *index; // array of integers
 };
 
 typedef struct column Column;
 
 /**
-  * @brief Create a column
-  * @param title Column title
-  * @return Pointer to created column or NULL pointer on failure
-  */
-Column *create_column(char *title);
+* Create a new column
+* @param1 : Column type
+* @param2 : Column title
+* @return : Pointer to the created column
+*/
+Column *create_column(Enum_type type, char *title);
 
 /**
-  * @brief Add a new value to a column
-  * @param col Pointer to a column
-  * @param value The value to be added
-  * @return 1 if the value is added 0 otherwise
-  */
-int insert_value(Column *col, int value);
+  * @brief Insert a new value into a column
+  * @param1 Pointer to the column
+  * @param2 Pointer to the value to insert
+  * @return 1 if the value is correctly inserted 0 otherwise
+*/
+int insert_value(Column *col, void *value);
 
 /**
-  * @brief Free allocated memory
-  * @param col Pointer to a column
-  */
+* @brief: Free the space allocated by a column
+* @param1: Pointer to the column
+*/
 void delete_column(Column **col);
-
-/**
- * @brief Delete last value of the column
- * @param col Pointer to a column
- * @param index Index to remove from the list
- * @return 1 if the index is invalid, 0 else
- */
-int delete_value_at_index(Column *col, int index);
-
-/**
-  * @brief Print a column content
-  * @param col Pointer to a column
-  */
-void print_col(Column *col);
-
-/**
- * @brief Get the value of the column index given
- * @param col The pointer to the column
- * @param idx The index to look for
- * @return that value
- * @warning exit the program if invalid index provided
- */
-int get_value(Column *col, int index);
-
-/**
- * @brief Get the number of occurrences of value under the one given
- * @param col Pointer to a column
- * @param x The value to compare
- * @return Number of occurrences
- * */
-int get_occurrences_inferior(Column *col, int x);
-
-/**
- * @brief Get the number of occurrences of value above the one given
- * @param col Pointer to a column
- * @param x The value to compare
- * @return Number of occurrences
- * */
-int get_occurrences_superior(Column *col, int x);
-
-/**
- * @brief Get the number of occurrences of value equals to the one given
- * @param col Pointer to a column
- * @param x The value to compare
- * @return Number of occurrences
- * */
-int get_occurrences_equal(Column *col, int x);
 
 #endif //CDATAX_COLUMN_H
