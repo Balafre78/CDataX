@@ -30,7 +30,7 @@ int main() {
     print_col(mycol);
     Col_type seuil;
     seuil.int_value = 20;
-    printf("Less than 20 : %d", get_occurrences_inferior(mycol, &seuil));
+    printf("Less than 20 : %d", get_occurrences_superior(mycol, &seuil));
     delete_column(&mycol);
 }
 

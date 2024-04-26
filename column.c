@@ -211,24 +211,33 @@ int compare_Col_type(Col_type *A, Col_type *B, Enum_type type) {
 
 int get_occurrences_inferior(Column *col, Col_type *x) {
     int occ = 0;
-    for (unsigned int i = 0; i < col->size; i++)
+    for (unsigned int i = 0; i < col->size; i++) {
+        if (col->data[i]->struct_value == NULL)
+            continue;
         if (compare_Col_type(x, col->data[i], col->column_type) < 0)
             occ++;
+    }
     return occ;
 }
 
 int get_occurrences_superior(Column *col, Col_type *x) {
     int occ = 0;
-    for (unsigned int i = 0; i < col->size; i++)
+    for (unsigned int i = 0; i < col->size; i++) {
+        if (col->data[i]->struct_value == NULL)
+            continue;
         if (compare_Col_type(x, col->data[i], col->column_type) > 0)
             occ++;
+    }
     return occ;
 }
 
 int get_occurrences_equal(Column *col, Col_type *x) {
     int occ = 0;
-    for (unsigned int i = 0; i < col->size; i++)
+    for (unsigned int i = 0; i < col->size; i++) {
+        if (col->data[i]->struct_value == NULL)
+            continue;
         if (compare_Col_type(x, col->data[i], col->column_type) == 0)
             occ++;
+    }
     return occ;
 }
