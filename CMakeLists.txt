@@ -9,4 +9,6 @@ add_executable(CDataX
         column.h
         llc.c
         llc.h
+        cdataframe.c
+        cdataframe.h
 )

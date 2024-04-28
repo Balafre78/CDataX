@@ -1,10 +1,13 @@
 #ifndef CDATAX_LLC_H
 #define CDATAX_LLC_H
+
+#include "column.h"
+
 /**
  * Élément lnode
  */
 typedef struct lnode_ {
-    void *data; // Pointer to a column
+    Column *data; // Pointer to a column
     struct lnode_ *prev;
     struct lnode_ *next;
 } lnode;
@@ -16,8 +19,6 @@ typedef struct list_ {
     lnode *head;
     lnode *tail;
 } list;
-
-typedef list cdataframe;
 
 /**
 * création d'un noeud

@@ -3,23 +3,39 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "llc.h"
 #include "column.h"
 
-struct cdataframe {
-    Column **columns;
-    int size;
-    int colsize;
-};
+typedef struct cadataframe {
+    Enum_type *types;
+    Enum_type size;
+    list data;
 
-typedef struct cdataframe CDataframe;
+} CDataframe;
+
 
 /**
  * @brief Create an empty Cdataframe
+ * @param cdftype list of types that will be used
+ * @param size size of the above list
  * @return Pointer to the newly created Cdataframe or the NULL pointer if it cannot allocate memory
  */
-CDataframe *create_cdataframe();
+CDataframe *create_cdataframe(Enum_type *cdftype, int size);
 
-/*NB: L'implémenter aussi en dur*/
+/**
+* @brief: Column deletion
+* @param cdf Pointer to the CDataframe to delete
+*/
+void delete_cdataframe(CDataframe **cdf);
+
+// /**
+// * @brief: Number of columns
+// * @param1: Point to the CDataframe
+// * @return: Number of columns in the CDataframe
+// */
+// int get_cdataframe_cols_size(CDataframe *cdf);
+
+//TODO: L'implémenter aussi en dur
 /**
  * @brief Write all data to a new Cdataframe (from user input)
  * @param cdf Cdataframe pointer (should be empty)
@@ -54,20 +70,21 @@ int print_columns(CDataframe *cdf, int from, int to);
 /**
  * @brief Add a new line to an existing Cdataframe
  * @param cdf Cdataframe pointer
- * @param values Tab of integers to insert to the new line
+ * @param values Tab of Col_type to insert to the new line
  * @param size Size of the previous tab, should be the exact same size as the Cdataframe size
  * @return 3 if the cdf is empty, 2 if it's the size, 1 if it's the memory allocation, 0 else
  */
-int add_newline(CDataframe *cdf, int *values, int size);
+int add_newline(CDataframe *cdf, Col_type *values, int size);
 
 /**
  * @brief Add a new line to an existing Cdataframe
  * @param cdf Cdataframe pointer
- * @param values Tab of integers to insert to the new line
+ * @param type Type of value to insert
+ * @param values Tab of Col_type to insert to the new line
  * @param size Size of the previous tab, should be the exact same size as the Cdataframe size
  * @return 2 if there's an error with the size, 1 if there's an error with memory allocation, 0 else
  */
-int add_newcolumn(CDataframe *cdf, int *values, int size, char *title);
+int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, int size, char *title);
 
 /**
  * @brief Delete one line of the Cdataframe
@@ -78,21 +95,21 @@ int add_newcolumn(CDataframe *cdf, int *values, int size, char *title);
 int del_line(CDataframe *cdf, int line);
 
 /**
- * @brief Delete one column of the Cdataframe
+ * @brief Delete one column of the Cdataframe, query by names
  * @param cdf Cdataframe pointer
- * @param column column to remove
- * @return 0 on success, 2 if there's an error the column parameter
+ * @param col_title column name to remove
+ * @return 0 on success, 2 if there's an error the col_name parameter
  */
-int del_column(CDataframe *cdf, int column);
+int del_column(CDataframe *cdf, char *col_title);
 
 /**
  * @brief Rename one column name
  * @param cdf Cdataframe pointer
- * @param column column to rename
+ * @param col_title column name to rename
  * @param newTitle new title of the column
- * @return 0 on success, 2 if there's an error the column parameter
+ * @return 0 on success, 2 if there's an error the col_title parameter
  */
-int rename_column(CDataframe *cdf, int column, char *newTitle);
+int rename_column(CDataframe *cdf, char *col_title, char *newTitle);
 
 /**
  * @brief Give a pointer to the first cell with the matching value
@@ -100,7 +117,7 @@ int rename_column(CDataframe *cdf, int column, char *newTitle);
  * @param var value to find
  * @return A pointer to the value (first found by column) if it's found, the NULL pointer else
  */
-int *find_in(CDataframe *cdf, int var);
+Col_type *find_in(CDataframe *cdf, Col_type var);
 
 /**
  * @brief Print all column names
@@ -112,10 +129,10 @@ void print_columns_names(CDataframe *cdf);
  * @brief Give a pointer to the value at the line and column wanted
  * @param cdf Cdataframe pointer
  * @param line the line index
- * @param column the column index
+ * @param col_title column name to find in
  * @return A pointer to the value
  */
-int *get_var(CDataframe *cdf, int column, int line);
+Col_type *get_var(CDataframe *cdf, char *col_title, int line);
 
 /**
  * @brief Get the amount of lines
@@ -137,7 +154,7 @@ int get_columns_amount(CDataframe *cdf);
  * @param var variable to compare
  * @retunr number of occurrences
  */
-int get_occurrences(CDataframe *cdf, int var);
+int get_occurrences(CDataframe *cdf, Col_type var);
 
 /**
  * @brief Get the occurrences of a var superior to a var in a Cdataframe
@@ -145,7 +162,7 @@ int get_occurrences(CDataframe *cdf, int var);
  * @param var variable to compare
  * @retunr number of occurrences
  */
-int get_superior_occurrences(CDataframe *cdf, int var);
+int get_superior_occurrences(CDataframe *cdf, Col_type var);
 
 /**
  * @brief Get the occurrences of a var inferior to a var in a Cdataframe
@@ -153,6 +170,6 @@ int get_superior_occurrences(CDataframe *cdf, int var);
  * @param var variable to compare
  * @retunr number of occurrences
  */
-int get_inferior_occurrences(CDataframe *cdf, int var);
+int get_inferior_occurrences(CDataframe *cdf, Col_type var);
 
 #endif //CDATAX_CDATAFRAME_H
