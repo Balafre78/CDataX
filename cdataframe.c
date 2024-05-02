@@ -72,3 +72,43 @@ int add_newline(CDataframe *cdf, Col_type *values, int size) {
     cdf->colsize++;
     return 0;
 }
+
+void print_columns_names(CDataframe *cdf) {
+    lnode *node = cdf->data->head;
+    for (int i = 0; i < cdf->size; i++) {
+        printf("\t%s", node->data->title);
+    }
+    printf("\n");
+}
+
+int print_lines(CDataframe *cdf, int from, int to) {
+    if (from < 0 || from > to || to > cdf->size)
+        return 2;
+
+    int buffer_size = STD_BUFF_SIZE;
+    char *buffer = malloc(buffer_size * sizeof(char)), *newPtr;
+    if (buffer == NULL) {
+        return 1;
+    }
+
+    print_columns_names(cdf);
+
+    lnode *node = cdf->data->head;
+    for (unsigned int col = from; col < to; col++) {
+        printf("[%d]", col);
+        for (unsigned int i = 0; i < cdf->size; i++) {
+            while (convert_value(node->data, i, buffer, buffer_size) == 1) {
+                newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
+                if (newPtr == NULL) {
+                    free(buffer);
+                    free(newPtr);
+                    return 1;
+                }
+                buffer_size += STD_BUFF_SIZE;
+            }
+        }
+        printf("\t%s", buffer);
+        node = get_next_node(cdf->data, node);
+    }
+    free(buffer);
+}

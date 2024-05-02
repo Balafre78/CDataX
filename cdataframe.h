@@ -57,11 +57,17 @@ int write(CDataframe *cdf);
 void print_all(CDataframe *cdf);
 
 /**
+ * @brief Print all column names
+ * @param cdf Cdataframe pointer
+ */
+void print_columns_names(CDataframe *cdf);
+
+/**
  * @brief Print all lines from a start to an end from an existing Cdataframe
  * @param cdf Cdataframe pointer
  * @param from Starting line
  * @param to Ending line (excluded)
- * @return 2 if there's an error with the section selected, 0 else
+ * @return 2 if there's an error with the section selected, 1 with internal memory allocation, 0 else
  */
 int print_lines(CDataframe *cdf, int from, int to);
 
@@ -70,7 +76,7 @@ int print_lines(CDataframe *cdf, int from, int to);
  * @param cdf Cdataframe pointer
  * @param from Starting column
  * @param to Ending column (excluded)
- * @return 2 if there's an error with the section selected, 0 else
+ * @return 2 if there's an error with the section selected, 1 with internal memory allocation, 0 else
  */
 int print_columns(CDataframe *cdf, int from, int to);
 
@@ -125,12 +131,6 @@ int rename_column(CDataframe *cdf, char *col_title, char *newTitle);
  * @return A pointer to the value (first found by column) if it's found, the NULL pointer else
  */
 Col_type *find_in(CDataframe *cdf, Col_type var);
-
-/**
- * @brief Print all column names
- * @param cdf Cdataframe pointer
- */
-void print_columns_names(CDataframe *cdf);
 
 /**
  * @brief Give a pointer to the value at the line and column wanted
