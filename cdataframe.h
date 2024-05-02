@@ -7,20 +7,27 @@
 #include "column.h"
 
 typedef struct cadataframe {
-    Enum_type *types;
-    Enum_type size;
-    list data;
+    int size;
+    int colsize;
+    list *data;
 
 } CDataframe;
 
 
 /**
- * @brief Create an empty Cdataframe
+ * @brief Create an empty Cdataframe (no data provided only the an empty list is created)
+ * @return Pointer to the newly created Cdataframe or the NULL pointer if it cannot allocate memory
+ */
+CDataframe *create_empty_cdataframe();
+
+/**
+ * @brief Create an empty Cdataframe (no data provided by all columns defined)
  * @param cdftype list of types that will be used
+ * @param colNames list og names that will be used
  * @param size size of the above list
  * @return Pointer to the newly created Cdataframe or the NULL pointer if it cannot allocate memory
  */
-CDataframe *create_cdataframe(Enum_type *cdftype, int size);
+CDataframe *create_cdataframe(Enum_type *cdfTypes, char** colNames, int size);
 
 /**
 * @brief: Column deletion
@@ -72,7 +79,7 @@ int print_columns(CDataframe *cdf, int from, int to);
  * @param cdf Cdataframe pointer
  * @param values Tab of Col_type to insert to the new line
  * @param size Size of the previous tab, should be the exact same size as the Cdataframe size
- * @return 3 if the cdf is empty, 2 if it's the size, 1 if it's the memory allocation, 0 else
+ * @return 3 if the cdf is empty (no info on columns types), 2 if it's the size, 1 if it's the memory allocation, 0 else
  */
 int add_newline(CDataframe *cdf, Col_type *values, int size);
 
@@ -82,7 +89,7 @@ int add_newline(CDataframe *cdf, Col_type *values, int size);
  * @param type Type of value to insert
  * @param values Tab of Col_type to insert to the new line
  * @param size Size of the previous tab, should be the exact same size as the Cdataframe size
- * @return 2 if there's an error with the size, 1 if there's an error with memory allocation, 0 else
+ * @return 2 if it's the size, 1 if there's an error with memory allocation, 0 else
  */
 int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, int size, char *title);
 
