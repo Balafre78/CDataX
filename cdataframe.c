@@ -77,6 +77,7 @@ void print_columns_names(CDataframe *cdf) {
     lnode *node = cdf->data->head;
     for (int i = 0; i < cdf->size; i++) {
         printf("\t%s", node->data->title);
+        node = get_next_node(cdf->data, node);
     }
     printf("\n");
 }
@@ -92,12 +93,12 @@ int print_lines(CDataframe *cdf, int from, int to) {
     }
 
     print_columns_names(cdf);
-
-    lnode *node = cdf->data->head;
-    for (unsigned int col = from; col < to; col++) {
-        printf("[%d]", col);
-        for (unsigned int i = 0; i < cdf->size; i++) {
-            while (convert_value(node->data, i, buffer, buffer_size) == 1) {
+    lnode *node = NULL;
+    for (unsigned int line = from; line < to; line++) {
+        node = cdf->data->head;
+        printf("[%d]", line);
+        for (unsigned int col = 0; col < cdf->size; col++) {
+            while (convert_value(node->data, line, buffer, buffer_size) == 1) {
                 newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
                 if (newPtr == NULL) {
                     free(buffer);
@@ -106,9 +107,10 @@ int print_lines(CDataframe *cdf, int from, int to) {
                 }
                 buffer_size += STD_BUFF_SIZE;
             }
+            printf("\t%s", buffer);
+            node = get_next_node(cdf->data, node);
         }
-        printf("\t%s", buffer);
-        node = get_next_node(cdf->data, node);
+        printf("\n");
     }
     free(buffer);
 }

@@ -50,6 +50,7 @@ int main() {
         printf("%s\t@ %s\n", buff, node->data->title);
         node = get_next_node(cdf->data, node);
     }
+
     print_lines(cdf, 0, 1);
     return 0;
 
