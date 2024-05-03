@@ -64,10 +64,12 @@ int add_newline(CDataframe *cdf, Col_type *values, int size) {
         return 2;
 
     lnode *node = cdf->data->head;
-    for (int i = 0; i < size; i++) {
+    int i = 0;
+    while (node != NULL) {
         if (!insert_value(node->data, &values[i]))
             return 1;
         node = get_next_node(cdf->data, node);
+        i++;
     }
     cdf->colsize++;
     return 0;
@@ -75,7 +77,7 @@ int add_newline(CDataframe *cdf, Col_type *values, int size) {
 
 void print_columns_names(CDataframe *cdf) {
     lnode *node = cdf->data->head;
-    for (int i = 0; i < cdf->size; i++) {
+    while (node != NULL) {
         printf("\t%s", node->data->title);
         node = get_next_node(cdf->data, node);
     }
@@ -97,7 +99,7 @@ int print_lines(CDataframe *cdf, int from, int to) {
     for (unsigned int line = from; line < to; line++) {
         node = cdf->data->head;
         printf("[%d]", line);
-        for (unsigned int col = 0; col < cdf->size; col++) {
+        while (node != NULL) {
             while (convert_value(node->data, line, buffer, buffer_size) == 1) {
                 newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
                 if (newPtr == NULL) {
