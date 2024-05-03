@@ -53,8 +53,18 @@ int write(CDataframe *cdf);
 /**
  * @brief Print all data of an existing Cdataframe
  * @param cdf Cdataframe pointer
+ * @return 1 with internal memory allocation, 0 else
  */
-void print_all(CDataframe *cdf);
+int print_all(CDataframe *cdf);
+
+/**
+ * @brief Print all column names
+ * @param cdf Cdataframe pointer
+ * @param from Starting line
+ * @param to Ending line (excluded)
+ * @return 2 if there's an error with the section selected, 0 else
+ */
+int print_columns_names_partial(CDataframe *cdf, int from, int to);
 
 /**
  * @brief Print all column names

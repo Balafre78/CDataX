@@ -75,17 +75,34 @@ int add_newline(CDataframe *cdf, Col_type *values, int size) {
     return 0;
 }
 
-void print_columns_names(CDataframe *cdf) {
+int print_columns_names_partial(CDataframe *cdf, int from, int to) {
+    if (from < 0 || from > to || to > cdf->size)
+        return 2;
+
     lnode *node = cdf->data->head;
-    while (node != NULL) {
-        printf("\t%s", node->data->title);
+
+    int i;
+    for (i = 0; i < from; i++) {
         node = get_next_node(cdf->data, node);
     }
+
+    while (i < to) {
+        printf("\t%s", node->data->title);
+        node = get_next_node(cdf->data, node);
+        i++;
+    }
     printf("\n");
+
+    return 0;
+}
+
+void print_columns_names(CDataframe *cdf) {
+    print_columns_names_partial(cdf, 0, cdf->size);
 }
 
 int print_lines(CDataframe *cdf, int from, int to) {
-    if (from < 0 || from > to || to > cdf->size)
+
+    if (from < 0 || from > to || to > cdf->colsize)
         return 2;
 
     int buffer_size = STD_BUFF_SIZE;
@@ -115,4 +132,61 @@ int print_lines(CDataframe *cdf, int from, int to) {
         printf("\n");
     }
     free(buffer);
+
+    return 0;
+}
+
+int print_columns(CDataframe *cdf, int from, int to) {
+    if (from < 0 || from > to || to > cdf->size)
+        return 2;
+
+    int buffer_size = STD_BUFF_SIZE;
+    char *buffer = malloc(buffer_size * sizeof(char)), *newPtr;
+    if (buffer == NULL) {
+        return 1;
+    }
+
+    print_columns_names_partial(cdf, from, to);
+
+    lnode *node = cdf->data->head;
+
+    int i;
+    for (i = 0; i < from; i++) {
+        node = get_next_node(cdf->data, node);
+    }
+
+    lnode *fromnode = node;
+    while(i < to) {
+        node = get_next_node(cdf->data, node);
+        i++;
+    }
+    lnode *tonode = node;
+
+    node = fromnode;
+    for (unsigned int line = 0; line < node->data->size; line++) {
+        printf("[%d]", line);
+
+        while (node != tonode) {
+            while (convert_value(node->data, line, buffer, buffer_size) == 1) {
+                newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
+                if (newPtr == NULL) {
+                    free(buffer);
+                    free(newPtr);
+                    return 1;
+                }
+                buffer_size += STD_BUFF_SIZE;
+            }
+            printf("\t%s", buffer);
+            node = get_next_node(cdf->data, node);
+        }
+
+        node = fromnode;
+        printf("\n");
+    }
+    free(buffer);
+    return 0;
+}
+
+int print_all(CDataframe *cdf) {
+    return print_lines(cdf, 0, cdf->colsize);
 }
