@@ -110,6 +110,15 @@ int add_newline(CDataframe *cdf, Col_type *values, int size);
 int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, int size, char *title);
 
 /**
+ * @brief Query column by his name
+ * @param cdf Cdataframe pointer
+ * @param title name of the column
+ * @return the pointer to that column (may be NULL if nothing is found)
+ */
+Column *query_column_by_name(CDataframe *cdf, char *title);
+
+
+/**
  * @brief Delete one line of the Cdataframe
  * @param cdf Cdataframe pointer
  * @param line line to remove

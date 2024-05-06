@@ -101,7 +101,6 @@ void print_columns_names(CDataframe *cdf) {
 }
 
 int print_lines(CDataframe *cdf, int from, int to) {
-
     if (from < 0 || from > to || to > cdf->colsize)
         return 2;
 
@@ -156,7 +155,7 @@ int print_columns(CDataframe *cdf, int from, int to) {
     }
 
     lnode *fromnode = node;
-    while(i < to) {
+    while (i < to) {
         node = get_next_node(cdf->data, node);
         i++;
     }
@@ -189,4 +188,14 @@ int print_columns(CDataframe *cdf, int from, int to) {
 
 int print_all(CDataframe *cdf) {
     return print_lines(cdf, 0, cdf->colsize);
+}
+
+Column *query_column_by_name(CDataframe *cdf, char *title) {
+    lnode *node = cdf->data;
+    while (node != NULL) {
+        if (strcmp(node->data->title, title) == 0)
+            return  node->data;
+        node = node->next;
+    }
+    return NULL;
 }
