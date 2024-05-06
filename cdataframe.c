@@ -199,3 +199,19 @@ Column *query_column_by_name(CDataframe *cdf, char *title) {
     }
     return NULL;
 }
+
+int get_lines_amount(CDataframe *cdf) {
+    return cdf->colsize;
+}
+
+int get_columns_amount(CDataframe *cdf) {
+    return cdf->size;
+}
+
+int rename_column(CDataframe *cdf, char *col_title, char *newTitle) {
+    Column *ptr = query_column_by_name(cdf, col_title);
+    if (ptr == NULL)
+        return 2;
+    ptr->title = newTitle;
+    return 0;
+}
