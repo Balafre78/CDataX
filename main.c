@@ -67,6 +67,13 @@ int main() {
     print_columns(cdf, 0, 1);
     printf("Cdf of %d lines and %d columns\n", get_lines_amount(cdf), get_columns_amount(cdf));
 
+    // Test this function breaks the test suite
+    //del_cell(cdf, "new Col 1", 1);
+    //return 0;
+
+    del_line(cdf, 0);
+
+
 
 
 
