@@ -8,6 +8,13 @@
 #define REALOC_SIZE 256
 #define STD_BUFF_SIZE 32
 
+#define ASC 0
+#define DESC 1
+
+#define UNSORTED 0
+#define ALMOST_SORT (-1)
+#define SORTED 1
+
 enum enum_type
 {
     NULLVAL = 1 , UINT, INT, CHAR, FLOAT, DOUBLE, STRING, STRUCTURE
@@ -25,13 +32,24 @@ union column_type {
 };
 typedef union column_type Col_type;
 
+typedef unsigned long long int indexation;
+
 struct column {
     char *title; // title
     unsigned int size; // logical size
     unsigned int max_size; // physical size
     Enum_type column_type; // data type
     Col_type **data; // array of pointers to stored data
-    unsigned long long int *index; // array of integers
+    indexation *index; // array of integers
+    // index valid
+    // 0 : no index
+    // -1 : invalid index
+    // 1 : valid index
+    int valid_index;
+    // direction de tri Ascendant ou Déscendant
+    // 0 : ASC
+    // 1 : DESC
+    int sort_dir;
 };
 
 typedef struct column Column;
@@ -58,6 +76,8 @@ int insert_value(Column *col, void *value);
 */
 void delete_column(Column **col);
 
+/*Printing functions*/
+
 /**
 * @brief: Convert a value into a string
 * @param1: Pointer to the column
@@ -69,11 +89,18 @@ void delete_column(Column **col);
 int convert_value(Column *col, unsigned int i, char *str, int size);
 
 /**
-* @brief: Display the content of a column
+* @brief: Display the content of a column (no matter the index)
 * @param: Pointer to the column to display
 * @return: 1 on internal allocation error, 0 else
 */
-int print_col(Column *col);
+int print_col_raw(Column *col);
+
+/**
+* @brief: Display the content of a sorted column
+* @param: Pointer to a column
+* @return: 1 on internal allocation error, 0 else
+*/
+int print_col_by_index(Column *col);
 
 /*Extra functions*/
 
@@ -81,8 +108,7 @@ int print_col(Column *col);
  * @brief Get the value of the column index given
  * @param col The pointer to the column
  * @param idx The index to look for
- * @return a pointer to that value
- * @warning exit the program if invalid index provided
+ * @return a pointer to that value may return NULL pointer if it doesn't exists
  */
 Col_type *get_value(Column *col, unsigned int index);
 
@@ -91,9 +117,18 @@ Col_type *get_value(Column *col, unsigned int index);
  * @param A first param
  * @param B second param
  * @param type their type in Enum_type
- * @return 1 if A > B else (-1 if B > A else 0)
+ * @return 1 if A > B
+ * @return -1 if B > A
+ * @return 0 if A == B
  * */
 int compare_Col_type(Col_type *A, Col_type *B, Enum_type type);
+
+/**
+* @brief: Sort a column according to a given order
+* @param col Pointer to the column to sort
+* @param sort_dir Sort type (ASC or DESC)
+*/
+void sort(Column *col, int sort_dir);
 
 /**
  * @brief Get the number of occurrences of value under the one given
@@ -101,7 +136,7 @@ int compare_Col_type(Col_type *A, Col_type *B, Enum_type type);
  * @param x The value to compare (same type as col)
  * @return Number of occurrences
  * */
-int get_occurrences_inferior(Column *col, Col_type *x);
+int get_occurrences_inferior_raw(Column *col, Col_type *x);
 
 /**
  * @brief Get the number of occurrences of value under the one given
@@ -109,7 +144,7 @@ int get_occurrences_inferior(Column *col, Col_type *x);
  * @param x The value to compare
  * @return Number of occurrences
  * */
-int get_occurrences_superior(Column *col, Col_type *x);
+int get_occurrences_superior_raw(Column *col, Col_type *x);
 
 /**
  * @brief Get the number of occurrences of value under the one given
@@ -117,6 +152,6 @@ int get_occurrences_superior(Column *col, Col_type *x);
  * @param x The value to compare
  * @return Number of occurrences
  * */
-int get_occurrences_equal(Column *col, Col_type *x);
+int get_occurrences_equal_raw(Column *col, Col_type *x);
 
 #endif //CDATAX_COLUMN_H

@@ -9,6 +9,8 @@ Column *create_column(Enum_type type, char *title) {
         col->column_type = type;
         col->data = NULL;
         col->index = NULL;
+        col->valid_index = 0;
+        col->sort_dir = ASC;
     }
     return col;
 }
@@ -17,22 +19,29 @@ int insert_value(Column *col, void *value) {
     // Ensure Allocation size
     if (col->size + 1 > col->max_size) {
         Col_type **newPtr;
+        indexation *newIndex;
         if (col->size == 0) {
             newPtr = (Col_type **) malloc(REALOC_SIZE * sizeof(Col_type *));
+            newIndex = (indexation *) calloc(REALOC_SIZE, sizeof(Col_type *));
         } else {
             newPtr = (Col_type **) realloc(col->data, col->max_size + REALOC_SIZE);
+            newIndex = (indexation *) realloc(col->index, col->max_size + REALOC_SIZE);
         }
-        if (newPtr == NULL) {
+        if (newPtr == NULL || newIndex == NULL) {
             return 0;
         }
         col->data = newPtr;
+        col->index = newIndex;
         col->max_size += REALOC_SIZE;
     }
 
     if (value == NULL) {
         col->data[col->size] = malloc(sizeof(void *));
         col->data[col->size]->struct_value = NULL;
+        col->index[col->size] = col->size;
         col->size++;
+        if (col->valid_index != UNSORTED)
+            col->valid_index = ALMOST_SORT;
         return 1;
     }
 
@@ -130,7 +139,7 @@ int convert_value(Column *col, unsigned int i, char *str, int size) {
     }
 }
 
-int print_col(Column *col) {
+int print_col_raw(Column *col) {
     int buffer_size = STD_BUFF_SIZE, rc;
     char *buffer = malloc(buffer_size * sizeof(char)), *newPtr;
     if (buffer == NULL) {
@@ -156,8 +165,7 @@ int print_col(Column *col) {
 
 Col_type *get_value(Column *col, unsigned int index) {
     if (index >= col->size) {
-        fprintf(stderr, "%s", "Index out of range");
-        exit(1);
+        return NULL;
     }
     return col->data[index];
 }
@@ -209,7 +217,55 @@ int compare_Col_type(Col_type *A, Col_type *B, Enum_type type) {
     }
 }
 
-int get_occurrences_inferior(Column *col, Col_type *x) {
+void insertion_sort(indexation *index, indexation size) {
+    indexation i, j, k;
+    for (i = 1; i < size; i++) {
+        k = index[i];
+        j = i - 1;
+        while (j > 0 && index[j] > k) {
+            index[j + 1] = index[j];
+            j--;
+        }
+        index[j + 1] = k;
+    }
+}
+
+void swap(indexation *index, indexation i, indexation j) {
+    indexation tmp = index[i];
+    index[i] = index[j];
+    index[j] = tmp;
+}
+
+indexation partition(indexation *index, indexation left, indexation right) {
+    indexation pivot = index[right];
+    indexation i = left - 1;
+    for (indexation j = left; i < right - 1; j++) {
+        if (index[j] <= pivot) {
+            i++;
+            swap(index, i, j);
+        }
+    }
+    swap(index, i + 1, right);
+    return i + 1;
+}
+
+void quicksort(indexation *index, indexation left, indexation right) {
+    if (left < right) {
+        indexation pi = partition(index, left, right);
+        quicksort(index, left, pi - 1);
+        quicksort(index, pi + 1, right);
+    }
+}
+
+void sort(Column *col, int sort_dir) {
+    if (col->valid_index == UNSORTED) {
+        quicksort(col->index, 0, col->size);
+    } else if (col->valid_index == SORTED) {
+        insertion_sort(col->index, col->size);
+    }
+}
+
+int get_occurrences_inferior_raw(Column *col, Col_type *x) {
     int occ = 0;
     for (unsigned int i = 0; i < col->size; i++) {
         if (col->data[i]->struct_value == NULL)
@@ -220,7 +276,7 @@ int get_occurrences_inferior(Column *col, Col_type *x) {
     return occ;
 }
 
-int get_occurrences_superior(Column *col, Col_type *x) {
+int get_occurrences_superior_raw(Column *col, Col_type *x) {
     int occ = 0;
     for (unsigned int i = 0; i < col->size; i++) {
         if (col->data[i]->struct_value == NULL)
@@ -231,7 +287,7 @@ int get_occurrences_superior(Column *col, Col_type *x) {
     return occ;
 }
 
-int get_occurrences_equal(Column *col, Col_type *x) {
+int get_occurrences_equal_raw(Column *col, Col_type *x) {
     int occ = 0;
     for (unsigned int i = 0; i < col->size; i++) {
         if (col->data[i]->struct_value == NULL)

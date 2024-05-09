@@ -216,6 +216,16 @@ int rename_column(CDataframe *cdf, char *col_title, char *newTitle) {
     return 0;
 }
 
+/**
+ * @brief Delete a single cell
+ * @param cdf Cdataframe pointer
+ * @param line line to remove
+ * @param col_title column name to remove
+ * @warning this function is highly insecure and shouldn't be used alone
+ * @warning you should use functions like del_line and del_column
+ */
+void del_cell(CDataframe *cdf, char *col_title, int line);
+
 void del_cell(CDataframe *cdf, char *col_title, int line) {
     //fprintf(stderr, "This function shouldn't be used; use at your own risks\n");
     //fflush(stderr);

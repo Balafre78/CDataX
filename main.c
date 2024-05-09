@@ -28,10 +28,10 @@ int main() {
     insert_value(mycol, &d);
     //convert_value(mycol, 3, buff, 1);
     //printf("%s \n", buff);
-    print_col(mycol);
+    print_col_raw(mycol);
     Col_type seuil;
     seuil.int_value = 20;
-    printf("Less than 20 : %d\n", get_occurrences_superior(mycol, &seuil));
+    printf("Less than 20 : %d\n", get_occurrences_superior_raw(mycol, &seuil));
     delete_column(&mycol);
 
     int size = 3;

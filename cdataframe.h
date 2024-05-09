@@ -118,16 +118,6 @@ int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, int size, c
 Column *query_column_by_name(CDataframe *cdf, char *title);
 
 /**
- * @brief Delete a single cell
- * @param cdf Cdataframe pointer
- * @param line line to remove
- * @param col_title column name to remove
- * @warning this function is highly insecure and shouldn't be used alone
- * @warning you should use functions like del_line and del_column
- */
-void del_cell(CDataframe *cdf, char *col_title, int line);
-
-/**
  * @brief Delete one line of the Cdataframe
  * @param cdf Cdataframe pointer
  * @param line line to remove
