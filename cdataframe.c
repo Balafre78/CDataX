@@ -50,7 +50,7 @@ int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, int size, c
     lst_insert_tail(cdf->data, node);
 
     for (int i = 0; i < size; i++) {
-        insert_value(cdf->data->tail->data, &values[i]);
+        insert_value_raw(cdf->data->tail->data, &values[i]);
     }
 
     cdf->size++;
@@ -66,7 +66,7 @@ int add_newline(CDataframe *cdf, Col_type *values, int size) {
     lnode *node = cdf->data->head;
     int i = 0;
     while (node != NULL) {
-        if (!insert_value(node->data, &values[i]))
+        if (!insert_value_raw(node->data, &values[i]))
             return 1;
         node = get_next_node(cdf->data, node);
         i++;

@@ -21,11 +21,11 @@ int main() {
     char buff[10];
     Column *mycol = create_column(INT, "My column");
     int a = 52, b = 44, c = 15, d = 18;
-    insert_value(mycol, &a);
-    insert_value(mycol, &b);
-    insert_value(mycol, NULL);
-    insert_value(mycol, &c);
-    insert_value(mycol, &d);
+    insert_value_raw(mycol, &a);
+    insert_value_raw(mycol, &b);
+    insert_value_raw(mycol, NULL);
+    insert_value_raw(mycol, &c);
+    insert_value_raw(mycol, &d);
     //convert_value(mycol, 3, buff, 1);
     //printf("%s \n", buff);
     print_col_raw(mycol);

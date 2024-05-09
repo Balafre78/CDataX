@@ -15,7 +15,7 @@ Column *create_column(Enum_type type, char *title) {
     return col;
 }
 
-int insert_value(Column *col, void *value) {
+int insert_value_raw(Column *col, void *value) {
     // Ensure Allocation size
     if (col->size + 1 > col->max_size) {
         Col_type **newPtr;
@@ -230,6 +230,19 @@ void insertion_sort(indexation *index, indexation size) {
     }
 }
 
+void insertion_sort_reverse(indexation *index, indexation size) {
+    indexation i, j, k;
+    for (i = 1; i < size; i++) {
+        k = index[i];
+        j = i - 1;
+        while (j > 0 && index[j] < k) {
+            index[j + 1] = index[j];
+            j--;
+        }
+        index[j + 1] = k;
+    }
+}
+
 void swap(indexation *index, indexation i, indexation j) {
     indexation tmp = index[i];
     index[i] = index[j];
@@ -257,12 +270,42 @@ void quicksort(indexation *index, indexation left, indexation right) {
     }
 }
 
-void sort(Column *col, int sort_dir) {
-    if (col->valid_index == UNSORTED) {
-        quicksort(col->index, 0, col->size);
-    } else if (col->valid_index == SORTED) {
-        insertion_sort(col->index, col->size);
+indexation partition_reverse(indexation *index, indexation left, indexation right) {
+    //TODO: fix the partition reverse
+    indexation pivot = index[right];
+    indexation i = left - 1;
+    for (indexation j = left; i < right - 1; j++) {
+        if (index[j] <= pivot) {
+            i++;
+            swap(index, i, j);
+        }
     }
+    swap(index, i + 1, right);
+    return i + 1;
+}
+
+void quicksort_reverse(indexation *index, indexation left, indexation right) {
+    if (left < right) {
+        indexation pi = partition_reverse(index, left, right);
+        quicksort(index, left, pi - 1);
+        quicksort(index, pi + 1, right);
+    }
+}
+
+void sort(Column *col, int sort_dir) {
+    if (col->valid_index == UNSORTED && sort_dir == ASC) {
+        quicksort(col->index, 0, col->size);
+    } else if (col->valid_index == SORTED && sort_dir == ASC) {
+        insertion_sort(col->index, col->size);
+    } else if (col->valid_index == UNSORTED && sort_dir == DESC) {
+        quicksort_reverse(col->index, 0, col->size);
+    } else if (col->valid_index == SORTED && sort_dir == DESC) {
+        insertion_sort_reverse(col->index, col->size);
+    }
+}
+
+int print_col_by_index(Column *col) {
+
 }
 
 int get_occurrences_inferior_raw(Column *col, Col_type *x) {
