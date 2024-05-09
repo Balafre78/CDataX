@@ -62,6 +62,14 @@ int main() {
     print_columns(cdf, 1, 3);
     print_all(cdf);
 
+    //printf("%s\n", cdf->data->head->data->title);
+    rename_column(cdf, "Col 1", "new Col 1");
+    print_columns(cdf, 0, 1);
+    printf("Cdf of %d lines and %d columns\n", get_lines_amount(cdf), get_columns_amount(cdf));
+
+
+
+
 
     free(prefabValuePtr);
     return 0;

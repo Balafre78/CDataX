@@ -76,7 +76,7 @@ int add_newline(CDataframe *cdf, Col_type *values, int size) {
 }
 
 int print_columns_names_partial(CDataframe *cdf, int from, int to) {
-    if (from < 0 || from > to || to > cdf->size)
+    if (from < 0 || from >= to || to > cdf->size)
         return 2;
 
     lnode *node = cdf->data->head;
@@ -101,7 +101,7 @@ void print_columns_names(CDataframe *cdf) {
 }
 
 int print_lines(CDataframe *cdf, int from, int to) {
-    if (from < 0 || from > to || to > cdf->colsize)
+    if (from < 0 || from >= to || to > cdf->colsize)
         return 2;
 
     int buffer_size = STD_BUFF_SIZE;
@@ -136,7 +136,7 @@ int print_lines(CDataframe *cdf, int from, int to) {
 }
 
 int print_columns(CDataframe *cdf, int from, int to) {
-    if (from < 0 || from > to || to > cdf->size)
+    if (from < 0 || from >= to || to > cdf->size)
         return 2;
 
     int buffer_size = STD_BUFF_SIZE;
@@ -191,7 +191,7 @@ int print_all(CDataframe *cdf) {
 }
 
 Column *query_column_by_name(CDataframe *cdf, char *title) {
-    lnode *node = cdf->data;
+    lnode *node = cdf->data->head;
     while (node != NULL) {
         if (strcmp(node->data->title, title) == 0)
             return  node->data;
