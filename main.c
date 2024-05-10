@@ -76,9 +76,9 @@ int main() {
 
     Column *withindex = create_column(INT, "sorted column");
     int va = 52;
-    int vb = 44;
+    int vb = 18;
     int vc = 15;
-    int vd = 18;
+    int vd = 44;
     insert_value_raw(withindex, &va);
     insert_value_raw(withindex, &vb);
     insert_value_raw(withindex, &vc);

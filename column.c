@@ -35,13 +35,13 @@ int insert_value_raw(Column *col, void *value) {
         col->max_size += REALOC_SIZE;
     }
 
+    col->index[col->size] = (indexation) col->size;
+    if (col->valid_index != UNSORTED)
+        col->valid_index = ALMOST_SORT;
+
     if (value == NULL) {
         col->data[col->size] = malloc(sizeof(void *));
         col->data[col->size]->struct_value = NULL;
-        col->index[col->size] = col->size;
-        col->size++;
-        if (col->valid_index != UNSORTED)
-            col->valid_index = ALMOST_SORT;
         return 1;
     }
 
@@ -217,64 +217,83 @@ int compare_Col_type(Col_type *A, Col_type *B, Enum_type type) {
     }
 }
 
-void insertion_sort(indexation *index, indexation size) {
+void insertion_sort(Column *column) {
     indexation i, j, k;
-    for (i = 1; i < size; i++) {
-        k = index[i];
+    for (i = 1; i < column->size; i++) {
+        k = column->index[i];
+        Col_type *knode = column->data[i];
         j = i - 1;
-        while (j > 0 && index[j] > k) {
-            index[j + 1] = index[j];
+        while (j > 0 && compare_Col_type(column->data[j], knode, column->column_type) == -1) {
+            column->index[j + 1] = column->index[j];
+            column->data[j + 1] = column->data[j];
             j--;
         }
-        index[j + 1] = k;
+        column->index[j + 1] = k;
+        column->data[j + 1] = knode;
     }
 }
 
-void insertion_sort_reverse(indexation *index, indexation size) {
+void insertion_sort_reverse(Column *column) {
     indexation i, j, k;
-    for (i = 1; i < size; i++) {
-        k = index[i];
+    for (i = 1; i < column->size; i++) {
+        k = column->index[i];
+        Col_type *knode = column->data[i];
         j = i - 1;
-        while (j > 0 && index[j] < k) {
-            index[j + 1] = index[j];
+        while (j > 0 && compare_Col_type(column->data[j], knode, column->column_type) == 1) {
+            column->index[j + 1] = column->index[j];
+            column->data[j + 1] = column->data[j];
             j--;
         }
-        index[j + 1] = k;
+        column->index[j + 1] = k;
+        column->data[j + 1] = knode;
     }
 }
 
-void swap(indexation *index, indexation i, indexation j) {
-    indexation tmp = index[i];
-    index[i] = index[j];
-    index[j] = tmp;
+void double_swap(Column *column, indexation i, indexation j) {
+    //printf("Input %lld %lld | ", i, j);
+    //for (indexation idx = 0; idx < 4; idx++)
+    //    printf("%lld ", index[idx]);
+    //printf("-> ");
+    indexation tmp = column->index[i];
+    column->index[i] = column->index[j];
+    column->index[j] = tmp;
+    Col_type *ptr = column->data[i];
+    column->data[i] = column->data[j];
+    column->data[j] = ptr;
+    //for (indexation idx = 0; idx < 4; idx++)
+    //    printf("%lld ", index[idx]);
+    //printf("\n");
 }
 
-indexation partition(indexation *index, indexation left, indexation right) {
-    indexation pivot = index[right];
-    indexation i = left - 1;
-    for (indexation j = left; i <= right; j++) {
-        if (index[j] < pivot) {
+indexation partition(Column *column, indexation left, indexation right) {
+    indexation pivot = column->index[right];
+    indexation i = left;
+    for (indexation j = left; j < right; j++) {
+        printf("chk %d->%lld\n", j, column->index[j]);
+        if (compare_Col_type(column->data[j], column->data[pivot], column->column_type) == -1) {
+            double_swap(column, i, j);
             i++;
-            swap(index, i, j);
         }
     }
-    swap(index, i + 1, right);
-    return i + 1;
+    double_swap(column, i, right);
+    printf("End round i=%lld\n", i);
+    return i;
 }
 
-void quicksort(indexation *index, indexation left, indexation right) {
+void quicksort(Column *column, indexation left, indexation right) {
     if (left < right) {
-        indexation pi = partition(index, left, right);
-        quicksort(index, left, pi - 1);
-        quicksort(index, pi + 1, right);
+        indexation pi = partition(column, left, right);
+        //printf("Pivot is %d\n", pi);
+        quicksort(column, left, pi - 1);
+        quicksort(column, pi + 1, right);
     }
 }
 
-indexation partition_reverse(indexation *index, indexation left, indexation right) {
+/*indexation partition_reverse(indexation *index, indexation left, indexation right) {
     //TODO: fix the partition reverse
     indexation pivot = index[right];
     indexation i = left - 1;
-    for (indexation j = left; i < right - 1; j++) {
+    for (indexation j = left; j < right; j++) {
         if (index[j] <= pivot) {
             i++;
             swap(index, i, j);
@@ -290,18 +309,23 @@ void quicksort_reverse(indexation *index, indexation left, indexation right) {
         quicksort(index, left, pi - 1);
         quicksort(index, pi + 1, right);
     }
-}
+}*/
+
 
 void sort(Column *col, int sort_dir) {
+    //swap(col->index, 0, 2);
+    //for (indexation i = 0; i < col->size; i++)
+    //    printf("%lld ", col->index[i]);
+    //printf("\n");
     if (col->valid_index == UNSORTED && sort_dir == ASC) {
-        quicksort(col->index, 0, col->size);
+        quicksort(col, 0, col->size - 1);
     } else if (col->valid_index == SORTED && sort_dir == ASC) {
-        insertion_sort(col->index, col->size);
-    } else if (col->valid_index == UNSORTED && sort_dir == DESC) {
-        quicksort_reverse(col->index, 0, col->size);
+        insertion_sort(col);
+    } /*else if (col->valid_index == UNSORTED && sort_dir == DESC) {
+        quicksort_reverse(col->index, 0, col->size - 1);
     } else if (col->valid_index == SORTED && sort_dir == DESC) {
         insertion_sort_reverse(col->index, col->size);
-    }
+    }*/
 }
 
 int print_col_by_index(Column *col) {
@@ -310,8 +334,12 @@ int print_col_by_index(Column *col) {
     if (buffer == NULL) {
         return 1;
     }
+    printf("Indexation ");
+    for (int i = 0; i < col->size; i++)
+        printf("%lld ", col->index[i]);
+    printf("\n");
     printf("%s\n", col->title);
-    for (unsigned int i = 0; i < col->size; i++) {
+    for (indexation i = 0; i < col->size; i++) {
         while ((rc = convert_value(col, col->index[i], buffer, buffer_size)) == 1) {
             newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
             if (newPtr == NULL) {

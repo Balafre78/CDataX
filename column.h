@@ -32,12 +32,12 @@ union column_type {
 };
 typedef union column_type Col_type;
 
-typedef unsigned long long int indexation;
+typedef long long int indexation;
 
 struct column {
     char *title; // title
-    unsigned int size; // logical size
-    unsigned int max_size; // physical size
+    indexation size; // logical size
+    indexation max_size; // physical size
     Enum_type column_type; // data type
     Col_type **data; // array of pointers to stored data
     indexation *index; // array of integers
