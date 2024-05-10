@@ -252,8 +252,8 @@ void swap(indexation *index, indexation i, indexation j) {
 indexation partition(indexation *index, indexation left, indexation right) {
     indexation pivot = index[right];
     indexation i = left - 1;
-    for (indexation j = left; i < right - 1; j++) {
-        if (index[j] <= pivot) {
+    for (indexation j = left; i <= right; j++) {
+        if (index[j] < pivot) {
             i++;
             swap(index, i, j);
         }
@@ -305,7 +305,27 @@ void sort(Column *col, int sort_dir) {
 }
 
 int print_col_by_index(Column *col) {
+    int buffer_size = STD_BUFF_SIZE, rc;
+    char *buffer = malloc(buffer_size * sizeof(char)), *newPtr;
+    if (buffer == NULL) {
+        return 1;
+    }
+    printf("%s\n", col->title);
+    for (unsigned int i = 0; i < col->size; i++) {
+        while ((rc = convert_value(col, col->index[i], buffer, buffer_size)) == 1) {
+            newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
+            if (newPtr == NULL) {
+                free(buffer);
+                free(newPtr);
+                return 1;
+            }
+            buffer_size += STD_BUFF_SIZE;
+        }
+        printf("[%d] %s\n", i, buffer);
+    }
 
+    free(buffer);
+    return 0;
 }
 
 int get_occurrences_inferior_raw(Column *col, Col_type *x) {

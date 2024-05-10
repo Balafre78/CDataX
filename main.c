@@ -74,6 +74,24 @@ int main() {
     del_line(cdf, 0);
 
 
+    Column *withindex = create_column(INT, "sorted column");
+    int va = 52;
+    int vb = 44;
+    int vc = 15;
+    int vd = 18;
+    insert_value_raw(withindex, &va);
+    insert_value_raw(withindex, &vb);
+    insert_value_raw(withindex, &vc);
+    insert_value_raw(withindex, &vd);
+
+    sort(withindex,ASC);
+
+    printf("Column content before sorting : \n");
+    print_col_raw(withindex);
+    printf("Column content after sorting : \n");
+    print_col_by_index(withindex);
+
+
 
 
 
