@@ -36,7 +36,7 @@ int append_value(Column *col, void *value) {
     }
 
     col->index[col->size] = (indexation) col->size;
-    if (col->valid_index != UNSORTED)
+    if (col->valid_index != INVALID)
         col->valid_index = ALMOST_SORT;
 
     if (value == NULL) {
@@ -81,6 +81,25 @@ int append_value(Column *col, void *value) {
     }
     col->size++;
     return 1;
+}
+
+void erase_index(Column *col) {
+    free(col->index);
+    col->index = NULL;
+    col->valid_index = 0;
+}
+
+int check_index(Column *col) {
+    if (col->index == NULL)
+        return INVALID;
+
+    for (indexation i = 1; i < col->size; i++) {
+        if (col->index[i] < col->index[i - 1]) {
+            return ALMOST_SORT;
+        }
+    }
+
+    return SORTED;
 }
 
 void delete_column(Column **col) {
@@ -254,7 +273,8 @@ indexation partition(Column *column, indexation left, indexation right) {
     indexation pivot = right;
     indexation i = left - 1;
     for (indexation j = left; j < right; j++) {
-        if (compare_Col_type(column->data[column->index[j]], column->data[column->index[pivot]], column->column_type) <= 0) {
+        if (compare_Col_type(column->data[column->index[j]], column->data[column->index[pivot]],
+                             column->column_type) <= 0) {
             i++;
             swap_idx(column, i, j);
         }
@@ -276,7 +296,8 @@ indexation partition_reverse(Column *column, indexation left, indexation right) 
     indexation pivot = right;
     indexation i = left - 1;
     for (indexation j = left; j < right; j++) {
-        if (compare_Col_type(column->data[column->index[j]], column->data[column->index[pivot]], column->column_type) >= 0) {
+        if (compare_Col_type(column->data[column->index[j]], column->data[column->index[pivot]],
+                             column->column_type) >= 0) {
             i++;
             swap_idx(column, i, j);
         }
@@ -299,11 +320,11 @@ void sort(Column *col, int sort_dir) {
     //for (indexation i = 0; i < col->size; i++)
     //    printf("%lld ", col->index[i]);
     //printf("\n");
-    if (col->valid_index == UNSORTED && sort_dir == ASC) {
+    if (col->valid_index == INVALID && sort_dir == ASC) {
         quicksort(col, 0, col->size - 1);
     } else if (col->valid_index == SORTED && sort_dir == ASC) {
         insertion_sort(col);
-    } else if (col->valid_index == UNSORTED && sort_dir == DESC) {
+    } else if (col->valid_index == INVALID && sort_dir == DESC) {
         quicksort_reverse(col, 0, col->size - 1);
     } else if (col->valid_index == SORTED && sort_dir == DESC) {
         insertion_sort_reverse(col);
@@ -336,6 +357,11 @@ int print_col_by_index(Column *col) {
 
     free(buffer);
     return 0;
+}
+
+void update_index(Column *col) {
+    sort(col, ASC);
+    col->valid_index = check_index(col);
 }
 
 int get_occurrences_inferior_raw(Column *col, Col_type *x) {
