@@ -118,7 +118,7 @@ Col_type *get_value(Column *col, unsigned int index);
  * @param B second param
  * @param type their type in Enum_type
  * @return 1 if A > B
- * @return -1 if B > A
+ * @return -1 if A < B
  * @return 0 if A == B
  * */
 int compare_Col_type(Col_type *A, Col_type *B, Enum_type type);

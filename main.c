@@ -77,18 +77,24 @@ int main() {
     Column *withindex = create_column(INT, "sorted column");
     int va = 52;
     int vb = 18;
-    int vc = 15;
+    int vc = 5;
     int vd = 44;
+    int ve = 2;
+    int vf = 15;
     insert_value_raw(withindex, &va);
     insert_value_raw(withindex, &vb);
     insert_value_raw(withindex, &vc);
     insert_value_raw(withindex, &vd);
+    insert_value_raw(withindex, &ve);
+    insert_value_raw(withindex, &vf);
 
     sort(withindex,ASC);
 
     printf("Column content before sorting : \n");
     print_col_raw(withindex);
     printf("Column content after sorting : \n");
+    print_col_by_index(withindex);
+    sort(withindex,DESC);
     print_col_by_index(withindex);
 
 

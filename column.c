@@ -221,95 +221,77 @@ void insertion_sort(Column *column) {
     indexation i, j, k;
     for (i = 1; i < column->size; i++) {
         k = column->index[i];
-        Col_type *knode = column->data[i];
         j = i - 1;
-        while (j > 0 && compare_Col_type(column->data[j], knode, column->column_type) == -1) {
+        while (j >= 0 && compare_Col_type(column->data[column->index[j]], column->data[k], column->column_type) > 0) {
             column->index[j + 1] = column->index[j];
-            column->data[j + 1] = column->data[j];
             j--;
         }
         column->index[j + 1] = k;
-        column->data[j + 1] = knode;
     }
 }
 
 void insertion_sort_reverse(Column *column) {
     indexation i, j, k;
+    //Col_type *knode;
     for (i = 1; i < column->size; i++) {
         k = column->index[i];
-        Col_type *knode = column->data[i];
         j = i - 1;
-        while (j > 0 && compare_Col_type(column->data[j], knode, column->column_type) == 1) {
+        while (j >= 0 && compare_Col_type(column->data[column->index[j]], column->data[k], column->column_type) < 0) {
             column->index[j + 1] = column->index[j];
-            column->data[j + 1] = column->data[j];
             j--;
         }
         column->index[j + 1] = k;
-        column->data[j + 1] = knode;
     }
 }
 
-void double_swap(Column *column, indexation i, indexation j) {
-    //printf("Input %lld %lld | ", i, j);
-    //for (indexation idx = 0; idx < 4; idx++)
-    //    printf("%lld ", index[idx]);
-    //printf("-> ");
+void swap_idx(Column *column, indexation i, indexation j) {
     indexation tmp = column->index[i];
     column->index[i] = column->index[j];
     column->index[j] = tmp;
-    Col_type *ptr = column->data[i];
-    column->data[i] = column->data[j];
-    column->data[j] = ptr;
-    //for (indexation idx = 0; idx < 4; idx++)
-    //    printf("%lld ", index[idx]);
-    //printf("\n");
 }
 
 indexation partition(Column *column, indexation left, indexation right) {
-    indexation pivot = column->index[right];
-    indexation i = left;
+    indexation pivot = right;
+    indexation i = left - 1;
     for (indexation j = left; j < right; j++) {
-        printf("chk %d->%lld\n", j, column->index[j]);
-        if (compare_Col_type(column->data[j], column->data[pivot], column->column_type) == -1) {
-            double_swap(column, i, j);
+        if (compare_Col_type(column->data[column->index[j]], column->data[column->index[pivot]], column->column_type) <= 0) {
             i++;
+            swap_idx(column, i, j);
         }
     }
-    double_swap(column, i, right);
-    printf("End round i=%lld\n", i);
-    return i;
+    swap_idx(column, i + 1, right);
+    return i + 1;
 }
 
 void quicksort(Column *column, indexation left, indexation right) {
     if (left < right) {
         indexation pi = partition(column, left, right);
-        //printf("Pivot is %d\n", pi);
         quicksort(column, left, pi - 1);
         quicksort(column, pi + 1, right);
     }
 }
 
-/*indexation partition_reverse(indexation *index, indexation left, indexation right) {
-    //TODO: fix the partition reverse
-    indexation pivot = index[right];
+indexation partition_reverse(Column *column, indexation left, indexation right) {
+    //TODO: Inverser la partition _reverse
+    indexation pivot = right;
     indexation i = left - 1;
     for (indexation j = left; j < right; j++) {
-        if (index[j] <= pivot) {
+        if (compare_Col_type(column->data[column->index[j]], column->data[column->index[pivot]], column->column_type) >= 0) {
             i++;
-            swap(index, i, j);
+            swap_idx(column, i, j);
         }
     }
-    swap(index, i + 1, right);
+    swap_idx(column, i + 1, right);
     return i + 1;
 }
 
-void quicksort_reverse(indexation *index, indexation left, indexation right) {
+void quicksort_reverse(Column *column, indexation left, indexation right) {
     if (left < right) {
-        indexation pi = partition_reverse(index, left, right);
-        quicksort(index, left, pi - 1);
-        quicksort(index, pi + 1, right);
+        indexation pi = partition(column, left, right);
+        quicksort_reverse(column, left, pi - 1);
+        quicksort_reverse(column, pi + 1, right);
     }
-}*/
+}
 
 
 void sort(Column *col, int sort_dir) {
@@ -321,11 +303,11 @@ void sort(Column *col, int sort_dir) {
         quicksort(col, 0, col->size - 1);
     } else if (col->valid_index == SORTED && sort_dir == ASC) {
         insertion_sort(col);
-    } /*else if (col->valid_index == UNSORTED && sort_dir == DESC) {
-        quicksort_reverse(col->index, 0, col->size - 1);
+    } else if (col->valid_index == UNSORTED && sort_dir == DESC) {
+        quicksort_reverse(col, 0, col->size - 1);
     } else if (col->valid_index == SORTED && sort_dir == DESC) {
-        insertion_sort_reverse(col->index, col->size);
-    }*/
+        insertion_sort_reverse(col);
+    }
 }
 
 int print_col_by_index(Column *col) {
