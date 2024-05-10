@@ -68,7 +68,15 @@ Column *create_column(Enum_type type, char *title);
   * @param2 Pointer to the value to insert
   * @return 1 if the value is correctly inserted 0 otherwise
 */
-int insert_value_raw(Column *col, void *value);
+int append_value(Column *col, void *value);
+
+/**
+  * @brief Insert a new value into a column
+  * @param1 Pointer to the column
+  * @param2 Pointer to the value to insert
+  * @return 1 if the value is correctly inserted 0 otherwise
+*/
+int insert_value(Column *col, void *value);
 
 /**
 * @brief: Free the space allocated by a column

@@ -21,11 +21,11 @@ int main() {
     char buff[10];
     Column *mycol = create_column(INT, "My column");
     int a = 52, b = 44, c = 15, d = 18;
-    insert_value_raw(mycol, &a);
-    insert_value_raw(mycol, &b);
-    insert_value_raw(mycol, NULL);
-    insert_value_raw(mycol, &c);
-    insert_value_raw(mycol, &d);
+    append_value(mycol, &a);
+    append_value(mycol, &b);
+    append_value(mycol, NULL);
+    append_value(mycol, &c);
+    append_value(mycol, &d);
     //convert_value(mycol, 3, buff, 1);
     //printf("%s \n", buff);
     print_col_raw(mycol);
@@ -81,12 +81,12 @@ int main() {
     int vd = 44;
     int ve = 2;
     int vf = 15;
-    insert_value_raw(withindex, &va);
-    insert_value_raw(withindex, &vb);
-    insert_value_raw(withindex, &vc);
-    insert_value_raw(withindex, &vd);
-    insert_value_raw(withindex, &ve);
-    insert_value_raw(withindex, &vf);
+    append_value(withindex, &va);
+    append_value(withindex, &vb);
+    append_value(withindex, &vc);
+    append_value(withindex, &vd);
+    append_value(withindex, &ve);
+    append_value(withindex, &vf);
 
     sort(withindex,ASC);
 

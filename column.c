@@ -15,7 +15,7 @@ Column *create_column(Enum_type type, char *title) {
     return col;
 }
 
-int insert_value_raw(Column *col, void *value) {
+int append_value(Column *col, void *value) {
     // Ensure Allocation size
     if (col->size + 1 > col->max_size) {
         Col_type **newPtr;
@@ -316,9 +316,9 @@ int print_col_by_index(Column *col) {
     if (buffer == NULL) {
         return 1;
     }
-    printf("Indexation ");
-    for (int i = 0; i < col->size; i++)
-        printf("%lld ", col->index[i]);
+    //printf("Indexation ");
+    //for (int i = 0; i < col->size; i++)
+    //    printf("%lld ", col->index[i]);
     printf("\n");
     printf("%s\n", col->title);
     for (indexation i = 0; i < col->size; i++) {
