@@ -112,7 +112,7 @@ void delete_column(Column **col) {
     *col = NULL;
 }
 
-int convert_value(Column *col, unsigned int i, char *str, int size) {
+int convert_value(Column *col, indexation i, char *str, indexation size) {
     int rc;
     if (col->data[i]->struct_value == NULL) {
         //printf("NULL ptr ");
@@ -182,7 +182,7 @@ int print_col_raw(Column *col) {
     return 0;
 }
 
-Col_type *get_value(Column *col, unsigned int index) {
+Col_type *get_value(Column *col, indexation index) {
     if (index >= col->size) {
         return NULL;
     }
