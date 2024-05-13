@@ -177,4 +177,13 @@ int get_occurrences_superior_raw(Column *col, Col_type *x);
  * */
 int get_occurrences_equal_raw(Column *col, Col_type *x);
 
+/**
+ * @brief Get the number of occurrences of value under the one given, uses indexs
+ * @param col Pointer to a column
+ * @param x The value to compare
+ * @warning works only if the list is sorted !
+ * @return Number of occurrences
+ * */
+int get_occurrences_equal_by_index(Column *col, Col_type *x);
+
 #endif //CDATAX_COLUMN_H

@@ -103,7 +103,7 @@ int check_index(Column *col) {
 }
 
 void delete_column(Column **col) {
-    for (unsigned int i = 0; i < (*col)->size; i++) {
+    for (indexation i = 0; i < (*col)->size; i++) {
         free((*col)->data[i]);
     }
     free((*col)->data);
@@ -165,7 +165,7 @@ int print_col_raw(Column *col) {
         return 1;
     }
     printf("%s\n", col->title);
-    for (unsigned int i = 0; i < col->size; i++) {
+    for (indexation i = 0; i < col->size; i++) {
         while ((rc = convert_value(col, i, buffer, buffer_size)) == 1) {
             newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
             if (newPtr == NULL) {
@@ -366,7 +366,7 @@ void update_index(Column *col) {
 
 int get_occurrences_inferior_raw(Column *col, Col_type *x) {
     int occ = 0;
-    for (unsigned int i = 0; i < col->size; i++) {
+    for (indexation i = 0; i < col->size; i++) {
         if (col->data[i]->struct_value == NULL)
             continue;
         if (compare_Col_type(x, col->data[i], col->column_type) < 0)
@@ -377,7 +377,7 @@ int get_occurrences_inferior_raw(Column *col, Col_type *x) {
 
 int get_occurrences_superior_raw(Column *col, Col_type *x) {
     int occ = 0;
-    for (unsigned int i = 0; i < col->size; i++) {
+    for (indexation i = 0; i < col->size; i++) {
         if (col->data[i]->struct_value == NULL)
             continue;
         if (compare_Col_type(x, col->data[i], col->column_type) > 0)
@@ -388,11 +388,37 @@ int get_occurrences_superior_raw(Column *col, Col_type *x) {
 
 int get_occurrences_equal_raw(Column *col, Col_type *x) {
     int occ = 0;
-    for (unsigned int i = 0; i < col->size; i++) {
+    for (indexation i = 0; i < col->size; i++) {
         if (col->data[i]->struct_value == NULL)
             continue;
         if (compare_Col_type(x, col->data[i], col->column_type) == 0)
             occ++;
+    }
+    return occ;
+}
+
+int get_occurrences_equal_by_index(Column *col, Col_type *x) {
+    int occ = 0;
+    indexation left = 0, right = col->size - 1, pivot;
+    while (left <= right) {
+        pivot = (left + right) / 2;
+        if (compare_Col_type(col->data[col->index[pivot]], x, col->column_type) == 0) {
+            // Obtain near value on the right
+            occ++;
+            indexation i = 1;
+            while (i <= right && col->data[col->index[pivot + i]])
+                i++;
+            occ += i - 1;
+            i = 1;
+            while (i > 0 && col->data[col->index[pivot - i]])
+                i++;
+            occ += i - 1;
+            break;
+        } else if (compare_Col_type(col->data[col->index[pivot]], x, col->column_type) < 0) {
+            right = pivot - 1;
+        } else {
+            left = pivot + 1;
+        }
     }
     return occ;
 }
