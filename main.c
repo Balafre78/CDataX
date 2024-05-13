@@ -51,14 +51,14 @@ int main() {
         node = get_next_node(cdf->data, node);
     }
 
-    print_lines(cdf, 0, 1);
+    print_lines_by_objects(cdf, 0, 1);
 
     prefabValuePtr[0].char_value = 'b';
     prefabValuePtr[1].int_value = 495;
     prefabValuePtr[2].int_value = -200;
     add_newline(cdf, prefabValuePtr, 3);
-    print_lines(cdf, 0, 2);
-    print_lines(cdf, 1, 2);
+    print_lines_by_objects(cdf, 0, 2);
+    print_lines_by_objects(cdf, 1, 2);
     print_columns(cdf, 1, 3);
     print_all(cdf);
 
@@ -113,7 +113,7 @@ int main() {
     printf("Erease index : %d\n", check_index(withindex));
 
 
-
+    print_all(cdf);
 
 
 

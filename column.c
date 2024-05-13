@@ -422,3 +422,10 @@ int get_occurrences_equal_by_index(Column *col, Col_type *x) {
     }
     return occ;
 }
+
+void propagate_index(Column *colA, Column *colB) {
+    if (colA->size != colB->size)
+        return;
+    for (indexation i = 0; i < colA->size; i++)
+        colB->index[i] = colA->index[i];
+}

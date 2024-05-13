@@ -234,3 +234,25 @@ int del_line(CDataframe *cdf, indexation line) {
     if (line < 0 || line >= cdf->size)
         return 2;
 }
+
+void sorting_column(CDataframe *cdf, char *col_title, int sort_dir) {
+    if (sort_dir != ASC && sort_dir != DESC)
+        return;
+
+    Column *ptr = query_column_by_name(cdf, col_title);
+    if (ptr == NULL)
+        return;
+
+    sort(ptr, sort_dir);
+}
+
+void sort_all_columns(CDataframe *cdf, int sort_dir) {
+    if (sort_dir != ASC && sort_dir != DESC)
+        return;
+
+    lnode *node = get_first_node(cdf->data);
+    while (node != NULL) {
+        sort(node->data, sort_dir);
+        node = get_next_node(cdf->data, node);
+    }
+}

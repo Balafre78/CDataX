@@ -186,4 +186,13 @@ int get_occurrences_equal_raw(Column *col, Col_type *x);
  * */
 int get_occurrences_equal_by_index(Column *col, Col_type *x);
 
+/**
+ * @brief copy indexs from a column to another
+ * @param colA Pointer to the origin
+ * @param colB Pointer to the dest
+ * @warning won't attempt if there're at a different size;
+ * */
+void propagate_index(Column *colA, Column *colB);
+
+
 #endif //CDATAX_COLUMN_H

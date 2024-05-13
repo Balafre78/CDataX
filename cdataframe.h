@@ -177,7 +177,7 @@ indexation get_columns_amount(CDataframe *cdf);
  * @brief Get the occurrences of a var in a Cdataframe
  * @param cdf Cdataframe pointer
  * @param var variable to compare
- * @retunr number of occurrences
+ * @return number of occurrences
  */
 int get_occurrences(CDataframe *cdf, Col_type var);
 
@@ -185,7 +185,7 @@ int get_occurrences(CDataframe *cdf, Col_type var);
  * @brief Get the occurrences of a var superior to a var in a Cdataframe
  * @param cdf Cdataframe pointer
  * @param var variable to compare
- * @retunr number of occurrences
+ * @return number of occurrences
  */
 int get_superior_occurrences(CDataframe *cdf, Col_type var);
 
@@ -193,8 +193,25 @@ int get_superior_occurrences(CDataframe *cdf, Col_type var);
  * @brief Get the occurrences of a var inferior to a var in a Cdataframe
  * @param cdf Cdataframe pointer
  * @param var variable to compare
- * @retunr number of occurrences
+ * @return number of occurrences
  */
 int get_inferior_occurrences(CDataframe *cdf, Col_type var);
+
+/**
+ * @brief Sort 1 column
+ * @param cdf Cdataframe pointer
+ * @param col_title name of the column to align sort on
+ * @param sort_dir direction to sort either ASC or DESC is accepted
+ * @warning fail if col_title is not found or sort_dir is incorrect !
+ */
+void sorting_column(CDataframe *cdf, char *col_title, int sort_dir);
+
+/**
+ * @brief Sort all columns
+ * @param cdf Cdataframe pointer
+ * @param sort_dir direction to sort either ASC or DESC is accepted
+ * @warning fail if sort_dir is incorrect !
+ */
+void sort_all_columns(CDataframe *cdf, int sort_dir);
 
 #endif //CDATAX_CDATAFRAME_H
