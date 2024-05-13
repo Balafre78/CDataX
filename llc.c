@@ -117,13 +117,13 @@ void lst_erase(list *lst) {
 }
 
 lnode *get_first_node(list *lst) {
-    if (lst->head == NULL)
+    if (lst == NULL)
         return NULL;
     return lst->head;
 }
 
 lnode *get_last_node(list *lst) {
-    if (lst->tail == NULL)
+    if (lst == NULL)
         return NULL;
     return lst->tail;
 }

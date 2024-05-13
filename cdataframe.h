@@ -7,8 +7,8 @@
 #include "column.h"
 
 typedef struct cadataframe {
-    int size;
-    int colsize;
+    indexation size;
+    indexation colsize;
     list *data;
 
 } CDataframe;
@@ -27,7 +27,7 @@ CDataframe *create_empty_cdataframe();
  * @param size size of the above list
  * @return Pointer to the newly created Cdataframe or the NULL pointer if it cannot allocate memory
  */
-CDataframe *create_cdataframe(Enum_type *cdfTypes, char** colNames, int size);
+CDataframe *create_cdataframe(Enum_type *cdfTypes, char** colNames, indexation size);
 
 /**
 * @brief: Column deletion
@@ -64,7 +64,7 @@ int print_all(CDataframe *cdf);
  * @param to Ending line (excluded)
  * @return 2 if there's an error with the section selected, 0 else
  */
-int print_columns_names_partial(CDataframe *cdf, int from, int to);
+int print_columns_names_partial(CDataframe *cdf, indexation from, indexation to);
 
 /**
  * @brief Print all column names
@@ -79,7 +79,7 @@ void print_columns_names(CDataframe *cdf);
  * @param to Ending line (excluded)
  * @return 2 if there's an error with the section selected, 1 with internal memory allocation, 0 else
  */
-int print_lines(CDataframe *cdf, int from, int to);
+int print_lines_by_objects(CDataframe *cdf, indexation from, indexation to);
 
 /**
  * @brief Print all columns from a start to an end from an existing Cdataframe
@@ -88,7 +88,7 @@ int print_lines(CDataframe *cdf, int from, int to);
  * @param to Ending column (excluded)
  * @return 2 if there's an error with the section selected, 1 with internal memory allocation, 0 else
  */
-int print_columns(CDataframe *cdf, int from, int to);
+int print_columns(CDataframe *cdf, indexation from, indexation to);
 
 /**
  * @brief Add a new line to an existing Cdataframe
@@ -97,7 +97,7 @@ int print_columns(CDataframe *cdf, int from, int to);
  * @param size Size of the previous tab, should be the exact same size as the Cdataframe size
  * @return 3 if the cdf is empty (no info on columns types), 2 if it's the size, 1 if it's the memory allocation, 0 else
  */
-int add_newline(CDataframe *cdf, Col_type *values, int size);
+int add_newline(CDataframe *cdf, Col_type *values, indexation size);
 
 /**
  * @brief Add a new line to an existing Cdataframe
@@ -107,7 +107,7 @@ int add_newline(CDataframe *cdf, Col_type *values, int size);
  * @param size Size of the previous tab, should be the exact same size as the Cdataframe size
  * @return 2 if it's the size, 1 if there's an error with memory allocation, 0 else
  */
-int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, int size, char *title);
+int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, indexation size, char *title);
 
 /**
  * @brief Query column by his name
@@ -123,7 +123,7 @@ Column *query_column_by_name(CDataframe *cdf, char *title);
  * @param line line to remove
  * @return 0 on success, 2 if there's an error the line parameter
  */
-int del_line(CDataframe *cdf, int line);
+int del_line(CDataframe *cdf, indexation line);
 
 /**
  * @brief Delete one column of the Cdataframe, query by names
@@ -157,21 +157,21 @@ Col_type *find_in(CDataframe *cdf, Col_type var);
  * @param col_title column name to find in
  * @return A pointer to the value
  */
-Col_type *get_var(CDataframe *cdf, char *col_title, int line);
+Col_type *get_var(CDataframe *cdf, char *col_title, indexation line);
 
 /**
  * @brief Get the amount of lines
  * @param cdf Cdataframe pointer
  * @return number of lines
  */
-int get_lines_amount(CDataframe *cdf);
+indexation get_lines_amount(CDataframe *cdf);
 
 /**
  * @brief Get the amount of lines
  * @param cdf Cdataframe pointer
  * @return number of columns
  */
-int get_columns_amount(CDataframe *cdf);
+indexation get_columns_amount(CDataframe *cdf);
 
 /**
  * @brief Get the occurrences of a var in a Cdataframe

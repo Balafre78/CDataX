@@ -24,7 +24,7 @@ CDataframe *create_empty_cdataframe() {
     return ptr;
 }
 
-CDataframe *create_cdataframe(Enum_type *cdfTypes, char **colNames, int size) {
+CDataframe *create_cdataframe(Enum_type *cdfTypes, char **colNames, indexation size) {
     CDataframe *ptr = create_empty_cdataframe();
     if (ptr != NULL) {
         for (int i = 0; i < size; i++) {
@@ -35,7 +35,7 @@ CDataframe *create_cdataframe(Enum_type *cdfTypes, char **colNames, int size) {
     return ptr;
 }
 
-int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, int size, char *title) {
+int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, indexation size, char *title) {
     if (cdf->colsize != size)
         return 2;
 
@@ -49,7 +49,7 @@ int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, int size, c
 
     lst_insert_tail(cdf->data, node);
 
-    for (int i = 0; i < size; i++) {
+    for (indexation i = 0; i < size; i++) {
         append_value(cdf->data->tail->data, &values[i]);
     }
 
@@ -57,7 +57,7 @@ int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, int size, c
     return 0;
 }
 
-int add_newline(CDataframe *cdf, Col_type *values, int size) {
+int add_newline(CDataframe *cdf, Col_type *values, indexation size) {
     if (cdf->size == 0)
         return 3;
     if (cdf->size != size)
@@ -75,7 +75,7 @@ int add_newline(CDataframe *cdf, Col_type *values, int size) {
     return 0;
 }
 
-int print_columns_names_partial(CDataframe *cdf, int from, int to) {
+int print_columns_names_partial(CDataframe *cdf, indexation from, indexation to) {
     if (from < 0 || from >= to || to >= cdf->size)
         return 2;
 
@@ -100,7 +100,7 @@ void print_columns_names(CDataframe *cdf) {
     print_columns_names_partial(cdf, 0, cdf->size);
 }
 
-int print_lines(CDataframe *cdf, int from, int to) {
+int print_lines_by_objects(CDataframe *cdf, indexation from, indexation to) {
     if (from < 0 || from >= to || to >= cdf->colsize)
         return 2;
 
@@ -135,7 +135,7 @@ int print_lines(CDataframe *cdf, int from, int to) {
     return 0;
 }
 
-int print_columns(CDataframe *cdf, int from, int to) {
+int print_columns(CDataframe *cdf, indexation from, indexation to) {
     if (from < 0 || from >= to || to >= cdf->size)
         return 2;
 
@@ -187,7 +187,7 @@ int print_columns(CDataframe *cdf, int from, int to) {
 }
 
 int print_all(CDataframe *cdf) {
-    return print_lines(cdf, 0, cdf->colsize);
+    return print_lines_by_objects(cdf, 0, cdf->colsize);
 }
 
 Column *query_column_by_name(CDataframe *cdf, char *title) {
@@ -200,11 +200,11 @@ Column *query_column_by_name(CDataframe *cdf, char *title) {
     return NULL;
 }
 
-int get_lines_amount(CDataframe *cdf) {
+indexation get_lines_amount(CDataframe *cdf) {
     return cdf->colsize;
 }
 
-int get_columns_amount(CDataframe *cdf) {
+indexation get_columns_amount(CDataframe *cdf) {
     return cdf->size;
 }
 
@@ -216,17 +216,7 @@ int rename_column(CDataframe *cdf, char *col_title, char *newTitle) {
     return 0;
 }
 
-/**
- * @brief Delete a single cell
- * @param cdf Cdataframe pointer
- * @param line line to remove
- * @param col_title column name to remove
- * @warning this function is highly insecure and shouldn't be used alone
- * @warning you should use functions like del_line and del_column
- */
-void del_cell(CDataframe *cdf, char *col_title, int line);
-
-void del_cell(CDataframe *cdf, char *col_title, int line) {
+void del_cell(CDataframe *cdf, char *col_title, indexation line) {
     //fprintf(stderr, "This function shouldn't be used; use at your own risks\n");
     //fflush(stderr);
     Column *column = query_column_by_name(cdf, col_title);
@@ -240,7 +230,7 @@ int del_column(CDataframe *cdf, char *col_title) {
 
 }
 
-int del_line(CDataframe *cdf, int line) {
+int del_line(CDataframe *cdf, indexation line) {
     if (line < 0 || line >= cdf->size)
         return 2;
 }
