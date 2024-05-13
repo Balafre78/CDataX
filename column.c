@@ -94,7 +94,7 @@ int check_index(Column *col) {
         return INVALID;
 
     for (indexation i = 1; i < col->size; i++) {
-        if (col->index[i] < col->index[i - 1]) {
+        if (compare_Col_type(col->data[col->index[i]], col->data[col->index[i - 1]], col->column_type) < 0) {
             return ALMOST_SORT;
         }
     }
@@ -405,14 +405,14 @@ int get_occurrences_equal_by_index(Column *col, Col_type *x) {
         if (compare_Col_type(col->data[col->index[pivot]], x, col->column_type) == 0) {
             // Obtain near value on the right
             occ++;
-            indexation i = 1;
-            while (i <= right && col->data[col->index[pivot + i]])
+            indexation i = pivot + 1;
+            while (i < col->size && compare_Col_type(col->data[col->index[i]], x, col->column_type) == 0)
                 i++;
-            occ += i - 1;
-            i = 1;
-            while (i > 0 && col->data[col->index[pivot - i]])
-                i++;
-            occ += i - 1;
+            occ += i - pivot - 1;
+            i = pivot - 1;
+            while (i > 0 && compare_Col_type(col->data[col->index[i]], x, col->column_type) == 0)
+                i--;
+            occ += pivot - i - 1;
             break;
         } else if (compare_Col_type(col->data[col->index[pivot]], x, col->column_type) < 0) {
             right = pivot - 1;

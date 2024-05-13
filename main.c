@@ -81,12 +81,18 @@ int main() {
     int vd = 44;
     int ve = 2;
     int vf = 15;
+    int vg = 15;
+    int vh = 15;
+    int vi = 15;
     append_value(withindex, &va);
     append_value(withindex, &vb);
     append_value(withindex, &vc);
     append_value(withindex, &vd);
     append_value(withindex, &ve);
     append_value(withindex, &vf);
+    append_value(withindex, &vg);
+    append_value(withindex, &vh);
+    append_value(withindex, &vi);
 
     sort(withindex,ASC);
 
@@ -96,6 +102,16 @@ int main() {
     print_col_by_index(withindex);
     sort(withindex,DESC);
     print_col_by_index(withindex);
+    Col_type Var_col;
+    Var_col.int_value = 15;
+    printf("Amount of 15 : %d\n", get_occurrences_equal_by_index(withindex, &Var_col));
+    printf("Check index : %d\n", check_index(withindex));
+    int vz = 0;
+    append_value(withindex, &vz);
+    printf("Checking unvalid index : %d\n", check_index(withindex));
+    erase_index(withindex);
+    printf("Erease index : %d\n", check_index(withindex));
+
 
 
 
