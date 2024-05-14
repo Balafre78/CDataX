@@ -104,6 +104,8 @@ int main() {
     print_col_by_index(withindex);
     Col_type Var_col;
     Var_col.int_value = 15;
+    int answer = 44;
+    printf("Is 44 in ? : %d\n", search_value_in_column(withindex, &answer));
     printf("Amount of 15 : %d\n", get_occurrences_equal_by_index(withindex, &Var_col));
     printf("Check index : %d\n", check_index(withindex));
     int vz = 0;

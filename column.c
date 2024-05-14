@@ -364,63 +364,98 @@ void update_index(Column *col) {
     col->valid_index = check_index(col);
 }
 
-int get_occurrences_inferior_raw(Column *col, Col_type *x) {
+int get_occurrences_inferior_raw(Column *col, void *x) {
     int occ = 0;
+    Col_type *ptr = (Col_type *) x;
     for (indexation i = 0; i < col->size; i++) {
         if (col->data[i]->struct_value == NULL)
             continue;
-        if (compare_Col_type(x, col->data[i], col->column_type) < 0)
+        if (compare_Col_type(ptr, col->data[i], col->column_type) < 0)
             occ++;
     }
     return occ;
 }
 
-int get_occurrences_superior_raw(Column *col, Col_type *x) {
+int get_occurrences_superior_raw(Column *col, void *x) {
     int occ = 0;
+    Col_type *ptr = (Col_type *) x;
     for (indexation i = 0; i < col->size; i++) {
         if (col->data[i]->struct_value == NULL)
             continue;
-        if (compare_Col_type(x, col->data[i], col->column_type) > 0)
+        if (compare_Col_type(ptr, col->data[i], col->column_type) > 0)
             occ++;
     }
     return occ;
 }
 
-int get_occurrences_equal_raw(Column *col, Col_type *x) {
+int get_occurrences_equal_raw(Column *col, void *x) {
     int occ = 0;
+    Col_type *ptr = (Col_type *) x;
     for (indexation i = 0; i < col->size; i++) {
         if (col->data[i]->struct_value == NULL)
             continue;
-        if (compare_Col_type(x, col->data[i], col->column_type) == 0)
+        if (compare_Col_type(ptr, col->data[i], col->column_type) == 0)
             occ++;
     }
     return occ;
 }
 
-int get_occurrences_equal_by_index(Column *col, Col_type *x) {
+int get_occurrences_equal_by_index(Column *col, void *x) {
+    if (check_index(col) != SORTED)
+        return -1;
     int occ = 0;
+    Col_type *ptr = (Col_type *) x;
     indexation left = 0, right = col->size - 1, pivot;
+    //printf("==========\n");
+    //print_col_raw(col);
+    //print_col_by_index(col);
     while (left <= right) {
         pivot = (left + right) / 2;
-        if (compare_Col_type(col->data[col->index[pivot]], x, col->column_type) == 0) {
+        int cmp = compare_Col_type(col->data[col->index[pivot]], ptr, col->column_type);
+        if (cmp == 0) {
             // Obtain near value on the right
             occ++;
             indexation i = pivot + 1;
-            while (i < col->size && compare_Col_type(col->data[col->index[i]], x, col->column_type) == 0)
+            //printf("i=%lld & pivot=%lld\n", i, pivot);
+            while (i < col->size && compare_Col_type(col->data[col->index[i]], ptr, col->column_type) == 0)
                 i++;
             occ += i - pivot - 1;
+            //printf("occ=%d->", occ);
             i = pivot - 1;
-            while (i > 0 && compare_Col_type(col->data[col->index[i]], x, col->column_type) == 0)
+            while (i > 0 && compare_Col_type(col->data[col->index[i]], ptr, col->column_type) == 0)
                 i--;
-            occ += pivot - i - 1;
+            occ += pivot - 1 - i;
+            //printf("occ=%d\n", occ);
             break;
-        } else if (compare_Col_type(col->data[col->index[pivot]], x, col->column_type) < 0) {
-            right = pivot - 1;
-        } else {
+        } else if (cmp < 0) {
+            //printf("Inf 0 ");
             left = pivot + 1;
+        } else {
+            //printf("Sup 0 ");
+            right = pivot - 1;
         }
+        //printf("pass pivot=%lld\n", pivot);
     }
     return occ;
+}
+
+int search_value_in_column(Column *col, void *val) {
+    if (check_index(col) != SORTED)
+        return -1;
+    indexation left = 0, right = col->size - 1, pivot;
+    Col_type *ptr = (Col_type *) val;
+    while (left <= right) {
+        pivot = (left + right) / 2;
+        int cmp = compare_Col_type(col->data[col->index[pivot]], ptr, col->column_type);
+        if (cmp == 0) {
+            return 1;
+        } else if (cmp < 0) {
+            left = pivot + 1;
+        } else {
+            right = pivot - 1;
+        }
+    }
+    return 0;
 }
 
 void propagate_index(Column *colA, Column *colB) {

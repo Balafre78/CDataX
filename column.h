@@ -159,7 +159,7 @@ void sort(Column *col, int sort_dir);
  * @param x The value to compare (same type as col)
  * @return Number of occurrences
  * */
-int get_occurrences_inferior_raw(Column *col, Col_type *x);
+int get_occurrences_inferior_raw(Column *col, void *x);
 
 /**
  * @brief Get the number of occurrences of value under the one given
@@ -167,7 +167,7 @@ int get_occurrences_inferior_raw(Column *col, Col_type *x);
  * @param x The value to compare
  * @return Number of occurrences
  * */
-int get_occurrences_superior_raw(Column *col, Col_type *x);
+int get_occurrences_superior_raw(Column *col, void *x);
 
 /**
  * @brief Get the number of occurrences of value under the one given
@@ -175,16 +175,26 @@ int get_occurrences_superior_raw(Column *col, Col_type *x);
  * @param x The value to compare
  * @return Number of occurrences
  * */
-int get_occurrences_equal_raw(Column *col, Col_type *x);
+int get_occurrences_equal_raw(Column *col, void *x);
 
 /**
  * @brief Get the number of occurrences of value under the one given, uses indexs
  * @param col Pointer to a column
  * @param x The value to compare
  * @warning works only if the list is sorted !
- * @return Number of occurrences
+ * @return Number of occurrences; -1 if the list is not sorted
  * */
-int get_occurrences_equal_by_index(Column *col, Col_type *x);
+int get_occurrences_equal_by_index(Column *col, void *x);
+
+/**
+* @brief: Check if a value exists in a column
+* @param1: Pointer to the column
+* @param2: Pointer to the value to search for
+* @return: -1: column not sorted,
+            0: value not found
+            1: value found
+*/
+int search_value_in_column(Column *col, void *val);
 
 /**
  * @brief copy indexs from a column to another
