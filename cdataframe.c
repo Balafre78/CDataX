@@ -76,7 +76,7 @@ int add_newline(CDataframe *cdf, Col_type *values, indexation size) {
 }
 
 int print_columns_names_partial(CDataframe *cdf, indexation from, indexation to) {
-    if (from < 0 || from >= to || to >= cdf->size)
+    if (from < 0 || from >= to || to > cdf->size)
         return 2;
 
     lnode *node = cdf->data->head;
@@ -101,7 +101,8 @@ void print_columns_names(CDataframe *cdf) {
 }
 
 int print_lines_by_objects(CDataframe *cdf, indexation from, indexation to) {
-    if (from < 0 || from >= to || to >= cdf->colsize)
+    //printf("from = %d to = %d colsize = %d \n", from, to, cdf->colsize);
+    if (from < 0 || from >= to || to > cdf->colsize)
         return 2;
 
     int buffer_size = STD_BUFF_SIZE;
@@ -136,7 +137,7 @@ int print_lines_by_objects(CDataframe *cdf, indexation from, indexation to) {
 }
 
 int print_columns_by_objects(CDataframe *cdf, indexation from, indexation to) {
-    if (from < 0 || from >= to || to >= cdf->size)
+    if (from < 0 || from >= to || to > cdf->size)
         return 2;
 
     int buffer_size = STD_BUFF_SIZE;
@@ -190,7 +191,7 @@ int print_lines(CDataframe *cdf, char *ref_col, indexation from, indexation to) 
     if (ref_col == NULL)
         return print_lines_by_objects(cdf, from, to);
 
-    if (from < 0 || from >= to || to >= cdf->colsize)
+    if (from < 0 || from >= to || to > cdf->colsize)
         return 2;
 
     Column *col_sort = query_column_by_name(cdf, ref_col);
@@ -234,7 +235,7 @@ int print_columns(CDataframe *cdf, char *ref_col, indexation from, indexation to
     if (ref_col == NULL)
         return print_columns_by_objects(cdf, from, to);
 
-    if (from < 0 || from >= to || to >= cdf->size)
+    if (from < 0 || from >= to || to > cdf->size)
         return 2;
 
     Column *col_sort = query_column_by_name(cdf, ref_col);

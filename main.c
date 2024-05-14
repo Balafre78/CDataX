@@ -2,6 +2,9 @@
 #include "column.h"
 #include "cdataframe.h"
 
+#define LINE 2
+#define COLUMN 3
+
 /**
  * @brief Debug the column by dumping all infos
  * @param column : Pointer to a column
@@ -32,46 +35,6 @@ int main() {
     seuil.int_value = 20;
     printf("Less than 20 : %d\n", get_occurrences_superior_raw(mycol, &seuil));
     delete_column(&mycol);*/
-
-    int size = 3;
-    Enum_type prefabTypes[3] = {CHAR, INT, INT};
-    Col_type *prefabValuePtr = malloc(3 * sizeof(Col_type));
-    prefabValuePtr[0].char_value = 'a';
-    prefabValuePtr[1].int_value = 1024;
-    prefabValuePtr[2].int_value = 2048;
-    char *prefabNames[3] = {"Col 1", "Col 2", "Col 3"};
-    CDataframe *cdf = create_cdataframe(prefabTypes, prefabNames, size);
-    printf("add with %d\n", add_newline(cdf, prefabValuePtr, 3));
-
-    lnode *node = cdf->data->head;
-    for (int i = 0; i < size; i++) {
-        convert_value(node->data, 0, buff, 10);
-        printf("%s\t@ %s\n", buff, node->data->title);
-        node = get_next_node(cdf->data, node);
-    }
-
-    print_lines(cdf, NULL, 0, 1);
-
-    prefabValuePtr[0].char_value = 'b';
-    prefabValuePtr[1].int_value = 495;
-    prefabValuePtr[2].int_value = -200;
-    add_newline(cdf, prefabValuePtr, 3);
-    print_lines(cdf, NULL, 0, 2);
-    print_lines(cdf, NULL, 1, 2);
-    print_columns(cdf, NULL, 1, 3);
-    print_all(cdf, NULL);
-
-    //printf("%s\n", cdf->data->head->data->title);
-    rename_column(cdf, "Col 1", "new Col 1");
-    print_columns(cdf, NULL, 0, 1);
-    printf("Cdf of %lld lines and %lld columns\n", get_lines_amount(cdf), get_columns_amount(cdf));
-
-    // Test this function breaks the test suite
-    //del_cell(cdf, "new Col 1", 1);
-    //return 0;
-
-    // del_line(cdf, 0);
-
 
     /*Column *withindex = create_column(INT, "sorted column");
     int va = 52;
@@ -113,8 +76,54 @@ int main() {
     erase_index(withindex);
     printf("Erease index : %d\n", check_index(withindex));*/
 
+    int size = 3;
+    Enum_type prefabTypes[3] = {CHAR, INT, INT};
+    Col_type **prefabValuePtr = malloc(LINE * sizeof(Col_type *));
+    for (int i = 0; i < LINE; i++)
+        prefabValuePtr[i] = malloc(COLUMN * sizeof(Col_type *));
+    prefabValuePtr[0][0].char_value = 'a';
+    prefabValuePtr[0][1].int_value = 1024;
+    prefabValuePtr[0][2].int_value = 2048;
+    char *prefabNames[3] = {"Col 1", "Col 2", "Col 3"};
+    CDataframe *cdf = create_cdataframe(prefabTypes, prefabNames, size);
+    printf("add with %d\n", add_newline(cdf, prefabValuePtr[0], 3));
+
+    lnode *node = cdf->data->head;
+    for (int i = 0; i < size; i++) {
+        convert_value(node->data, 0, buff, 10);
+        printf("%s\t@ %s\n", buff, node->data->title);
+        node = get_next_node(cdf->data, node);
+    }
+
+    printf("printed with %d!\n", print_lines(cdf, NULL, 0, 1));
+
+    prefabValuePtr[1][0].char_value = 'b';
+    prefabValuePtr[1][1].int_value = 495;
+    prefabValuePtr[1][2].int_value = -200;
+    add_newline(cdf, prefabValuePtr[1], 3);
+    print_lines(cdf, NULL, 0, 2);
+    print_lines(cdf, NULL, 1, 2);
+    print_columns(cdf, NULL, 1, 3);
+    print_all(cdf, NULL);
+
+    //printf("%s\n", cdf->data->head->data->title);
+    rename_column(cdf, "Col 1", "newCol1");
+    print_columns(cdf, NULL, 0, 1);
+    printf("Cdf of %lld lines and %lld columns\n", get_lines_amount(cdf), get_columns_amount(cdf));
+
+    printf("\n\nINDEXING TEST SUITE\n");
+
+    printf("failed with 3=%d\n", print_columns(cdf, "Col 3", 2, 3));
+    printf("\nBefore and efter sorting\n");
+    print_columns(cdf, NULL, 2, 3);
+    sorting_column(cdf, "Col 3", ASC);
+    print_all(cdf, "Col 3");
+    sort_all_columns(cdf, ASC);
 
 
+
+    for (int i = 0; i < LINE; i++)
+        free(prefabValuePtr[i]);
     free(prefabValuePtr);
     return 0;
 
