@@ -53,9 +53,13 @@ int write(CDataframe *cdf);
 /**
  * @brief Print all data of an existing Cdataframe
  * @param cdf Cdataframe pointer
- * @return 1 with internal memory allocation, 0 else
+ * @param ref_col Reference column used for sort, NULL if object is prefered
+ * @return 3, if a ref_col is mentioned but the col isn't sorted
+ *         2 if ref_col is unknown
+ *         1 with internal memory allocation,
+ *         0 else
  */
-int print_all(CDataframe *cdf);
+int print_all(CDataframe *cdf, char *ref_col);
 
 /**
  * @brief Print all column names
@@ -75,27 +79,38 @@ void print_columns_names(CDataframe *cdf);
 /**
  * @brief Print all lines from a start to an end from an existing Cdataframe
  * @param cdf Cdataframe pointer
+ * @param ref_col Reference column used for sort, NULL if object is prefered
  * @param from Starting line
  * @param to Ending line (excluded)
- * @return 2 if there's an error with the section selected, 1 with internal memory allocation, 0 else
+ * @return 3, if a ref_col is mentioned but the col isn't sorted
+ *         2 if there's an error with the section selected or name of ref_col,
+ *         1 with internal memory allocation,
+ *         0 else
  */
-int print_lines_by_objects(CDataframe *cdf, indexation from, indexation to);
+int print_lines(CDataframe *cdf, char *ref_col, indexation from, indexation to);
 
 /**
  * @brief Print all columns from a start to an end from an existing Cdataframe
  * @param cdf Cdataframe pointer
+ * @param ref_col Reference column used for sort, NULL if object is prefered
  * @param from Starting column
  * @param to Ending column (excluded)
- * @return 2 if there's an error with the section selected, 1 with internal memory allocation, 0 else
+ * @return 3, if a ref_col is mentioned but the col isn't sorted
+ *         2 if there's an error with the section selected or name of ref_col,
+ *         1 with internal memory allocation,
+ *         0 else
  */
-int print_columns(CDataframe *cdf, indexation from, indexation to);
+int print_columns(CDataframe *cdf, char *ref_col, indexation from, indexation to);
 
 /**
  * @brief Add a new line to an existing Cdataframe
  * @param cdf Cdataframe pointer
  * @param values Tab of Col_type to insert to the new line
  * @param size Size of the previous tab, should be the exact same size as the Cdataframe size
- * @return 3 if the cdf is empty (no info on columns types), 2 if it's the size, 1 if it's the memory allocation, 0 else
+ * @return 3 if the cdf is empty (no info on columns types),
+ *         2 if it's the size,
+ *         1 if it's the memory allocation,
+ *         0 else
  */
 int add_newline(CDataframe *cdf, Col_type *values, indexation size);
 
@@ -105,7 +120,9 @@ int add_newline(CDataframe *cdf, Col_type *values, indexation size);
  * @param type Type of value to insert
  * @param values Tab of Col_type to insert to the new line
  * @param size Size of the previous tab, should be the exact same size as the Cdataframe size
- * @return 2 if it's the size, 1 if there's an error with memory allocation, 0 else
+ * @return 2 if it's the size,
+ *         1 if there's an error with memory allocation,
+ *         0 else
  */
 int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, indexation size, char *title);
 

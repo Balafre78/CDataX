@@ -12,14 +12,13 @@ void printColumnInfo(Column *column);
 int main() {
     /*Column *mycol = create_column(INT, "My column");
     int a = 42, c = 2;
-    insert_value(mycol, &a);
+    append_value(mycol, &a);
     //insert_value(mycol, NULL);
-    insert_value(mycol, &c);
-    printColumnInfo(mycol);
-    return 0;*/
+    append_value(mycol, &c);
+    printColumnInfo(mycol);*/
 
     char buff[10];
-    Column *mycol = create_column(INT, "My column");
+    /*Column *mycol = create_column(INT, "My column");
     int a = 52, b = 44, c = 15, d = 18;
     append_value(mycol, &a);
     append_value(mycol, &b);
@@ -32,7 +31,7 @@ int main() {
     Col_type seuil;
     seuil.int_value = 20;
     printf("Less than 20 : %d\n", get_occurrences_superior_raw(mycol, &seuil));
-    delete_column(&mycol);
+    delete_column(&mycol);*/
 
     int size = 3;
     Enum_type prefabTypes[3] = {CHAR, INT, INT};
@@ -51,30 +50,30 @@ int main() {
         node = get_next_node(cdf->data, node);
     }
 
-    print_lines_by_objects(cdf, 0, 1);
+    print_lines(cdf, NULL, 0, 1);
 
     prefabValuePtr[0].char_value = 'b';
     prefabValuePtr[1].int_value = 495;
     prefabValuePtr[2].int_value = -200;
     add_newline(cdf, prefabValuePtr, 3);
-    print_lines_by_objects(cdf, 0, 2);
-    print_lines_by_objects(cdf, 1, 2);
-    print_columns(cdf, 1, 3);
-    print_all(cdf);
+    print_lines(cdf, NULL, 0, 2);
+    print_lines(cdf, NULL, 1, 2);
+    print_columns(cdf, NULL, 1, 3);
+    print_all(cdf, NULL);
 
     //printf("%s\n", cdf->data->head->data->title);
     rename_column(cdf, "Col 1", "new Col 1");
-    print_columns(cdf, 0, 1);
-    printf("Cdf of %d lines and %d columns\n", get_lines_amount(cdf), get_columns_amount(cdf));
+    print_columns(cdf, NULL, 0, 1);
+    printf("Cdf of %lld lines and %lld columns\n", get_lines_amount(cdf), get_columns_amount(cdf));
 
     // Test this function breaks the test suite
     //del_cell(cdf, "new Col 1", 1);
     //return 0;
 
-    del_line(cdf, 0);
+    // del_line(cdf, 0);
 
 
-    Column *withindex = create_column(INT, "sorted column");
+    /*Column *withindex = create_column(INT, "sorted column");
     int va = 52;
     int vb = 18;
     int vc = 5;
@@ -112,11 +111,7 @@ int main() {
     append_value(withindex, &vz);
     printf("Checking unvalid index : %d\n", check_index(withindex));
     erase_index(withindex);
-    printf("Erease index : %d\n", check_index(withindex));
-
-
-    print_all(cdf);
-
+    printf("Erease index : %d\n", check_index(withindex));*/
 
 
 
