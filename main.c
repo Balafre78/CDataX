@@ -76,7 +76,7 @@ int main() {
     erase_index(withindex);
     printf("Erease index : %d\n", check_index(withindex));*/
 
-    int size = 3;
+
     Enum_type prefabTypes[3] = {CHAR, INT, INT};
     Col_type **prefabValuePtr = malloc(LINE * sizeof(Col_type *));
     for (int i = 0; i < LINE; i++)
@@ -85,11 +85,11 @@ int main() {
     prefabValuePtr[0][1].int_value = 1024;
     prefabValuePtr[0][2].int_value = 2048;
     char *prefabNames[3] = {"Col 1", "Col 2", "Col 3"};
-    CDataframe *cdf = create_cdataframe(prefabTypes, prefabNames, size);
+    CDataframe *cdf = create_cdataframe(prefabTypes, prefabNames, COLUMN);
     printf("add with %d\n", add_newline(cdf, prefabValuePtr[0], 3));
 
     lnode *node = cdf->data->head;
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < COLUMN; i++) {
         convert_value(node->data, 0, buff, 10);
         printf("%s\t@ %s\n", buff, node->data->title);
         node = get_next_node(cdf->data, node);
@@ -119,6 +119,13 @@ int main() {
     sorting_column(cdf, "Col 3", ASC);
     print_all(cdf, "Col 3");
     sort_all_columns(cdf, ASC);
+
+    char mystery_char = 'b';
+    int mystery_int = 495;
+    printf("find a 'b' @%p\n", find_in(cdf, &mystery_char));
+    printf("find a 495 @%p\n", find_in(cdf, &mystery_int));
+    mystery_int = 15;
+    printf("don't find a 15 @%p\n", find_in(cdf, &mystery_int));
 
 
 

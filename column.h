@@ -197,6 +197,23 @@ int get_occurrences_equal_by_index(Column *col, void *x);
 int search_value_in_column(Column *col, void *val);
 
 /**
+* @brief: Check if a value exists in a column
+* @param1: Pointer to the column
+* @param2: Pointer to the value to search for
+* @warning: if the column is not sorted, return NULL ptr
+* @return: the value if it exists NULL ptr else
+*/
+Col_type *get_value_in_column_indexed(Column *col, void *val);
+
+/**
+* @brief: Check if a value exists in a column
+* @param1: Pointer to the column
+* @param2: Pointer to the value to search for
+* @return: the value if it exists NULL ptr else
+*/
+Col_type *get_value_in_column_unindexed(Column *col, void *val);
+
+/**
  * @brief copy indexs from a column to another
  * @param colA Pointer to the origin
  * @param colB Pointer to the dest

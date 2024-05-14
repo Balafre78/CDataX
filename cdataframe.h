@@ -35,13 +35,6 @@ CDataframe *create_cdataframe(Enum_type *cdfTypes, char** colNames, indexation s
 */
 void delete_cdataframe(CDataframe **cdf);
 
-// /**
-// * @brief: Number of columns
-// * @param1: Point to the CDataframe
-// * @return: Number of columns in the CDataframe
-// */
-// int get_cdataframe_cols_size(CDataframe *cdf);
-
 //TODO: L'implémenter aussi en dur
 /**
  * @brief Write all data to a new Cdataframe (from user input)
@@ -165,14 +158,15 @@ int rename_column(CDataframe *cdf, char *col_title, char *newTitle);
  * @param var value to find
  * @return A pointer to the value (first found by column) if it's found, the NULL pointer else
  */
-Col_type *find_in(CDataframe *cdf, Col_type var);
+Col_type *find_in(CDataframe *cdf, void *var);
 
 /**
  * @brief Give a pointer to the value at the line and column wanted
  * @param cdf Cdataframe pointer
  * @param line the line index
  * @param col_title column name to find in
- * @return A pointer to the value
+ * @warning line is ordered according to objects (no sorting)
+ * @return A pointer to the value if it's found, the NULL pointer else
  */
 Col_type *get_var(CDataframe *cdf, char *col_title, indexation line);
 
@@ -196,7 +190,7 @@ indexation get_columns_amount(CDataframe *cdf);
  * @param var variable to compare
  * @return number of occurrences
  */
-int get_occurrences(CDataframe *cdf, Col_type var);
+int get_occurrences(CDataframe *cdf, void *var);
 
 /**
  * @brief Get the occurrences of a var superior to a var in a Cdataframe
@@ -204,7 +198,7 @@ int get_occurrences(CDataframe *cdf, Col_type var);
  * @param var variable to compare
  * @return number of occurrences
  */
-int get_superior_occurrences(CDataframe *cdf, Col_type var);
+int get_superior_occurrences(CDataframe *cdf, void *var);
 
 /**
  * @brief Get the occurrences of a var inferior to a var in a Cdataframe
@@ -212,7 +206,7 @@ int get_superior_occurrences(CDataframe *cdf, Col_type var);
  * @param var variable to compare
  * @return number of occurrences
  */
-int get_inferior_occurrences(CDataframe *cdf, Col_type var);
+int get_inferior_occurrences(CDataframe *cdf, void *var);
 
 /**
  * @brief Sort 1 column

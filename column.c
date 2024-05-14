@@ -442,20 +442,36 @@ int get_occurrences_equal_by_index(Column *col, void *x) {
 int search_value_in_column(Column *col, void *val) {
     if (check_index(col) != SORTED)
         return -1;
+    return (get_value_in_column_indexed(col, val) != NULL);
+}
+
+Col_type *get_value_in_column_indexed(Column *col, void *val) {
+    if (check_index(col) != SORTED)
+        return NULL;
     indexation left = 0, right = col->size - 1, pivot;
     Col_type *ptr = (Col_type *) val;
     while (left <= right) {
         pivot = (left + right) / 2;
         int cmp = compare_Col_type(col->data[col->index[pivot]], ptr, col->column_type);
         if (cmp == 0) {
-            return 1;
+            return col->data[col->index[pivot]];
         } else if (cmp < 0) {
             left = pivot + 1;
         } else {
             right = pivot - 1;
         }
     }
-    return 0;
+    return NULL;
+}
+
+Col_type *get_value_in_column_unindexed(Column *col, void *val) {
+    Col_type *ptr = (Col_type *) val;
+    for (indexation i = 0; i < col->size; i++) {
+        if (compare_Col_type(col->data[i], ptr, col->column_type)) {
+            return col->data[i];
+        }
+    }
+    return NULL;
 }
 
 void propagate_index(Column *colA, Column *colB) {

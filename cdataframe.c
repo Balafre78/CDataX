@@ -349,3 +349,32 @@ void sort_all_columns(CDataframe *cdf, int sort_dir) {
         node = get_next_node(cdf->data, node);
     }
 }
+
+Col_type *find_in(CDataframe *cdf, void *var) {
+    Col_type *ptr = NULL;
+    lnode *node = get_first_node(cdf->data);
+    while (node != NULL) {
+        if (check_index(node->data) == SORTED) {
+            ptr = get_value_in_column_indexed(node->data, var);
+            if (ptr != NULL)
+                return ptr;
+        } else {
+            ptr = get_value_in_column_unindexed(node->data, var);
+            if (ptr != NULL)
+                return ptr;
+        }
+        node = get_next_node(cdf->data, node);
+    }
+    return NULL;
+}
+
+Col_type *get_var(CDataframe *cdf, char *col_title, indexation line) {
+    Column *col = query_column_by_name(cdf, col_title);
+    if (col == NULL)
+        return NULL;
+
+    if (0 <= line && line < col->size)
+        return col->data[line];
+
+    return NULL;
+}
