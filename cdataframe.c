@@ -419,3 +419,38 @@ void delete_cdataframe(CDataframe **cdf) {
     }
     *cdf = NULL;
 }
+
+
+int get_occurrences(CDataframe *cdf, void *var) {
+    lnode *node = cdf->data->head;
+    int res = 0;
+    while (node != NULL) {
+        if (check_index(node->data) == SORTED)
+            res += get_occurrences_equal_by_index(node->data, var);
+        else
+            res += get_occurrences_equal_raw(node->data, var);
+        node = node->next;
+    }
+    return res;
+}
+
+
+int get_superior_occurrences(CDataframe *cdf, void *var) {
+    lnode *node = cdf->data->head;
+    int res = 0;
+    while (node != NULL) {
+        res += get_occurrences_superior_raw(node->data, var);
+        node = node->next;
+    }
+    return res;
+}
+
+int get_inferior_occurrences(CDataframe *cdf, void *var) {
+    lnode *node = cdf->data->head;
+    int res = 0;
+    while (node != NULL) {
+        res += get_occurrences_inferior_raw(node->data, var);
+        node = node->next;
+    }
+    return res;
+}
