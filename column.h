@@ -130,7 +130,7 @@ int print_col_by_index(Column *col);
 /**
  * @brief Get the value of the column index given
  * @param col The pointer to the column
- * @param idx The index to look for
+ * @param index The index to look for
  * @return a pointer to that value may return NULL pointer if it doesn't exists
  */
 Col_type *get_value(Column *col, indexation index);

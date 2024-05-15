@@ -3,7 +3,7 @@
 #include "cdataframe.h"
 
 #define LINE 2
-#define COLUMN 3
+#define COLUMN 4
 
 /**
  * @brief Debug the column by dumping all infos
@@ -85,11 +85,11 @@ int main() {
     prefabValuePtr[0][1].int_value = 1024;
     prefabValuePtr[0][2].int_value = 2048;
     char *prefabNames[3] = {"Col 1", "Col 2", "Col 3"};
-    CDataframe *cdf = create_cdataframe(prefabTypes, prefabNames, COLUMN);
+    CDataframe *cdf = create_cdataframe(prefabTypes, prefabNames, 3);
     printf("add with %d\n", add_newline(cdf, prefabValuePtr[0], 3));
 
     lnode *node = cdf->data->head;
-    for (int i = 0; i < COLUMN; i++) {
+    for (int i = 0; i < 3; i++) {
         convert_value(node->data, 0, buff, 10);
         printf("%s\t@ %s\n", buff, node->data->title);
         node = get_next_node(cdf->data, node);
@@ -126,6 +126,22 @@ int main() {
     printf("find a 495 @%p\n", find_in(cdf, &mystery_int));
     mystery_int = 15;
     printf("don't find a 15 @%p\n", find_in(cdf, &mystery_int));
+
+    //  Test deletation
+    prefabValuePtr[0][3].string_value = "str1";
+    prefabValuePtr[1][3].string_value = "str2";
+    Col_type tabDELCOL[2] = {prefabValuePtr[0][3], prefabValuePtr[1][3]};
+    add_newcolumn(cdf, STRING, tabDELCOL, 2, "DEL COL");
+    print_all(cdf, NULL);
+    del_column(cdf, "DEL COL");
+    print_all(cdf, NULL);
+    del_line(cdf, 1);
+    print_all(cdf, NULL);
+    add_newline(cdf, prefabValuePtr[1], 3);
+    print_all(cdf, NULL);
+
+
+
 
 
 

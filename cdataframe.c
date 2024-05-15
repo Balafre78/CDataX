@@ -321,13 +321,6 @@ int rename_column(CDataframe *cdf, char *col_title, char *newTitle) {
     return 0;
 }
 
-void del_cell(CDataframe *cdf, char *col_title, indexation line) {
-    //fprintf(stderr, "This function shouldn't be used; use at your own risks\n");
-    //fflush(stderr);
-    Column *column = query_column_by_name(cdf, col_title);
-    free(column->data[line]);
-}
-
 void sorting_column(CDataframe *cdf, char *col_title, int sort_dir) {
     if (sort_dir != ASC && sort_dir != DESC)
         return;
@@ -377,4 +370,52 @@ Col_type *get_var(CDataframe *cdf, char *col_title, indexation line) {
         return col->data[line];
 
     return NULL;
+}
+
+
+int del_column(CDataframe *cdf, char *col_title) {
+    lnode *node = cdf->data->head;
+    while (node != NULL) {
+        if (strcmp(node->data->title, col_title) == 0) {
+            if (node->prev != NULL)
+                (node->prev)->next = node->next;
+            if (node->next != NULL)
+                (node->next)->prev = node->prev;
+            break;
+        }
+        node = node->next;
+    }
+    if (node == NULL)
+        return 2;
+    delete_column(&node->data);
+    free(node);
+    cdf->size--;
+    return 0;
+}
+
+
+int del_line(CDataframe *cdf, indexation line) {
+    if (line >= cdf->colsize || line < 0)
+        return 2;
+    lnode *node = cdf->data->head;
+    while (node != NULL) {
+        free(node->data->data[line]);
+        node->data->size--;
+        for (indexation i = line; i < node->data->size; i++) {
+            node->data->data[i] = node->data->data[i + 1];
+        }
+        node = node->next;
+    }
+    cdf->colsize--;
+    return 0;
+}
+
+
+void delete_cdataframe(CDataframe **cdf) {
+    lnode *node = (*cdf)->data->head;
+    while (node != NULL) {
+        del_column(*cdf, node->data->title);
+        node = (*cdf)->data->head;
+    }
+    *cdf = NULL;
 }

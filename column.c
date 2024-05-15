@@ -47,7 +47,7 @@ int append_value(Column *col, void *value) {
 
     switch (col->column_type) {
         case INT:
-            col->data[col->size] = malloc(sizeof(signed int));
+            col->data[col->size] = malloc(sizeof(signed int ));
             signed int *sint = (signed int *) value;
             col->data[col->size]->int_value = *sint;
             break;
@@ -68,13 +68,14 @@ int append_value(Column *col, void *value) {
             break;
         case CHAR:
             col->data[col->size] = malloc(sizeof(char));
-            char *c = (char *) value;
-            col->data[col->size]->char_value = *c;
+            //char *c = (char *) value;
+            col->data[col->size]->char_value = *((char *) value);
             break;
         case STRING:
             col->data[col->size] = malloc(sizeof(char *));
-            char *str = (char *) value;
-            col->data[col->size]->string_value = str;
+            // DONT CHANGE (char **) !!
+            char **str = (char **) value;
+            col->data[col->size]->string_value = *str;
             break;
         default:
             return 0;

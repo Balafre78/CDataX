@@ -1,8 +1,6 @@
 #ifndef CDATAX_CDATAFRAME_H
 #define CDATAX_CDATAFRAME_H
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "llc.h"
 #include "column.h"
 
@@ -131,6 +129,7 @@ Column *query_column_by_name(CDataframe *cdf, char *title);
  * @brief Delete one line of the Cdataframe
  * @param cdf Cdataframe pointer
  * @param line line to remove
+ * @warning line represent object, no sorting
  * @return 0 on success, 2 if there's an error the line parameter
  */
 int del_line(CDataframe *cdf, indexation line);
