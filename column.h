@@ -15,6 +15,8 @@
 #define ALMOST_SORT (-1)
 #define SORTED 1
 
+#define INDEXATION_FORMAT "%lld"
+
 enum enum_type
 {
     NULLVAL = 1 , UINT, INT, CHAR, FLOAT, DOUBLE, STRING, STRUCTURE

@@ -140,6 +140,10 @@ int main() {
     add_newline(cdf, prefabValuePtr[1], 3);
     print_all(cdf, NULL);
 
+    CDataframe *fromwrite;
+    write(&fromwrite);
+    print_all(fromwrite, NULL);
+
 
 
 

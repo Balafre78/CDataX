@@ -462,9 +462,9 @@ int get_inferior_occurrences(CDataframe *cdf, void *var) {
 void write(CDataframe **cdf) {
     indexation lcolsize, lcdfsize;
     printf("Saisir le nombre de colonnes : ");
-    scanf("%d", &lcdfsize);
+    scanf(INDEXATION_FORMAT, &lcdfsize);
     printf("Saisir le nombre de lignes : ");
-    scanf("%d", &lcolsize);
+    scanf(INDEXATION_FORMAT, &lcolsize);
 
     Enum_type *coltypes = malloc(lcdfsize*sizeof(Enum_type));
     printf("Types disponibles :\n"
@@ -477,17 +477,26 @@ void write(CDataframe **cdf) {
                "7 - string\n"
                "8 - pointeur\n");
     for (indexation i = 0; i < lcdfsize; i++) {
-        printf("Quelle type doit être la colonne %d :\n", i);
+        printf("Quelle type doit être la colonne %lld :\n", i);
         scanf("%d", &coltypes[i]);
     }
 
     char **colnames = malloc(lcdfsize*sizeof(char *));
     for (indexation i = 0; i < lcdfsize; i++) {
-        printf("Quelle nom doit porter la colonne %d :\n", i);
-        scanf("%s", &colnames[i]);
+        colnames[i] = malloc(USER_INPUT_SIZE*sizeof(char));
+        fflush_stdin();
+        printf("Quelle nom doit porter la colonne %lld : ", i);
+        fgets(colnames[i], USER_INPUT_SIZE, stdin);
+        // Delete fgets last return carriage
+        int delzero = 0;
+        while (colnames[i][delzero] != '\n' && delzero < USER_INPUT_SIZE) delzero++;
+        colnames[i][delzero] = '\0';
     }
     *cdf = create_cdataframe(coltypes, colnames, lcdfsize);
+    for (indexation i = 0; i < lcdfsize; i++)
+        free(colnames[i]);
     free(colnames);
+    free(coltypes);
 
     Col_type *values  = malloc(lcdfsize * sizeof(Col_type));
     char userinput[USER_INPUT_SIZE];
@@ -514,5 +523,5 @@ void write(CDataframe **cdf) {
         add_newline(*cdf, values, lcdfsize);
     }
     free(values);
-    printf("CDataframe completed !");
+    printf("CDataframe completed !\n");
 }
