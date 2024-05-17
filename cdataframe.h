@@ -4,6 +4,9 @@
 #include "llc.h"
 #include "column.h"
 
+// Should be inferrior as an int
+#define USER_INPUT_SIZE 255
+
 typedef struct cadataframe {
     indexation size;
     indexation colsize;
@@ -37,9 +40,9 @@ void delete_cdataframe(CDataframe **cdf);
 /**
  * @brief Write all data to a new Cdataframe (from user input)
  * @param cdf Cdataframe pointer (should be empty)
- * @return 1 if there's an error with memory allocation, 0 else
+ * @warning since, write interracts with IO, it doesn't check memeory allocation.
  */
-int write(CDataframe *cdf);
+void write(CDataframe **cdf);
 
 /**
  * @brief Print all data of an existing Cdataframe
@@ -110,7 +113,7 @@ int add_newline(CDataframe *cdf, Col_type *values, indexation size);
  * @param cdf Cdataframe pointer
  * @param type Type of value to insert
  * @param values Tab of Col_type to insert to the new line
- * @param size Size of the previous tab, should be the exact same size as the Cdataframe size
+ * @param size Size of the previous tab, should be the exact same size as the Cdataframe colsize
  * @return 2 if it's the size,
  *         1 if there's an error with memory allocation,
  *         0 else
@@ -147,7 +150,9 @@ int del_column(CDataframe *cdf, char *col_title);
  * @param cdf Cdataframe pointer
  * @param col_title column name to rename
  * @param newTitle new title of the column
- * @return 0 on success, 2 if there's an error the col_title parameter
+ * @return 0 on success,
+ *         1 if there's an arror with the memory allocation
+ *         2 if there's an error the col_title parameter
  */
 int rename_column(CDataframe *cdf, char *col_title, char *newTitle);
 

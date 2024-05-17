@@ -112,6 +112,14 @@ void update_index(Column *col);
 int convert_value(Column *col, indexation i, char *str, indexation size);
 
 /**
+* @brief: Convert a string into a Col_type value
+* @param1: The pointer to fill
+* @param2: The string to format
+* @param3: The type to format into
+*/
+void format_value(Col_type *ptr, char *str, Enum_type type);
+
+/**
 * @brief Display the content of a column (no matter the index)
 * @param col Pointer to the column to display
 * @return 1 on internal allocation error, 0 else

@@ -3,7 +3,8 @@
 Column *create_column(Enum_type type, char *title) {
     Column *col = malloc(sizeof(Column));
     if (col != NULL) {
-        col->title = title;
+        col->title = malloc((strlen(title) + 1) * sizeof(char));
+        strcpy(col->title, title);
         col->max_size = 0;
         col->size = 0;
         col->column_type = type;
@@ -47,7 +48,7 @@ int append_value(Column *col, void *value) {
 
     switch (col->column_type) {
         case INT:
-            col->data[col->size] = malloc(sizeof(signed int ));
+            col->data[col->size] = malloc(sizeof(signed int));
             signed int *sint = (signed int *) value;
             col->data[col->size]->int_value = *sint;
             break;
@@ -68,12 +69,12 @@ int append_value(Column *col, void *value) {
             break;
         case CHAR:
             col->data[col->size] = malloc(sizeof(char));
-            //char *c = (char *) value;
+        //char *c = (char *) value;
             col->data[col->size]->char_value = *((char *) value);
             break;
         case STRING:
             col->data[col->size] = malloc(sizeof(char *));
-            // DONT CHANGE (char **) !!
+        // DONT CHANGE (char **) !!
             char **str = (char **) value;
             col->data[col->size]->string_value = *str;
             break;
@@ -109,6 +110,7 @@ void delete_column(Column **col) {
     }
     free((*col)->data);
     free((*col)->index);
+    free((*col)->title);
     free(*col);
     *col = NULL;
 }
@@ -235,6 +237,38 @@ int compare_Col_type(Col_type *A, Col_type *B, Enum_type type) {
             //TODO: better printing function specific structs types
             return 0;
     }
+}
+
+void format_value(Col_type *ptr, char *str, Enum_type type) {
+    char *next = malloc((strlen(str) + 1) * sizeof(char));
+    switch (type) {
+        case UINT:
+            ptr->uint_value = strtoul(str, &next, 10);
+            break;
+        case INT:
+            ptr->int_value = atoi(str);
+            break;
+        case CHAR:
+            ptr->char_value = *str;
+            break;
+        case FLOAT:
+            ptr->float_value = atof(str);
+            break;
+        case DOUBLE:
+            ptr->double_value = strtod(str, &next);
+            break;
+        case STRING:
+            ptr->string_value = str;
+            break;
+        case NULLVAL:
+            ptr->struct_value = NULL;
+            break;
+        case STRUCTURE:
+            //TODO: better printing function specific structs types
+            ptr->struct_value = NULL;
+            break;
+    }
+    free(next);
 }
 
 void insertion_sort(Column *column) {

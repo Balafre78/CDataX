@@ -317,7 +317,11 @@ int rename_column(CDataframe *cdf, char *col_title, char *newTitle) {
     Column *ptr = query_column_by_name(cdf, col_title);
     if (ptr == NULL)
         return 2;
-    ptr->title = newTitle;
+    char *newPtr = realloc(ptr->title, (strlen(newTitle) + 1)*sizeof(char *));
+    if (newPtr == NULL)
+        return 1;
+    ptr->title = newPtr;
+    strcpy(ptr->title, newTitle);
     return 0;
 }
 
@@ -453,4 +457,62 @@ int get_inferior_occurrences(CDataframe *cdf, void *var) {
         node = node->next;
     }
     return res;
+}
+
+void write(CDataframe **cdf) {
+    indexation lcolsize, lcdfsize;
+    printf("Saisir le nombre de colonnes : ");
+    scanf("%d", &lcdfsize);
+    printf("Saisir le nombre de lignes : ");
+    scanf("%d", &lcolsize);
+
+    Enum_type *coltypes = malloc(lcdfsize*sizeof(Enum_type));
+    printf("Types disponibles :\n"
+               "1 - NULL\n"
+               "2 - unsigned int\n"
+               "3 - sigend int\n"
+               "4 - char\n"
+               "5 - float\n"
+               "6 - double\n"
+               "7 - string\n"
+               "8 - pointeur\n");
+    for (indexation i = 0; i < lcdfsize; i++) {
+        printf("Quelle type doit être la colonne %d :\n", i);
+        scanf("%d", &coltypes[i]);
+    }
+
+    char **colnames = malloc(lcdfsize*sizeof(char *));
+    for (indexation i = 0; i < lcdfsize; i++) {
+        printf("Quelle nom doit porter la colonne %d :\n", i);
+        scanf("%s", &colnames[i]);
+    }
+    *cdf = create_cdataframe(coltypes, colnames, lcdfsize);
+    free(colnames);
+
+    Col_type *values  = malloc(lcdfsize * sizeof(Col_type));
+    char userinput[USER_INPUT_SIZE];
+    lnode *node;
+    indexation j;
+    for (indexation i = 0; i < lcolsize; i++){
+        node = (*cdf)->data->head;
+        j = 0;
+        while (node != NULL) {
+            printf("Saisir la case x,y = %d,%d : ", i, j);
+            fgets(userinput, USER_INPUT_SIZE, stdin);
+
+            // Delete fgets last return carriage
+            int delzero = 0;
+            while (userinput[delzero] != '\n' && delzero < USER_INPUT_SIZE) delzero++;
+            userinput[delzero] = '\0';
+
+            format_value(&values[j], userinput, node->data->column_type);
+
+            node = node->next;
+            j++;
+        }
+        printf("Adding line %d !\n",i);
+        add_newline(*cdf, values, lcdfsize);
+    }
+    free(values);
+    printf("CDataframe completed !");
 }
