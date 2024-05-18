@@ -10,7 +10,7 @@ Column *create_column(Enum_type type, char *title) {
         col->column_type = type;
         col->data = NULL;
         col->index = NULL;
-        col->valid_index = 0;
+        col->valid_index = INVALID;
         col->sort_dir = ASC;
     }
     return col;
@@ -23,7 +23,7 @@ int append_value(Column *col, void *value) {
         indexation *newIndex;
         if (col->size == 0) {
             newPtr = (Col_type **) malloc(REALOC_SIZE * sizeof(Col_type *));
-            newIndex = (indexation *) calloc(REALOC_SIZE, sizeof(Col_type *));
+            newIndex = (indexation *) calloc(REALOC_SIZE, sizeof(indexation *));
         } else {
             newPtr = (Col_type **) realloc(col->data, col->max_size + REALOC_SIZE);
             newIndex = (indexation *) realloc(col->index, col->max_size + REALOC_SIZE);
@@ -53,7 +53,7 @@ int append_value(Column *col, void *value) {
             col->data[col->size]->int_value = *sint;
             break;
         case UINT:
-            col->data[col->size] = malloc(sizeof(int));
+            col->data[col->size] = malloc(sizeof(unsigned int));
             unsigned int *uint = (unsigned int *) value;
             col->data[col->size]->uint_value = *uint;
             break;
@@ -69,8 +69,8 @@ int append_value(Column *col, void *value) {
             break;
         case CHAR:
             col->data[col->size] = malloc(sizeof(char));
-            //char *c = (char *) value;
-            col->data[col->size]->char_value = *((char *) value);
+            char *c = (char *) value;
+            col->data[col->size]->char_value = *c;
             break;
         case STRING:
             col->data[col->size] = malloc(sizeof(char *));
@@ -185,7 +185,7 @@ int print_col_raw(Column *col) {
             }
             buffer_size += STD_BUFF_SIZE;
         }
-        printf("[%d] %s\n", i, buffer);
+        printf("[%lld] %s\n", i, buffer);
     }
 
     free(buffer);
@@ -364,11 +364,11 @@ void sort(Column *col, int sort_dir) {
     //printf("\n");
     if (col->valid_index == INVALID && sort_dir == ASC) {
         quicksort(col, 0, col->size - 1);
-    } else if (col->valid_index == SORTED && sort_dir == ASC) {
+    } else if (col->valid_index == ALMOST_SORT && sort_dir == ASC) {
         insertion_sort(col);
     } else if (col->valid_index == INVALID && sort_dir == DESC) {
         quicksort_reverse(col, 0, col->size - 1);
-    } else if (col->valid_index == SORTED && sort_dir == DESC) {
+    } else if (col->valid_index == ALMOST_SORT && sort_dir == DESC) {
         insertion_sort_reverse(col);
     }
     col->sort_dir = sort_dir;

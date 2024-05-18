@@ -128,13 +128,13 @@ lnode *get_last_node(list *lst) {
     return lst->tail;
 }
 
-lnode *get_next_node(list *lst, lnode *lnode) {
+lnode *get_next_node(lnode *lnode) {
     if (lnode == NULL)
         return NULL;
     return lnode->next;
 }
 
-void *get_previous_elem(list *lst, lnode *lnode) {
+lnode *get_previous_elem(lnode *lnode) {
     if (lnode == NULL)
         return NULL;
     return lnode->prev;
