@@ -77,7 +77,7 @@ int main() {
     printf("Erease index : %d\n", check_index(withindex));*/
 
 
-    Enum_type prefabTypes[3] = {CHAR, INT, INT};
+    /*Enum_type prefabTypes[3] = {CHAR, INT, INT};
     Col_type **prefabValuePtr = malloc(LINE * sizeof(Col_type *));
     for (int i = 0; i < LINE; i++)
         prefabValuePtr[i] = malloc(COLUMN * sizeof(Col_type *));
@@ -138,23 +138,31 @@ int main() {
     del_line(cdf, 1);
     print_all(cdf, NULL);
     add_newline(cdf, prefabValuePtr[1], 3);
-    print_all(cdf, NULL);
+    print_all(cdf, NULL);*/
 
-    CDataframe *fromwrite;
-    write(&fromwrite);
-    print_all(fromwrite, NULL);
-    save_into_csv(fromwrite, "save.csv");
+    //CDataframe *fromwrite;
+    //write(&fromwrite);
+    //print_all(fromwrite, NULL);
+    //save_into_csv(fromwrite, "save.csv");
 
-    //delete_cdataframe(&fromwrite);
+    Enum_type cdftype [] = {INT,STRING,FLOAT};
+    CDataframe *fromcsv = load_from_csv("example.csv", cdftype, 3);
+    // exemple de fonction qui permet un affichage partiel du CDataframe
+    if (fromcsv != NULL)
+        print_lines(fromcsv,NULL, 2,9);
+    sorting_column(fromcsv, "Age", ASC);
+    print_all(fromcsv, "Age");
+
+    delete_cdataframe(&fromcsv);
 
 
 
 
 
 
-    for (int i = 0; i < LINE; i++)
+    /*for (int i = 0; i < LINE; i++)
         free(prefabValuePtr[i]);
-    free(prefabValuePtr);
+    free(prefabValuePtr);*/
     return 0;
 
 }

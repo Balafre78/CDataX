@@ -390,7 +390,6 @@ int del_column(CDataframe *cdf, char *col_title) {
     }
     if (node == NULL)
         return 2;
-    printf("Del col %s\n", col_title);
     delete_column(&node->data);
     free(node);
     cdf->size--;
@@ -594,4 +593,155 @@ void save_into_csv(CDataframe *cdf, char *file_name) {
         fprintf(fptr, "%c", '\n');
     }
     free(buffer);
+    fclose(fptr);
+    fptr = NULL;
+}
+
+CDataframe *load_from_csv(char *file_name, Enum_type *dftype, int size) {
+    char csvinput[USER_INPUT_SIZE];
+    int inputsize;
+    int cc;
+
+    FILE *fptr;
+    fptr = fopen(file_name, "r");
+    if (fptr == NULL) {
+        fprintf(stderr, "%s", "Wasn't able to open file !");
+        return NULL;
+    }
+
+    /*while ((cc = fgetc(fptr)) != EOF) {
+        //print the character to a string
+        printf("%c", cc);
+    }*/
+
+
+    indexation lcdfsize = 1;
+    // SAISIE DE indexation lcolsize, lcdfsize
+    char **colnames = malloc(MAX_COL * sizeof(char *));
+
+    inputsize = 0;
+    for (cc = fgetc(fptr);
+         cc != '\n' && cc != EOF && inputsize < USER_INPUT_SIZE && lcdfsize < MAX_COL;
+         cc = fgetc(fptr)) {
+        if (cc == ',') {
+            csvinput[inputsize + 1] = '\0';
+
+            colnames[lcdfsize - 1] = malloc((inputsize + 1) * sizeof(char));
+            inputsize = 0;
+            strcpy(colnames[lcdfsize - 1], csvinput);
+            lcdfsize++;
+        } else {
+            csvinput[inputsize] = (char) cc;
+            inputsize++;
+        }
+    }
+    if (cc == '\n') {
+        csvinput[inputsize + 1] = '\0';
+
+        colnames[lcdfsize - 1] = malloc((inputsize + 1) * sizeof(char));
+        inputsize = 0;
+        strcpy(colnames[lcdfsize - 1], csvinput);
+    }
+
+
+    if (inputsize == USER_INPUT_SIZE) {
+        fprintf(stderr, "%s", "Max input size reach !\n");
+        return NULL;
+    }
+    if (lcdfsize == MAX_COL) {
+        fprintf(stderr, "%s", "Max input size reach !\n");
+        return NULL;
+    }
+    if (cc == EOF) {
+        fprintf(stderr, "%s", "CSV format incorrect !\n");
+        return NULL;
+    }
+    if (size != lcdfsize) {
+        fprintf(stderr, "CSV file %lld and given size %d are different !\n", lcdfsize, size);
+        return NULL;
+    }
+
+    CDataframe *cdf = create_cdataframe(dftype, colnames, lcdfsize);
+    for (indexation i = 0; i < lcdfsize; i++)
+        free(colnames[i]);
+    free(colnames);
+
+    Col_type *values = malloc(lcdfsize * sizeof(Col_type));
+    lnode *node;
+    indexation j;
+
+    node = cdf->data->head;
+    j = 0;
+    while (node != NULL) {
+        if (node->data->column_type == STRING)
+            values[j].string_value = malloc(USER_INPUT_SIZE * sizeof(char));
+        node = node->next;
+        j++;
+    }
+
+    indexation i = 0;
+    cc = fgetc(fptr);
+    while (cc != EOF) {
+        node = cdf->data->head;
+        j = 0;
+
+        inputsize = 0;
+        while (cc != '\n' && cc != EOF && inputsize < USER_INPUT_SIZE && node != NULL) {
+
+            if (cc == ',') {
+                csvinput[inputsize + 1] = '\0';
+
+                format_value(&values[j], csvinput, node->data->column_type);
+
+                inputsize = 0;
+                node = node->next;
+                j++;
+            } else {
+                csvinput[inputsize] = (char) cc;
+                inputsize++;
+            }
+            cc = fgetc(fptr);
+        }
+        if (cc == EOF) {
+            fprintf(stderr, "Inconsistent CSV file EOF before end\n");
+            return NULL;
+        }
+        if (inputsize == USER_INPUT_SIZE) {
+            fprintf(stderr, "Too large input on line %lld\n", i + 1);
+            fprintf(stderr, "%s\n", csvinput);
+            return NULL;
+        }
+        if (node == NULL || node->next != NULL) {
+            fprintf(stderr, "%s %lld %s", "Inconsistent CSV file not enough argument for object", i + 1, "!\n");
+            return NULL;
+        }
+        if (cc == '\n') {
+            csvinput[inputsize + 1] = '\0';
+
+            format_value(&values[j], csvinput, node->data->column_type);
+        }
+
+        printf("Adding line %lld !\n", i);
+        add_newline(cdf, values, lcdfsize);
+        print_lines(cdf, NULL, 0, i + 1);
+
+        cc = fgetc(fptr);
+        i++;
+    }
+
+    node = cdf->data->head;
+    j = 0;
+    while (node != NULL) {
+        if (node->data->column_type == STRING)
+            free(values[j].string_value);
+        node = node->next;
+        j++;
+    }
+
+    free(values);
+    fclose(fptr);
+    fptr = NULL;
+
+    printf("CDataframe completed !\n");
+    return cdf;
 }

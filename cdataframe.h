@@ -7,6 +7,8 @@
 // Should be inferrior as an int
 #define USER_INPUT_SIZE 255
 
+#define MAX_COL 255
+
 typedef struct cadataframe {
     indexation size;
     indexation colsize;
