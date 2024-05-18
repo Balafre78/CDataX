@@ -143,6 +143,7 @@ int main() {
     CDataframe *fromwrite;
     write(&fromwrite);
     print_all(fromwrite, NULL);
+    delete_cdataframe(&fromwrite);
 
 
 

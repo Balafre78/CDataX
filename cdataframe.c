@@ -9,7 +9,7 @@ void fflush_stdin();
 
 void fflush_stdin() {
     int c;
-    while ((c = getchar()) != '\n' && c != EOF);
+    while ((c = getchar()) != '\n' && c != EOF) putchar(c);
 }
 
 /* API functions */
@@ -317,7 +317,7 @@ int rename_column(CDataframe *cdf, char *col_title, char *newTitle) {
     Column *ptr = query_column_by_name(cdf, col_title);
     if (ptr == NULL)
         return 2;
-    char *newPtr = realloc(ptr->title, (strlen(newTitle) + 1)*sizeof(char *));
+    char *newPtr = realloc(ptr->title, (strlen(newTitle) + 1) * sizeof(char *));
     if (newPtr == NULL)
         return 1;
     ptr->title = newPtr;
@@ -376,7 +376,6 @@ Col_type *get_var(CDataframe *cdf, char *col_title, indexation line) {
     return NULL;
 }
 
-
 int del_column(CDataframe *cdf, char *col_title) {
     lnode *node = cdf->data->head;
     while (node != NULL) {
@@ -391,18 +390,20 @@ int del_column(CDataframe *cdf, char *col_title) {
     }
     if (node == NULL)
         return 2;
+    printf("Del col %s\n", col_title);
     delete_column(&node->data);
     free(node);
     cdf->size--;
     return 0;
 }
 
-
 int del_line(CDataframe *cdf, indexation line) {
     if (line >= cdf->colsize || line < 0)
         return 2;
     lnode *node = cdf->data->head;
     while (node != NULL) {
+        if (node->data->column_type == STRING)
+            free(node->data->data[line]->string_value);
         free(node->data->data[line]);
         node->data->size--;
         for (indexation i = line; i < node->data->size; i++) {
@@ -414,7 +415,6 @@ int del_line(CDataframe *cdf, indexation line) {
     return 0;
 }
 
-
 void delete_cdataframe(CDataframe **cdf) {
     lnode *node = (*cdf)->data->head;
     while (node != NULL) {
@@ -423,7 +423,6 @@ void delete_cdataframe(CDataframe **cdf) {
     }
     *cdf = NULL;
 }
-
 
 int get_occurrences(CDataframe *cdf, void *var) {
     lnode *node = cdf->data->head;
@@ -437,7 +436,6 @@ int get_occurrences(CDataframe *cdf, void *var) {
     }
     return res;
 }
-
 
 int get_superior_occurrences(CDataframe *cdf, void *var) {
     lnode *node = cdf->data->head;
@@ -460,37 +458,39 @@ int get_inferior_occurrences(CDataframe *cdf, void *var) {
 }
 
 void write(CDataframe **cdf) {
-    indexation lcolsize, lcdfsize;
-    printf("Saisir le nombre de colonnes : ");
-    scanf(INDEXATION_FORMAT, &lcdfsize);
-    printf("Saisir le nombre de lignes : ");
-    scanf(INDEXATION_FORMAT, &lcolsize);
+    char userinput[USER_INPUT_SIZE];
 
-    Enum_type *coltypes = malloc(lcdfsize*sizeof(Enum_type));
+    indexation lcolsize, lcdfsize;
+    printf("Saisir le nombre de colonnes :");
+    fgets(userinput, USER_INPUT_SIZE, stdin);
+    sscanf(userinput, INDEXATION_FORMAT, &lcdfsize);
+    printf("Saisir le nombre de lignes :");
+    fgets(userinput, USER_INPUT_SIZE, stdin);
+    sscanf(userinput, INDEXATION_FORMAT, &lcolsize);
+
+    Enum_type *coltypes = malloc(lcdfsize * sizeof(Enum_type));
     printf("Types disponibles :\n"
-               "1 - NULL\n"
-               "2 - unsigned int\n"
-               "3 - sigend int\n"
-               "4 - char\n"
-               "5 - float\n"
-               "6 - double\n"
-               "7 - string\n"
-               "8 - pointeur\n");
+           "1 - NULL\n"
+           "2 - unsigned int\n"
+           "3 - sigend int\n"
+           "4 - char\n"
+           "5 - float\n"
+           "6 - double\n"
+           "7 - string\n"
+           "8 - pointeur\n");
     for (indexation i = 0; i < lcdfsize; i++) {
-        printf("Quelle type doit être la colonne %lld :\n", i);
-        scanf("%d", &coltypes[i]);
+        printf("Quelle type doit être la colonne %lld :", i);
+        fgets(userinput, USER_INPUT_SIZE, stdin);
+        sscanf(userinput, "%d", &coltypes[i]);
     }
 
-    char **colnames = malloc(lcdfsize*sizeof(char *));
+    char **colnames = malloc(lcdfsize * sizeof(char *));
     for (indexation i = 0; i < lcdfsize; i++) {
-        colnames[i] = malloc(USER_INPUT_SIZE*sizeof(char));
-        fflush_stdin();
-        printf("Quelle nom doit porter la colonne %lld : ", i);
+        colnames[i] = malloc(USER_INPUT_SIZE * sizeof(char));
+        printf("Quelle nom doit porter la colonne %lld :", i);
         fgets(colnames[i], USER_INPUT_SIZE, stdin);
-        // Delete fgets last return carriage
-        int delzero = 0;
-        while (colnames[i][delzero] != '\n' && delzero < USER_INPUT_SIZE) delzero++;
-        colnames[i][delzero] = '\0';
+        sscanf(colnames[i], "%s", colnames[i]);
+        //printf("Nom : '%s'\n", colnames[i]);
     }
     *cdf = create_cdataframe(coltypes, colnames, lcdfsize);
     for (indexation i = 0; i < lcdfsize; i++)
@@ -498,30 +498,54 @@ void write(CDataframe **cdf) {
     free(colnames);
     free(coltypes);
 
-    Col_type *values  = malloc(lcdfsize * sizeof(Col_type));
-    char userinput[USER_INPUT_SIZE];
+    Col_type *values = malloc(lcdfsize * sizeof(Col_type));
     lnode *node;
     indexation j;
-    for (indexation i = 0; i < lcolsize; i++){
+
+    node = (*cdf)->data->head;
+    j = 0;
+    while (node != NULL) {
+        if (node->data->column_type == STRING)
+            values[j].string_value = malloc(USER_INPUT_SIZE * sizeof(char));
+        node = node->next;
+        j++;
+    }
+
+    for (indexation i = 0; i < lcolsize; i++) {
         node = (*cdf)->data->head;
         j = 0;
         while (node != NULL) {
             printf("Saisir la case x,y = %d,%d : ", i, j);
             fgets(userinput, USER_INPUT_SIZE, stdin);
+            //printf("\n");
 
             // Delete fgets last return carriage
-            int delzero = 0;
-            while (userinput[delzero] != '\n' && delzero < USER_INPUT_SIZE) delzero++;
-            userinput[delzero] = '\0';
+            //int delzero = 0;
+            //while (userinput[delzero] != '\n' && userinput[delzero] != EOF && delzero < USER_INPUT_SIZE) delzero++;
+            //userinput[delzero] = '\0';
 
+            //printf("echo '%s'\n", userinput);
             format_value(&values[j], userinput, node->data->column_type);
+            //printf("Formated!\n");
 
             node = node->next;
             j++;
         }
-        printf("Adding line %d !\n",i);
+        printf("Adding line %d !\n", i);
         add_newline(*cdf, values, lcdfsize);
+        print_lines(*cdf, NULL, 0, i + 1);
     }
+
+    node = (*cdf)->data->head;
+    j = 0;
+    while (node != NULL) {
+        if (node->data->column_type == STRING)
+            free(values[j].string_value);
+        node = node->next;
+        j++;
+    }
+
     free(values);
+
     printf("CDataframe completed !\n");
 }

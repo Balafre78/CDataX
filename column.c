@@ -69,14 +69,15 @@ int append_value(Column *col, void *value) {
             break;
         case CHAR:
             col->data[col->size] = malloc(sizeof(char));
-        //char *c = (char *) value;
+            //char *c = (char *) value;
             col->data[col->size]->char_value = *((char *) value);
             break;
         case STRING:
             col->data[col->size] = malloc(sizeof(char *));
-        // DONT CHANGE (char **) !!
+            // DONT CHANGE (char **) !!
             char **str = (char **) value;
-            col->data[col->size]->string_value = *str;
+            col->data[col->size]->string_value = malloc((strlen(*str) + 1) * sizeof(char));
+            strcpy(col->data[col->size]->string_value, *str);
             break;
         default:
             return 0;
@@ -105,9 +106,14 @@ int check_index(Column *col) {
 }
 
 void delete_column(Column **col) {
-    for (indexation i = 0; i < (*col)->size; i++) {
-        free((*col)->data[i]);
-    }
+    if ((*col)->column_type == STRING)
+        for (indexation i = 0; i < (*col)->size; i++)
+            free((*col)->data[i]->string_value);
+
+    for (indexation i = 0; i < (*col)->size; i++)
+            free((*col)->data[i]);
+
+
     free((*col)->data);
     free((*col)->index);
     free((*col)->title);
@@ -240,25 +246,30 @@ int compare_Col_type(Col_type *A, Col_type *B, Enum_type type) {
 }
 
 void format_value(Col_type *ptr, char *str, Enum_type type) {
-    char *next = malloc((strlen(str) + 1) * sizeof(char));
     switch (type) {
         case UINT:
-            ptr->uint_value = strtoul(str, &next, 10);
+            //ptr->uint_value = (unsigned) strtoul(str, NULL, 10);
+            sscanf(str, "%ud", &ptr->uint_value);
             break;
         case INT:
-            ptr->int_value = atoi(str);
+            //ptr->int_value = atoi(str);
+            sscanf(str, "%d", &ptr->int_value);
             break;
         case CHAR:
-            ptr->char_value = *str;
+            //ptr->char_value = *str;
+            sscanf(str, "%c", &ptr->char_value);
             break;
         case FLOAT:
-            ptr->float_value = atof(str);
+            //ptr->float_value = atof(str);
+            sscanf(str, "%f", &ptr->float_value);
             break;
         case DOUBLE:
-            ptr->double_value = strtod(str, &next);
+            //ptr->double_value = strtod(str, NULL);
+            sscanf(str, "%lf", &ptr->double_value);
             break;
         case STRING:
-            ptr->string_value = str;
+            sscanf(str, "%s", ptr->string_value);
+            //strcpy(ptr->string_value, str);
             break;
         case NULLVAL:
             ptr->struct_value = NULL;
@@ -268,7 +279,6 @@ void format_value(Col_type *ptr, char *str, Enum_type type) {
             ptr->struct_value = NULL;
             break;
     }
-    free(next);
 }
 
 void insertion_sort(Column *column) {
