@@ -28,7 +28,7 @@ CDataframe *create_empty_cdataframe();
  * @param size size of the above list
  * @return Pointer to the newly created Cdataframe or the NULL pointer if it cannot allocate memory
  */
-CDataframe *create_cdataframe(Enum_type *cdfTypes, char** colNames, indexation size);
+CDataframe *create_cdataframe(Enum_type *cdfTypes, char **colNames, indexation size);
 
 /**
 * @brief: Column deletion
@@ -228,5 +228,22 @@ void sorting_column(CDataframe *cdf, char *col_title, int sort_dir);
  * @warning fail if sort_dir is incorrect !
  */
 void sort_all_columns(CDataframe *cdf, int sort_dir);
+
+
+/**
+* @brief: Export into a csvfile
+* @param1: Pointer to the CDataframe
+* @param2: csv filename where export file, if the file exists,
+* it will be overwritten
+*/
+void save_into_csv(CDataframe *cdf, char *file_name);
+
+/**
+* @brief: Create a CDataframe from csvfile
+* @param1: CSV filename
+* @param2: Array of types
+* @param3: Size of array in param2
+*/
+CDataframe *load_from_csv(char *file_name, Enum_type *dftype, int size);
 
 #endif //CDATAX_CDATAFRAME_H

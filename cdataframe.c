@@ -549,3 +549,49 @@ void write(CDataframe **cdf) {
 
     printf("CDataframe completed !\n");
 }
+
+void save_into_csv(CDataframe *cdf, char *file_name) {
+    FILE *fptr;
+    fptr = fopen(file_name, "w+");
+
+    lnode *node = NULL;
+
+    node = cdf->data->head;
+    while (node != NULL) {
+        fprintf(fptr, "%s", node->data->title);
+
+        node = get_next_node(cdf->data, node);
+        if (node != NULL)
+            fprintf(fptr, "%c", ',');
+    }
+    fprintf(fptr, "%c", '\n');
+
+
+    int buffer_size = STD_BUFF_SIZE;
+    char *buffer = malloc(buffer_size * sizeof(char)), *newPtr;
+    if (buffer == NULL)
+        return;
+
+
+    for (indexation line = 0; line < cdf->colsize; line++) {
+        node = cdf->data->head;
+        while (node != NULL) {
+            while (convert_value(node->data, line, buffer, buffer_size) == 1) {
+                newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
+                if (newPtr == NULL) {
+                    free(buffer);
+                    free(newPtr);
+                    return;
+                }
+                buffer_size += STD_BUFF_SIZE;
+            }
+            fprintf(fptr, "%s", buffer);
+
+            node = get_next_node(cdf->data, node);
+            if (node != NULL)
+                fprintf(fptr, "%c", ',');
+        }
+        fprintf(fptr, "%c", '\n');
+    }
+    free(buffer);
+}
