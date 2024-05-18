@@ -83,11 +83,11 @@ lnode *get_last_node(list *lst);
 /**
 * retourne le node suivant
 */
-lnode *get_next_node(list *lst, lnode *lnode);
+lnode *get_next_node(lnode *lnode);
 
 /**
 * retourne le node precedent
 */
-void *get_previous_elem(list *lst, lnode *lnode);
+lnode *get_previous_node(lnode *lnode);
 
 #endif //CDATAX_LLC_H

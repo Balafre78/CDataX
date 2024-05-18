@@ -68,7 +68,7 @@ int add_newline(CDataframe *cdf, Col_type *values, indexation size) {
     while (node != NULL) {
         if (!append_value(node->data, &values[i]))
             return 1;
-        node = get_next_node(cdf->data, node);
+        node = get_next_node(node);
         i++;
     }
     cdf->colsize++;
@@ -83,12 +83,12 @@ int print_columns_names_partial(CDataframe *cdf, indexation from, indexation to)
 
     indexation i;
     for (i = 0; i < from; i++) {
-        node = get_next_node(cdf->data, node);
+        node = get_next_node(node);
     }
 
     while (i < to) {
         printf("\t%s", node->data->title);
-        node = get_next_node(cdf->data, node);
+        node = get_next_node(node);
         i++;
     }
     printf("\n");
@@ -127,7 +127,7 @@ int print_lines_by_objects(CDataframe *cdf, indexation from, indexation to) {
                 buffer_size += STD_BUFF_SIZE;
             }
             printf("\t%s", buffer);
-            node = get_next_node(cdf->data, node);
+            node = get_next_node(node);
         }
         printf("\n");
     }
@@ -152,12 +152,12 @@ int print_columns_by_objects(CDataframe *cdf, indexation from, indexation to) {
 
     indexation i;
     for (i = 0; i < from; i++) {
-        node = get_next_node(cdf->data, node);
+        node = get_next_node(node);
     }
 
     lnode *fromnode = node;
     while (i < to) {
-        node = get_next_node(cdf->data, node);
+        node = get_next_node(node);
         i++;
     }
     lnode *tonode = node;
@@ -177,7 +177,7 @@ int print_columns_by_objects(CDataframe *cdf, indexation from, indexation to) {
                 buffer_size += STD_BUFF_SIZE;
             }
             printf("\t%s", buffer);
-            node = get_next_node(cdf->data, node);
+            node = get_next_node(node);
         }
 
         node = fromnode;
@@ -222,7 +222,7 @@ int print_lines(CDataframe *cdf, char *ref_col, indexation from, indexation to) 
                 buffer_size += STD_BUFF_SIZE;
             }
             printf("\t%s", buffer);
-            node = get_next_node(cdf->data, node);
+            node = get_next_node(node);
         }
         printf("\n");
     }
@@ -256,12 +256,12 @@ int print_columns(CDataframe *cdf, char *ref_col, indexation from, indexation to
 
     indexation i;
     for (i = 0; i < from; i++) {
-        node = get_next_node(cdf->data, node);
+        node = get_next_node(node);
     }
 
     lnode *fromnode = node;
     while (i < to) {
-        node = get_next_node(cdf->data, node);
+        node = get_next_node(node);
         i++;
     }
     lnode *tonode = node;
@@ -281,7 +281,7 @@ int print_columns(CDataframe *cdf, char *ref_col, indexation from, indexation to
                 buffer_size += STD_BUFF_SIZE;
             }
             printf("\t%s", buffer);
-            node = get_next_node(cdf->data, node);
+            node = get_next_node(node);
         }
 
         node = fromnode;
@@ -300,7 +300,7 @@ Column *query_column_by_name(CDataframe *cdf, char *title) {
     while (node != NULL) {
         if (strcmp(node->data->title, title) == 0)
             return node->data;
-        node = node->next;
+        node = get_next_node(node);
     }
     return NULL;
 }
@@ -343,7 +343,7 @@ void sort_all_columns(CDataframe *cdf, int sort_dir) {
     lnode *node = get_first_node(cdf->data);
     while (node != NULL) {
         sort(node->data, sort_dir);
-        node = get_next_node(cdf->data, node);
+        node = get_next_node(node);
     }
 }
 
@@ -360,7 +360,7 @@ Col_type *find_in(CDataframe *cdf, void *var) {
             if (ptr != NULL)
                 return ptr;
         }
-        node = get_next_node(cdf->data, node);
+        node = get_next_node(node);
     }
     return NULL;
 }
@@ -390,7 +390,7 @@ int del_column(CDataframe *cdf, char *col_title) {
                 cdf->data->tail = node->prev;
             break;
         }
-        node = node->next;
+        node = get_next_node(node);
     }
     if (node == NULL)
         return 2;
@@ -412,7 +412,7 @@ int del_line(CDataframe *cdf, indexation line) {
         for (indexation i = line; i < node->data->size; i++) {
             node->data->data[i] = node->data->data[i + 1];
         }
-        node = node->next;
+        node = get_next_node(node);
     }
     cdf->colsize--;
     return 0;
@@ -424,6 +424,7 @@ void delete_cdataframe(CDataframe **cdf) {
         del_column(*cdf, node->data->title);
         node = (*cdf)->data->head;
     }
+    free(*cdf);
     *cdf = NULL;
 }
 
@@ -435,7 +436,7 @@ int get_occurrences(CDataframe *cdf, void *var) {
             res += get_occurrences_equal_by_index(node->data, var);
         else
             res += get_occurrences_equal_raw(node->data, var);
-        node = node->next;
+        node = get_next_node(node);
     }
     return res;
 }
@@ -445,7 +446,7 @@ int get_superior_occurrences(CDataframe *cdf, void *var) {
     int res = 0;
     while (node != NULL) {
         res += get_occurrences_superior_raw(node->data, var);
-        node = node->next;
+        node = get_next_node(node);
     }
     return res;
 }
@@ -455,7 +456,7 @@ int get_inferior_occurrences(CDataframe *cdf, void *var) {
     int res = 0;
     while (node != NULL) {
         res += get_occurrences_inferior_raw(node->data, var);
-        node = node->next;
+        node = get_next_node(node);
     }
     return res;
 }
@@ -475,12 +476,12 @@ void write(CDataframe **cdf) {
     printf("Types disponibles :\n"
            "1 - NULL\n"
            "2 - unsigned int\n"
-           "3 - sigend int\n"
+           "3 - signed int\n"
            "4 - char\n"
            "5 - float\n"
            "6 - double\n"
            "7 - string\n"
-           "8 - pointeur\n");
+           "8 - pointer\n");
     for (indexation i = 0; i < lcdfsize; i++) {
         printf("Quelle type doit être la colonne %lld :", i);
         fgets(userinput, USER_INPUT_SIZE, stdin);
@@ -490,7 +491,7 @@ void write(CDataframe **cdf) {
     char **colnames = malloc(lcdfsize * sizeof(char *));
     for (indexation i = 0; i < lcdfsize; i++) {
         colnames[i] = malloc(USER_INPUT_SIZE * sizeof(char));
-        printf("Quelle nom doit porter la colonne %lld :", i);
+        printf("Quel nom doit porter la colonne %lld :", i);
         fgets(colnames[i], USER_INPUT_SIZE, stdin);
         sscanf(colnames[i], "%s", colnames[i]);
         //printf("Nom : '%s'\n", colnames[i]);
@@ -531,12 +532,12 @@ void write(CDataframe **cdf) {
             format_value(&values[j], userinput, node->data->column_type);
             //printf("Formated!\n");
 
-            node = node->next;
+            node = get_next_node(node);
             j++;
         }
         printf("Adding line %d !\n", i);
         add_newline(*cdf, values, lcdfsize);
-        print_lines(*cdf, NULL, 0, i + 1);
+        print_lines(*cdf, NULL, i, i + 1);
     }
 
     node = (*cdf)->data->head;
@@ -563,7 +564,7 @@ void save_into_csv(CDataframe *cdf, char *file_name) {
     while (node != NULL) {
         fprintf(fptr, "%s", node->data->title);
 
-        node = get_next_node(cdf->data, node);
+        node = get_next_node(node);
         if (node != NULL)
             fprintf(fptr, "%c", ',');
     }
@@ -590,7 +591,7 @@ void save_into_csv(CDataframe *cdf, char *file_name) {
             }
             fprintf(fptr, "%s", buffer);
 
-            node = get_next_node(cdf->data, node);
+            node = get_next_node(node);
             if (node != NULL)
                 fprintf(fptr, "%c", ',');
         }
@@ -698,7 +699,7 @@ CDataframe *load_from_csv(char *file_name, Enum_type *dftype, int size) {
                 format_value(&values[j], csvinput, node->data->column_type);
 
                 inputsize = 0;
-                node = node->next;
+                node = get_next_node(node);
                 j++;
             } else {
                 csvinput[inputsize] = (char) cc;
@@ -738,7 +739,7 @@ CDataframe *load_from_csv(char *file_name, Enum_type *dftype, int size) {
     while (node != NULL) {
         if (node->data->column_type == STRING)
             free(values[j].string_value);
-        node = node->next;
+        node = get_next_node(node);
         j++;
     }
 

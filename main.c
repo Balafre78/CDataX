@@ -31,8 +31,7 @@ int main() {
     //convert_value(mycol, 3, buff, 1);
     //printf("%s \n", buff);
     print_col_raw(mycol);
-    Col_type seuil;
-    seuil.int_value = 20;
+    int seuil = 20;
     printf("Less than 20 : %d\n", get_occurrences_superior_raw(mycol, &seuil));
     delete_column(&mycol);*/
 
@@ -89,10 +88,10 @@ int main() {
     printf("add with %d\n", add_newline(cdf, prefabValuePtr[0], 3));
 
     lnode *node = cdf->data->head;
-    for (int i = 0; i < 3; i++) {
+    for (indexation i = 0; i < 3; i++) {
         convert_value(node->data, 0, buff, 10);
         printf("%s\t@ %s\n", buff, node->data->title);
-        node = get_next_node(cdf->data, node);
+        node = get_next_node(node);
     }
 
     printf("printed with %d!\n", print_lines(cdf, NULL, 0, 1));
@@ -140,20 +139,20 @@ int main() {
     add_newline(cdf, prefabValuePtr[1], 3);
     print_all(cdf, NULL);*/
 
-    //CDataframe *fromwrite;
-    //write(&fromwrite);
-    //print_all(fromwrite, NULL);
-    //save_into_csv(fromwrite, "save.csv");
+    /*CDataframe *fromwrite;
+    write(&fromwrite);
+    print_all(fromwrite, NULL);
+    save_into_csv(fromwrite, "save.csv");*/
 
-    Enum_type cdftype [] = {INT,STRING,FLOAT};
+    /*Enum_type cdftype [] = {INT,STRING,FLOAT};
     CDataframe *fromcsv = load_from_csv("example.csv", cdftype, 3);
     // exemple de fonction qui permet un affichage partiel du CDataframe
-    if (fromcsv != NULL)
-        print_lines(fromcsv,NULL, 2,9);
+    //if (fromcsv != NULL)
+    //    print_lines(fromcsv,NULL, 2,9);
     sorting_column(fromcsv, "Age", ASC);
     print_all(fromcsv, "Age");
 
-    delete_cdataframe(&fromcsv);
+    delete_cdataframe(&fromcsv);*/
 
 
 
