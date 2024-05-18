@@ -89,6 +89,7 @@ void erase_index(Column *col);
 /**
 * @brief: Check if an index is correct
 * @param1: Pointer to the column
+* @param2: The sort direction either ASC or DESC
 * @return:  0: index not existing,
 * @return: -1: the index exists but invalid,
 * @return: +1: the index is correct

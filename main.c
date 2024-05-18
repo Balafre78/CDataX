@@ -148,10 +148,12 @@ int main() {
     Enum_type cdftype [] = {INT,STRING,FLOAT};
     CDataframe *fromcsv = load_from_csv("example.csv", cdftype, 3);
     // exemple de fonction qui permet un affichage partiel du CDataframe
-    if (fromcsv != NULL)
-        print_lines(fromcsv,NULL, 2,9);
+    //if (fromcsv != NULL)
+    //    print_lines(fromcsv,NULL, 2,9);
+    sorting_column(fromcsv, "Age", DESC);
+    printf("\nerrno %d\n", print_all(fromcsv, "Age"));
     sorting_column(fromcsv, "Age", ASC);
-    print_all(fromcsv, "Age");
+    printf("\nerrno %d\n", print_all(fromcsv, "Age"));
 
     delete_cdataframe(&fromcsv);
 

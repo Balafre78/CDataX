@@ -89,7 +89,7 @@ int append_value(Column *col, void *value) {
 void erase_index(Column *col) {
     free(col->index);
     col->index = NULL;
-    col->valid_index = 0;
+    col->valid_index = INVALID;
 }
 
 int check_index(Column *col) {
@@ -97,12 +97,16 @@ int check_index(Column *col) {
         return INVALID;
 
     for (indexation i = 1; i < col->size; i++) {
-        if (compare_Col_type(col->data[col->index[i]], col->data[col->index[i - 1]], col->column_type) < 0) {
+        if (col->sort_dir == ASC &&
+            compare_Col_type(col->data[col->index[i]], col->data[col->index[i - 1]], col->column_type) < 0) {
+            return ALMOST_SORT;
+        } else if (col->sort_dir == DESC &&
+                   compare_Col_type(col->data[col->index[i]], col->data[col->index[i - 1]], col->column_type) > 0) {
             return ALMOST_SORT;
         }
-    }
 
-    return SORTED;
+        return SORTED;
+    }
 }
 
 void delete_column(Column **col) {
@@ -111,7 +115,7 @@ void delete_column(Column **col) {
             free((*col)->data[i]->string_value);
 
     for (indexation i = 0; i < (*col)->size; i++)
-            free((*col)->data[i]);
+        free((*col)->data[i]);
 
 
     free((*col)->data);
@@ -150,10 +154,7 @@ int convert_value(Column *col, indexation i, char *str, indexation size) {
                 rc = snprintf(str, size, "%s", col->data[i]->string_value);
                 break;
             case NULLVAL:
-                rc = snprintf(str, size, "%p", col->data[i]->struct_value);
-                break;
             case STRUCTURE:
-                //TODO: better printing function specific structs types
                 rc = snprintf(str, size, "%p", col->data[i]->struct_value);
                 break;
         }
@@ -238,9 +239,7 @@ int compare_Col_type(Col_type *A, Col_type *B, Enum_type type) {
         case STRING:
             return strcmp(A->string_value, B->string_value);
         case NULLVAL:
-            return 0;
         case STRUCTURE:
-            //TODO: better printing function specific structs types
             return 0;
     }
 }
@@ -272,10 +271,7 @@ void format_value(Col_type *ptr, char *str, Enum_type type) {
             //strcpy(ptr->string_value, str);
             break;
         case NULLVAL:
-            ptr->struct_value = NULL;
-            break;
         case STRUCTURE:
-            //TODO: better printing function specific structs types
             ptr->struct_value = NULL;
             break;
     }
@@ -286,7 +282,8 @@ void insertion_sort(Column *column) {
     for (i = 1; i < column->size; i++) {
         k = column->index[i];
         j = i - 1;
-        while (j >= 0 && compare_Col_type(column->data[column->index[j]], column->data[k], column->column_type) > 0) {
+        while (j >= 0 &&
+               compare_Col_type(column->data[column->index[j]], column->data[k], column->column_type) > 0) {
             column->index[j + 1] = column->index[j];
             j--;
         }
@@ -300,7 +297,8 @@ void insertion_sort_reverse(Column *column) {
     for (i = 1; i < column->size; i++) {
         k = column->index[i];
         j = i - 1;
-        while (j >= 0 && compare_Col_type(column->data[column->index[j]], column->data[k], column->column_type) < 0) {
+        while (j >= 0 &&
+               compare_Col_type(column->data[column->index[j]], column->data[k], column->column_type) < 0) {
             column->index[j + 1] = column->index[j];
             j--;
         }
@@ -319,7 +317,7 @@ indexation partition(Column *column, indexation left, indexation right) {
     indexation i = left - 1;
     for (indexation j = left; j < right; j++) {
         if (compare_Col_type(column->data[column->index[j]], column->data[column->index[pivot]],
-                             column->column_type) <= 0) {
+                             column->column_type) < 0) {
             i++;
             swap_idx(column, i, j);
         }
@@ -337,12 +335,11 @@ void quicksort(Column *column, indexation left, indexation right) {
 }
 
 indexation partition_reverse(Column *column, indexation left, indexation right) {
-    //TODO: Inverser la partition _reverse
     indexation pivot = right;
     indexation i = left - 1;
     for (indexation j = left; j < right; j++) {
         if (compare_Col_type(column->data[column->index[j]], column->data[column->index[pivot]],
-                             column->column_type) >= 0) {
+                             column->column_type) > 0) {
             i++;
             swap_idx(column, i, j);
         }
@@ -353,7 +350,7 @@ indexation partition_reverse(Column *column, indexation left, indexation right) 
 
 void quicksort_reverse(Column *column, indexation left, indexation right) {
     if (left < right) {
-        indexation pi = partition(column, left, right);
+        indexation pi = partition_reverse(column, left, right);
         quicksort_reverse(column, left, pi - 1);
         quicksort_reverse(column, pi + 1, right);
     }
@@ -374,6 +371,8 @@ void sort(Column *col, int sort_dir) {
     } else if (col->valid_index == SORTED && sort_dir == DESC) {
         insertion_sort_reverse(col);
     }
+    col->sort_dir = sort_dir;
+    col->valid_index = SORTED;
 }
 
 int print_col_by_index(Column *col) {

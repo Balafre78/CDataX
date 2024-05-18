@@ -550,7 +550,7 @@ void write(CDataframe **cdf) {
 
     free(values);
 
-    printf("CDataframe completed !\n");
+    printf("CDataframe from user input completed !\n");
 }
 
 void save_into_csv(CDataframe *cdf, char *file_name) {
@@ -725,9 +725,9 @@ CDataframe *load_from_csv(char *file_name, Enum_type *dftype, int size) {
             format_value(&values[j], csvinput, node->data->column_type);
         }
 
-        printf("Adding line %lld !\n", i);
+        //printf("Adding line %lld !\n", i);
         add_newline(cdf, values, lcdfsize);
-        print_lines(cdf, NULL, 0, i + 1);
+        //print_lines(cdf, NULL, 0, i + 1);
 
         cc = fgetc(fptr);
         i++;
@@ -746,6 +746,6 @@ CDataframe *load_from_csv(char *file_name, Enum_type *dftype, int size) {
     fclose(fptr);
     fptr = NULL;
 
-    printf("CDataframe completed !\n");
+    printf("CDataframe from csv completed !\n");
     return cdf;
 }
