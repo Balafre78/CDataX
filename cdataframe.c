@@ -7,265 +7,745 @@
  */
 void fflush_stdin();
 
-
-/**
- * @brief Print a section of a CDataframe
- */
-void print_section(CDataframe *cdf, int col_from, int col_to, int line_from, int line_to);
-
-void print_columns_names_section(CDataframe *cdf, int col_from, int col_to);
-
 void fflush_stdin() {
     int c;
-    while ((c = getchar()) != '\n' && c != EOF);
+    while ((c = getchar()) != '\n' && c != EOF) putchar(c);
 }
 
-int ensure_allocation_size(Column *col) {
-    if (col->size + 1 > col->physical_size) {
-        int *newPtr;
+/* API functions */
 
-        if (col->data == NULL) {
-            // Allocation
-            newPtr = calloc(REALOC_SIZE, sizeof(int));
-        } else {
-            // Reallocation
-            newPtr = realloc(col->data, (col->physical_size + REALOC_SIZE));
-            if (newPtr != NULL) col->physical_size += REALOC_SIZE;
+CDataframe *create_empty_cdataframe() {
+    CDataframe *ptr = (CDataframe *) malloc(sizeof(CDataframe));
+    if (ptr != NULL) {
+        ptr->size = 0;
+        ptr->colsize = 0;
+        ptr->data = lst_create_list();
+    }
+    return ptr;
+}
+
+CDataframe *create_cdataframe(Enum_type *cdfTypes, char **colNames, indexation size) {
+    CDataframe *ptr = create_empty_cdataframe();
+    if (ptr != NULL) {
+        for (indexation i = 0; i < size; i++) {
+            if (add_newcolumn(ptr, cdfTypes[i], NULL, 0, colNames[i]))
+                return NULL;
         }
-
-        if (newPtr == NULL) return 0;
-        col->data = newPtr;
     }
-    return 1;
+    return ptr;
 }
 
-void print_section(CDataframe *cdf, int col_from, int col_to, int line_from, int line_to) {
-    Column **columns = cdf->columns;
-    for (int i = line_from; i < line_to; i++) {
-        for (int j = col_from; j < col_to; j++) {
-            printf("%d\t", get_value(columns[j], i));
-        }
-        printf("\n");
-    }
-}
-
-void print_columns_names_section(CDataframe *cdf, int col_from, int col_to) {
-    //Column **columns = cdf->columns;
-    // printf("%d & %d\n", col_from, col_to);
-    // printf("title : %p\n", (cdf->columns[0]));
-    // printf("title : %p\n", (cdf->columns[1]));
-    for (int j = col_from; j < col_to; j++) {
-        printf("%s\t", cdf->columns[j]->title);
-    }
-    printf("\n");
-}
-
-CDataframe *create_cdataframe() {
-    CDataframe *pointer = malloc(sizeof(CDataframe));
-    if (pointer != NULL) {
-        pointer->columns = NULL;
-        pointer->size = 0;
-        pointer->colsize = 0;
-    }
-    return pointer;
-}
-
-void print_all(CDataframe *cdf) {
-    if (cdf == NULL) {
-        printf("The CDataFrame is empty.");
-        return;
-    }
-    print_lines(cdf, 0, get_lines_amount(cdf));
-}
-
-int print_lines(CDataframe *cdf, int from, int to) {
-    if (from < 0 || to < from || to > get_lines_amount(cdf)) {
+int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, indexation size, char *title) {
+    if (cdf->colsize != size)
         return 2;
+
+    Column *col = create_column(type, title);
+    if (col == NULL)
+        return 1;
+
+    lnode *node = lst_create_lnode(col);
+    if (node == NULL)
+        return 1;
+
+    lst_insert_tail(cdf->data, node);
+
+    for (indexation i = 0; i < size; i++) {
+        append_value(cdf->data->tail->data, &values[i]);
     }
-    print_columns_names(cdf);
-    print_section(cdf, 0, cdf->size, from, to);
+
+    cdf->size++;
     return 0;
 }
 
-int print_columns(CDataframe *cdf, int from, int to) {
-    if (from < 0 || to < from || to > cdf->size) {
-        return 2;
-    }
-    print_columns_names_section(cdf, from, to);
-    print_section(cdf, from, to, 0, get_lines_amount(cdf));
-    return 0;
-}
-
-void print_columns_names(CDataframe *cdf) {
-    print_columns_names_section(cdf, 0, cdf->size);
-}
-
-int get_lines_amount(CDataframe *cdf) {
-    if (cdf->size == 0) return 0;
-    return cdf->columns[0]->size;
-}
-
-int get_columns_amount(CDataframe *cdf) {
-    return cdf->size;
-}
-
-int get_occurrences(CDataframe *cdf, int var) {
-    int occ = 0;
-    for (int c = 0; c < cdf->size; c++) {
-        for (int i = 0; i < cdf->columns[c]->size; i++) {
-            if (get_value(cdf->columns[c], i) == var) {
-                occ++;
-            }
-        }
-    }
-    return occ;
-}
-
-int get_superior_occurrences(CDataframe *cdf, int var) {
-    int occ = 0;
-    for (int c = 0; c < cdf->size; c++) {
-        for (int i = 0; i < cdf->columns[c]->size; i++) {
-            if (get_value(cdf->columns[c], i) > var) {
-                occ++;
-            }
-        }
-    }
-    return occ;
-}
-
-int get_inferior_occurrences(CDataframe *cdf, int var) {
-    int occ = 0;
-    for (int c = 0; c < cdf->size; c++) {
-        for (int i = 0; i < cdf->columns[c]->size; i++) {
-            if (get_value(cdf->columns[c], i) < var) {
-                occ++;
-            }
-        }
-    }
-    return occ;
-}
-
-int rename_column(CDataframe *cdf, int column, char *newTitle) {
-    if (column < 0 || column >= cdf->size) {
-        //fprintf(stderr, "%s", "Column(s) out of range\n");
-        return 2;
-    }
-    cdf->columns[column]->title = newTitle;
-}
-
-int add_newline(CDataframe *cdf, int *values, int size) {
-    if (cdf->size == 0) {
-        //fprintf(stderr, "%s", "Empty CDataFrame\n");
+int add_newline(CDataframe *cdf, Col_type *values, indexation size) {
+    if (cdf->size == 0)
         return 3;
-    }
-    if (cdf->size != size) {
-        //fprintf(stderr, "%s", "Inconsistent values tab size\n");
+    if (cdf->size != size)
         return 2;
-    }
 
-    for (int i = 0; i < cdf->size; i++) {
-        if (!insert_value(cdf->columns[i], values[i]))
+    lnode *node = cdf->data->head;
+    indexation i = 0;
+    while (node != NULL) {
+        if (!append_value(node->data, &values[i]))
             return 1;
+        node = get_next_node(cdf->data, node);
+        i++;
     }
     cdf->colsize++;
     return 0;
 }
 
-int add_newcolumn(CDataframe *cdf, int *values, int size, char *title) {
-    //printf("START\n");
-    if (cdf->size == 0) {
-        cdf->columns = malloc(size * sizeof(Column));
-    } else {
-        if (cdf->colsize != size) {
-            //fprintf(stderr, "%s", "Inconsistent values tab size\n");
-            return 2;
-        }
-        Column **pointer = realloc(cdf->columns, cdf->size + 1);
-        if (pointer == NULL) {
-            //fprintf(stderr, "%s", "Cannot re-allocate the memory\n");
-            return 1;
-        }
-        cdf->columns = pointer;
+int print_columns_names_partial(CDataframe *cdf, indexation from, indexation to) {
+    if (from < 0 || from >= to || to > cdf->size)
+        return 2;
+
+    lnode *node = cdf->data->head;
+
+    indexation i;
+    for (i = 0; i < from; i++) {
+        node = get_next_node(cdf->data, node);
     }
-    //printf("MIDLLE\n");
-    cdf->columns[cdf->size] = create_column(title);
-    for (int i = 0; i < size; i++) {
-        if (!insert_value(cdf->columns[cdf->size], values[i]))
-            return 1;
+
+    while (i < to) {
+        printf("\t%s", node->data->title);
+        node = get_next_node(cdf->data, node);
+        i++;
     }
-    //printf("END\n");
-    if (cdf->size == 0)
-        cdf->colsize = cdf->columns[0]->size;
-    cdf->size++;
+    printf("\n");
+
     return 0;
 }
 
-int write(CDataframe *cdf) {
-    int nbCol, nbLig;
-    printf("Enter the amount of wanted columns : ");
-    scanf("%d", &nbCol);
-    printf("Enter the amount of lines wanted across the entire dataframe : ");
-    scanf("%d", &nbLig); // next is gets
-
-    for (int i = 0; i < nbCol; i++) {
-        char *title = calloc(sizeof(char), 1);
-        printf("Saisir le titre de la colonne : ");
-        fflush_stdin();
-        scanf("%[^\n]", title);
-        //fgets(title, 50, stdin);
-        //gets(title);
-        fflush_stdin();
-        int values[nbLig];
-        for (int j = 0; j < nbLig; j++) {
-            printf("[%d] <- ", j);
-            scanf("%d", values + j);
-        }
-        // for (int j = 0; j < nbLig; j++) printf("%d ", *(values + j));
-        printf("\n");
-        int rc = add_newcolumn(cdf, values, nbLig, title);
-        if (rc == 2) {
-            fprintf(stderr, "%s", "Internal Error");
-            exit(1);
-        } else if (rc == 1) {
-            return 1;
-        }
-        //printf("%p", cdf->columns[0]->data);
-    }
-    //printf("Wrote.\n");
+void print_columns_names(CDataframe *cdf) {
+    print_columns_names_partial(cdf, 0, cdf->size);
 }
 
-int del_line(CDataframe *cdf, int line) {
-    for (int i = 0; i < cdf->size; i++) {
-        if (delete_value_at_index(cdf->columns[i], line))
-            return 2;
+int print_lines_by_objects(CDataframe *cdf, indexation from, indexation to) {
+    //printf("from = %d to = %d colsize = %d \n", from, to, cdf->colsize);
+    if (from < 0 || from >= to || to > cdf->colsize)
+        return 2;
+
+    int buffer_size = STD_BUFF_SIZE;
+    char *buffer = malloc(buffer_size * sizeof(char)), *newPtr;
+    if (buffer == NULL) {
+        return 1;
+    }
+
+    print_columns_names(cdf);
+    lnode *node = NULL;
+    for (indexation line = from; line < to; line++) {
+        node = cdf->data->head;
+        printf("[%d]", line);
+        while (node != NULL) {
+            while (convert_value(node->data, line, buffer, buffer_size) == 1) {
+                newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
+                if (newPtr == NULL) {
+                    free(buffer);
+                    free(newPtr);
+                    return 1;
+                }
+                buffer_size += STD_BUFF_SIZE;
+            }
+            printf("\t%s", buffer);
+            node = get_next_node(cdf->data, node);
+        }
+        printf("\n");
+    }
+    free(buffer);
+
+    return 0;
+}
+
+int print_columns_by_objects(CDataframe *cdf, indexation from, indexation to) {
+    if (from < 0 || from >= to || to > cdf->size)
+        return 2;
+
+    int buffer_size = STD_BUFF_SIZE;
+    char *buffer = malloc(buffer_size * sizeof(char)), *newPtr;
+    if (buffer == NULL) {
+        return 1;
+    }
+
+    print_columns_names_partial(cdf, from, to);
+
+    lnode *node = cdf->data->head;
+
+    indexation i;
+    for (i = 0; i < from; i++) {
+        node = get_next_node(cdf->data, node);
+    }
+
+    lnode *fromnode = node;
+    while (i < to) {
+        node = get_next_node(cdf->data, node);
+        i++;
+    }
+    lnode *tonode = node;
+
+    node = fromnode;
+    for (indexation line = 0; line < node->data->size; line++) {
+        printf("[%d]", line);
+
+        while (node != tonode) {
+            while (convert_value(node->data, line, buffer, buffer_size) == 1) {
+                newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
+                if (newPtr == NULL) {
+                    free(buffer);
+                    free(newPtr);
+                    return 1;
+                }
+                buffer_size += STD_BUFF_SIZE;
+            }
+            printf("\t%s", buffer);
+            node = get_next_node(cdf->data, node);
+        }
+
+        node = fromnode;
+        printf("\n");
+    }
+    free(buffer);
+    return 0;
+}
+
+int print_lines(CDataframe *cdf, char *ref_col, indexation from, indexation to) {
+    if (ref_col == NULL)
+        return print_lines_by_objects(cdf, from, to);
+
+    if (from < 0 || from >= to || to > cdf->colsize)
+        return 2;
+
+    Column *col_sort = query_column_by_name(cdf, ref_col);
+    if (col_sort == NULL)
+        return 2;
+    if (check_index(col_sort) != SORTED)
+        return 3;
+
+    int buffer_size = STD_BUFF_SIZE;
+    char *buffer = malloc(buffer_size * sizeof(char)), *newPtr;
+    if (buffer == NULL) {
+        return 1;
+    }
+
+    print_columns_names(cdf);
+    lnode *node = NULL;
+    for (indexation line = from; line < to; line++) {
+        node = cdf->data->head;
+        printf("[%d]", line);
+        while (node != NULL) {
+            while (convert_value(node->data, col_sort->index[line], buffer, buffer_size) == 1) {
+                newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
+                if (newPtr == NULL) {
+                    free(buffer);
+                    free(newPtr);
+                    return 1;
+                }
+                buffer_size += STD_BUFF_SIZE;
+            }
+            printf("\t%s", buffer);
+            node = get_next_node(cdf->data, node);
+        }
+        printf("\n");
+    }
+    free(buffer);
+
+    return 0;
+}
+
+int print_columns(CDataframe *cdf, char *ref_col, indexation from, indexation to) {
+    if (ref_col == NULL)
+        return print_columns_by_objects(cdf, from, to);
+
+    if (from < 0 || from >= to || to > cdf->size)
+        return 2;
+
+    Column *col_sort = query_column_by_name(cdf, ref_col);
+    if (col_sort == NULL)
+        return 2;
+    if (check_index(col_sort) != SORTED)
+        return 3;
+
+    int buffer_size = STD_BUFF_SIZE;
+    char *buffer = malloc(buffer_size * sizeof(char)), *newPtr;
+    if (buffer == NULL) {
+        return 1;
+    }
+
+    print_columns_names_partial(cdf, from, to);
+
+    lnode *node = cdf->data->head;
+
+    indexation i;
+    for (i = 0; i < from; i++) {
+        node = get_next_node(cdf->data, node);
+    }
+
+    lnode *fromnode = node;
+    while (i < to) {
+        node = get_next_node(cdf->data, node);
+        i++;
+    }
+    lnode *tonode = node;
+
+    node = fromnode;
+    for (indexation line = 0; line < node->data->size; line++) {
+        printf("[%d]", line);
+
+        while (node != tonode) {
+            while (convert_value(node->data, col_sort->index[line], buffer, buffer_size) == 1) {
+                newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
+                if (newPtr == NULL) {
+                    free(buffer);
+                    free(newPtr);
+                    return 1;
+                }
+                buffer_size += STD_BUFF_SIZE;
+            }
+            printf("\t%s", buffer);
+            node = get_next_node(cdf->data, node);
+        }
+
+        node = fromnode;
+        printf("\n");
+    }
+    free(buffer);
+    return 0;
+}
+
+int print_all(CDataframe *cdf, char *ref_col) {
+    return print_lines(cdf, ref_col, 0, cdf->colsize);
+}
+
+Column *query_column_by_name(CDataframe *cdf, char *title) {
+    lnode *node = cdf->data->head;
+    while (node != NULL) {
+        if (strcmp(node->data->title, title) == 0)
+            return node->data;
+        node = node->next;
+    }
+    return NULL;
+}
+
+indexation get_lines_amount(CDataframe *cdf) {
+    return cdf->colsize;
+}
+
+indexation get_columns_amount(CDataframe *cdf) {
+    return cdf->size;
+}
+
+int rename_column(CDataframe *cdf, char *col_title, char *newTitle) {
+    Column *ptr = query_column_by_name(cdf, col_title);
+    if (ptr == NULL)
+        return 2;
+    char *newPtr = realloc(ptr->title, (strlen(newTitle) + 1) * sizeof(char *));
+    if (newPtr == NULL)
+        return 1;
+    ptr->title = newPtr;
+    strcpy(ptr->title, newTitle);
+    return 0;
+}
+
+void sorting_column(CDataframe *cdf, char *col_title, int sort_dir) {
+    if (sort_dir != ASC && sort_dir != DESC)
+        return;
+
+    Column *ptr = query_column_by_name(cdf, col_title);
+    if (ptr == NULL)
+        return;
+
+    sort(ptr, sort_dir);
+}
+
+void sort_all_columns(CDataframe *cdf, int sort_dir) {
+    if (sort_dir != ASC && sort_dir != DESC)
+        return;
+
+    lnode *node = get_first_node(cdf->data);
+    while (node != NULL) {
+        sort(node->data, sort_dir);
+        node = get_next_node(cdf->data, node);
+    }
+}
+
+Col_type *find_in(CDataframe *cdf, void *var) {
+    Col_type *ptr = NULL;
+    lnode *node = get_first_node(cdf->data);
+    while (node != NULL) {
+        if (check_index(node->data) == SORTED) {
+            ptr = get_value_in_column_indexed(node->data, var);
+            if (ptr != NULL)
+                return ptr;
+        } else {
+            ptr = get_value_in_column_unindexed(node->data, var);
+            if (ptr != NULL)
+                return ptr;
+        }
+        node = get_next_node(cdf->data, node);
+    }
+    return NULL;
+}
+
+Col_type *get_var(CDataframe *cdf, char *col_title, indexation line) {
+    Column *col = query_column_by_name(cdf, col_title);
+    if (col == NULL)
+        return NULL;
+
+    if (0 <= line && line < col->size)
+        return col->data[line];
+
+    return NULL;
+}
+
+int del_column(CDataframe *cdf, char *col_title) {
+    lnode *node = cdf->data->head;
+    while (node != NULL) {
+        if (strcmp(node->data->title, col_title) == 0) {
+            if (node->prev != NULL)
+                (node->prev)->next = node->next;
+            if (node->next != NULL)
+                (node->next)->prev = node->prev;
+            if (cdf->data->head == node)
+                cdf->data->head = node->next;
+            if (cdf->data->tail == node)
+                cdf->data->tail = node->prev;
+            break;
+        }
+        node = node->next;
+    }
+    if (node == NULL)
+        return 2;
+    delete_column(&node->data);
+    free(node);
+    cdf->size--;
+    return 0;
+}
+
+int del_line(CDataframe *cdf, indexation line) {
+    if (line >= cdf->colsize || line < 0)
+        return 2;
+    lnode *node = cdf->data->head;
+    while (node != NULL) {
+        if (node->data->column_type == STRING)
+            free(node->data->data[line]->string_value);
+        free(node->data->data[line]);
+        node->data->size--;
+        for (indexation i = line; i < node->data->size; i++) {
+            node->data->data[i] = node->data->data[i + 1];
+        }
+        node = node->next;
     }
     cdf->colsize--;
     return 0;
 }
 
-int del_column(CDataframe *cdf, int column) {
-    if (0 < column || column >= cdf->size)
-        return 2;
-    for (int i = 0; i < cdf->size; i++)
-        if (i >= column)
-            cdf->columns[i] = cdf->columns[i + 1];
-    cdf->size--;
+void delete_cdataframe(CDataframe **cdf) {
+    lnode *node = (*cdf)->data->head;
+    while (node != NULL) {
+        del_column(*cdf, node->data->title);
+        node = (*cdf)->data->head;
+    }
+    *cdf = NULL;
 }
 
-int *find_in(CDataframe *cdf, int var) {
-    int *ptr = NULL;
-    for (int i = 0; i < cdf->size; i++) {
-        for (int j = 0; j < cdf->colsize; j++) {
-            ptr = get_var(cdf, i, j);
-            if (*ptr == var)
-                return ptr;
+int get_occurrences(CDataframe *cdf, void *var) {
+    lnode *node = cdf->data->head;
+    int res = 0;
+    while (node != NULL) {
+        if (check_index(node->data) == SORTED)
+            res += get_occurrences_equal_by_index(node->data, var);
+        else
+            res += get_occurrences_equal_raw(node->data, var);
+        node = node->next;
+    }
+    return res;
+}
+
+int get_superior_occurrences(CDataframe *cdf, void *var) {
+    lnode *node = cdf->data->head;
+    int res = 0;
+    while (node != NULL) {
+        res += get_occurrences_superior_raw(node->data, var);
+        node = node->next;
+    }
+    return res;
+}
+
+int get_inferior_occurrences(CDataframe *cdf, void *var) {
+    lnode *node = cdf->data->head;
+    int res = 0;
+    while (node != NULL) {
+        res += get_occurrences_inferior_raw(node->data, var);
+        node = node->next;
+    }
+    return res;
+}
+
+void write(CDataframe **cdf) {
+    char userinput[USER_INPUT_SIZE];
+
+    indexation lcolsize, lcdfsize;
+    printf("Saisir le nombre de colonnes :");
+    fgets(userinput, USER_INPUT_SIZE, stdin);
+    sscanf(userinput, INDEXATION_FORMAT, &lcdfsize);
+    printf("Saisir le nombre de lignes :");
+    fgets(userinput, USER_INPUT_SIZE, stdin);
+    sscanf(userinput, INDEXATION_FORMAT, &lcolsize);
+
+    Enum_type *coltypes = malloc(lcdfsize * sizeof(Enum_type));
+    printf("Types disponibles :\n"
+           "1 - NULL\n"
+           "2 - unsigned int\n"
+           "3 - sigend int\n"
+           "4 - char\n"
+           "5 - float\n"
+           "6 - double\n"
+           "7 - string\n"
+           "8 - pointeur\n");
+    for (indexation i = 0; i < lcdfsize; i++) {
+        printf("Quelle type doit être la colonne %lld :", i);
+        fgets(userinput, USER_INPUT_SIZE, stdin);
+        sscanf(userinput, "%d", &coltypes[i]);
+    }
+
+    char **colnames = malloc(lcdfsize * sizeof(char *));
+    for (indexation i = 0; i < lcdfsize; i++) {
+        colnames[i] = malloc(USER_INPUT_SIZE * sizeof(char));
+        printf("Quelle nom doit porter la colonne %lld :", i);
+        fgets(colnames[i], USER_INPUT_SIZE, stdin);
+        sscanf(colnames[i], "%s", colnames[i]);
+        //printf("Nom : '%s'\n", colnames[i]);
+    }
+    *cdf = create_cdataframe(coltypes, colnames, lcdfsize);
+    for (indexation i = 0; i < lcdfsize; i++)
+        free(colnames[i]);
+    free(colnames);
+    free(coltypes);
+
+    Col_type *values = malloc(lcdfsize * sizeof(Col_type));
+    lnode *node;
+    indexation j;
+
+    node = (*cdf)->data->head;
+    j = 0;
+    while (node != NULL) {
+        if (node->data->column_type == STRING)
+            values[j].string_value = malloc(USER_INPUT_SIZE * sizeof(char));
+        node = node->next;
+        j++;
+    }
+
+    for (indexation i = 0; i < lcolsize; i++) {
+        node = (*cdf)->data->head;
+        j = 0;
+        while (node != NULL) {
+            printf("Saisir la case x,y = %d,%d : ", i, j);
+            fgets(userinput, USER_INPUT_SIZE, stdin);
+            //printf("\n");
+
+            // Delete fgets last return carriage
+            //int delzero = 0;
+            //while (userinput[delzero] != '\n' && userinput[delzero] != EOF && delzero < USER_INPUT_SIZE) delzero++;
+            //userinput[delzero] = '\0';
+
+            //printf("echo '%s'\n", userinput);
+            format_value(&values[j], userinput, node->data->column_type);
+            //printf("Formated!\n");
+
+            node = node->next;
+            j++;
+        }
+        printf("Adding line %d !\n", i);
+        add_newline(*cdf, values, lcdfsize);
+        print_lines(*cdf, NULL, 0, i + 1);
+    }
+
+    node = (*cdf)->data->head;
+    j = 0;
+    while (node != NULL) {
+        if (node->data->column_type == STRING)
+            free(values[j].string_value);
+        node = node->next;
+        j++;
+    }
+
+    free(values);
+
+    printf("CDataframe completed !\n");
+}
+
+void save_into_csv(CDataframe *cdf, char *file_name) {
+    FILE *fptr;
+    fptr = fopen(file_name, "w+");
+
+    lnode *node = NULL;
+
+    node = cdf->data->head;
+    while (node != NULL) {
+        fprintf(fptr, "%s", node->data->title);
+
+        node = get_next_node(cdf->data, node);
+        if (node != NULL)
+            fprintf(fptr, "%c", ',');
+    }
+    fprintf(fptr, "%c", '\n');
+
+
+    int buffer_size = STD_BUFF_SIZE;
+    char *buffer = malloc(buffer_size * sizeof(char)), *newPtr;
+    if (buffer == NULL)
+        return;
+
+
+    for (indexation line = 0; line < cdf->colsize; line++) {
+        node = cdf->data->head;
+        while (node != NULL) {
+            while (convert_value(node->data, line, buffer, buffer_size) == 1) {
+                newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
+                if (newPtr == NULL) {
+                    free(buffer);
+                    free(newPtr);
+                    return;
+                }
+                buffer_size += STD_BUFF_SIZE;
+            }
+            fprintf(fptr, "%s", buffer);
+
+            node = get_next_node(cdf->data, node);
+            if (node != NULL)
+                fprintf(fptr, "%c", ',');
+        }
+        fprintf(fptr, "%c", '\n');
+    }
+    free(buffer);
+    fclose(fptr);
+    fptr = NULL;
+}
+
+CDataframe *load_from_csv(char *file_name, Enum_type *dftype, int size) {
+    char csvinput[USER_INPUT_SIZE];
+    int inputsize;
+    int cc;
+
+    FILE *fptr;
+    fptr = fopen(file_name, "r");
+    if (fptr == NULL) {
+        fprintf(stderr, "%s", "Wasn't able to open file !");
+        return NULL;
+    }
+
+    /*while ((cc = fgetc(fptr)) != EOF) {
+        //print the character to a string
+        printf("%c", cc);
+    }*/
+
+
+    indexation lcdfsize = 1;
+    // SAISIE DE indexation lcolsize, lcdfsize
+    char **colnames = malloc(MAX_COL * sizeof(char *));
+
+    inputsize = 0;
+    for (cc = fgetc(fptr);
+         cc != '\n' && cc != EOF && inputsize < USER_INPUT_SIZE && lcdfsize < MAX_COL;
+         cc = fgetc(fptr)) {
+        if (cc == ',') {
+            csvinput[inputsize + 1] = '\0';
+
+            colnames[lcdfsize - 1] = malloc((inputsize + 1) * sizeof(char));
+            inputsize = 0;
+            strcpy(colnames[lcdfsize - 1], csvinput);
+            lcdfsize++;
+        } else {
+            csvinput[inputsize] = (char) cc;
+            inputsize++;
         }
     }
-    return NULL;
-}
+    if (cc == '\n') {
+        csvinput[inputsize + 1] = '\0';
 
-int *get_var(CDataframe *cdf, int column, int line) {
-    if (0 < line || line >= cdf->colsize || 0 < column || column >= cdf->size)
+        colnames[lcdfsize - 1] = malloc((inputsize + 1) * sizeof(char));
+        inputsize = 0;
+        strcpy(colnames[lcdfsize - 1], csvinput);
+    }
+
+
+    if (inputsize == USER_INPUT_SIZE) {
+        fprintf(stderr, "%s", "Max input size reach !\n");
         return NULL;
-    return &(cdf->columns[column]->data[line]);
+    }
+    if (lcdfsize == MAX_COL) {
+        fprintf(stderr, "%s", "Max input size reach !\n");
+        return NULL;
+    }
+    if (cc == EOF) {
+        fprintf(stderr, "%s", "CSV format incorrect !\n");
+        return NULL;
+    }
+    if (size != lcdfsize) {
+        fprintf(stderr, "CSV file %lld and given size %d are different !\n", lcdfsize, size);
+        return NULL;
+    }
+
+    CDataframe *cdf = create_cdataframe(dftype, colnames, lcdfsize);
+    for (indexation i = 0; i < lcdfsize; i++)
+        free(colnames[i]);
+    free(colnames);
+
+    Col_type *values = malloc(lcdfsize * sizeof(Col_type));
+    lnode *node;
+    indexation j;
+
+    node = cdf->data->head;
+    j = 0;
+    while (node != NULL) {
+        if (node->data->column_type == STRING)
+            values[j].string_value = malloc(USER_INPUT_SIZE * sizeof(char));
+        node = node->next;
+        j++;
+    }
+
+    indexation i = 0;
+    cc = fgetc(fptr);
+    while (cc != EOF) {
+        node = cdf->data->head;
+        j = 0;
+
+        inputsize = 0;
+        while (cc != '\n' && cc != EOF && inputsize < USER_INPUT_SIZE && node != NULL) {
+
+            if (cc == ',') {
+                csvinput[inputsize + 1] = '\0';
+
+                format_value(&values[j], csvinput, node->data->column_type);
+
+                inputsize = 0;
+                node = node->next;
+                j++;
+            } else {
+                csvinput[inputsize] = (char) cc;
+                inputsize++;
+            }
+            cc = fgetc(fptr);
+        }
+        if (cc == EOF) {
+            fprintf(stderr, "Inconsistent CSV file EOF before end\n");
+            return NULL;
+        }
+        if (inputsize == USER_INPUT_SIZE) {
+            fprintf(stderr, "Too large input on line %lld\n", i + 1);
+            fprintf(stderr, "%s\n", csvinput);
+            return NULL;
+        }
+        if (node == NULL || node->next != NULL) {
+            fprintf(stderr, "%s %lld %s", "Inconsistent CSV file not enough argument for object", i + 1, "!\n");
+            return NULL;
+        }
+        if (cc == '\n') {
+            csvinput[inputsize + 1] = '\0';
+
+            format_value(&values[j], csvinput, node->data->column_type);
+        }
+
+        printf("Adding line %lld !\n", i);
+        add_newline(cdf, values, lcdfsize);
+        print_lines(cdf, NULL, 0, i + 1);
+
+        cc = fgetc(fptr);
+        i++;
+    }
+
+    node = cdf->data->head;
+    j = 0;
+    while (node != NULL) {
+        if (node->data->column_type == STRING)
+            free(values[j].string_value);
+        node = node->next;
+        j++;
+    }
+
+    free(values);
+    fclose(fptr);
+    fptr = NULL;
+
+    printf("CDataframe completed !\n");
+    return cdf;
 }
