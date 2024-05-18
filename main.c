@@ -149,6 +149,8 @@ int main() {
     // exemple de fonction qui permet un affichage partiel du CDataframe
     //if (fromcsv != NULL)
     //    print_lines(fromcsv,NULL, 2,9);
+    sorting_column(fromcsv, "Age", DESC);
+    print_all(fromcsv, "Age");
     sorting_column(fromcsv, "Age", ASC);
     print_all(fromcsv, "Age");
 
