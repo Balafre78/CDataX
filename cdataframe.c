@@ -384,6 +384,10 @@ int del_column(CDataframe *cdf, char *col_title) {
                 (node->prev)->next = node->next;
             if (node->next != NULL)
                 (node->next)->prev = node->prev;
+            if (cdf->data->head == node)
+                cdf->data->head = node->next;
+            if (cdf->data->tail == node)
+                cdf->data->tail = node->prev;
             break;
         }
         node = node->next;
