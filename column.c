@@ -291,6 +291,8 @@ void format_value(Col_type *ptr, char *str, Enum_type type) {
             //strcpy(ptr->string_value, str);
             break;
         case NULLVAL:
+            ptr->struct_value = NULL;
+            break;
         case STRUCTURE:
             ptr->struct_value = NULL;
             break;

@@ -22,7 +22,7 @@
 // Should be inferrior as an int
 #define USER_INPUT_SIZE 255
 
-#define MAX_COL 255
+#define MAX_COL 1024
 
 typedef struct cadataframe {
     indexation size;
@@ -53,7 +53,6 @@ CDataframe *create_cdataframe(Enum_type *cdfTypes, char **colNames, indexation s
 */
 void delete_cdataframe(CDataframe **cdf);
 
-//TODO: L'implémenter aussi en dur
 /**
  * @brief Write all data to a new Cdataframe (from user input)
  * @param cdf Cdataframe pointer (should be empty)
