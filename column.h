@@ -140,8 +140,9 @@ int convert_value(Column *col, indexation i, char *str, indexation size);
 * @param1: The pointer to fill
 * @param2: The string to format
 * @param3: The type to format into
+* @return the error code of sscanf
 */
-void format_value(Col_type *ptr, char *str, Enum_type type);
+int format_value(Col_type *ptr, char *str, Enum_type type);
 
 /**
 * @brief Display the content of a column (no matter the index)

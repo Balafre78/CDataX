@@ -77,6 +77,7 @@ Nota Bene sur les constantes & types:
 * Une colonne ne devrait donc jamais excéder 9223372036854775807 *par défaut* (`long long int`).
 * Un CDataframe est une liste doublement chainée avec une taille et une taille de colonne qui est constant mis-à-jour
   (à chaque ajout et suppression) pour garder une complexité de constante pour obtenir la taille de liste.
+* Le cdataframe est toujours en toute circonstance RECTANGULAIRE (les colonnes ont toutes le même nombre de lignes)
 
 ## Dépendances
 

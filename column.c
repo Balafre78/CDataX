@@ -264,39 +264,34 @@ int compare_Col_type(Col_type *A, Col_type *B, Enum_type type) {
     }
 }
 
-void format_value(Col_type *ptr, char *str, Enum_type type) {
+int format_value(Col_type *ptr, char *str, Enum_type type) {
     switch (type) {
         case UINT:
             //ptr->uint_value = (unsigned) strtoul(str, NULL, 10);
-            sscanf(str, "%ud", &ptr->uint_value);
-            break;
+            return sscanf(str, "%ud", &ptr->uint_value);
         case INT:
             //ptr->int_value = atoi(str);
-            sscanf(str, "%d", &ptr->int_value);
-            break;
+            return sscanf(str, "%d", &ptr->int_value);
         case CHAR:
             //ptr->char_value = *str;
-            sscanf(str, "%c", &ptr->char_value);
-            break;
+            return sscanf(str, "%c", &ptr->char_value);
         case FLOAT:
             //ptr->float_value = atof(str);
-            sscanf(str, "%f", &ptr->float_value);
-            break;
+            return sscanf(str, "%f", &ptr->float_value);
         case DOUBLE:
             //ptr->double_value = strtod(str, NULL);
-            sscanf(str, "%lf", &ptr->double_value);
-            break;
+            return sscanf(str, "%lf", &ptr->double_value);
         case STRING:
-            sscanf(str, "%s", ptr->string_value);
             //strcpy(ptr->string_value, str);
-            break;
+            return sscanf(str, "%s", ptr->string_value);
         case NULLVAL:
             ptr->struct_value = NULL;
-            break;
+            return 1;
         case STRUCTURE:
             ptr->struct_value = NULL;
-            break;
+            return 1;
     }
+    return 0;
 }
 
 void insertion_sort(Column *column) {
