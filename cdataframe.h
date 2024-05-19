@@ -1,3 +1,18 @@
+/* CDataX
+ * Pierre CAMELERI
+ * Raphaël GUIGNOLLE
+ * cdataframe.c -
+ * Function to manage a CDataframe
+ *   - Creation
+ *   - Destruction
+ *   - Printing
+ *   - Modification (addition)
+ *   - Getters
+ *   - Setters
+ *   - Sorting
+ *   - Interaction with IO
+ * Also include some internal function (not declared in header).
+ */
 #ifndef CDATAX_CDATAFRAME_H
 #define CDATAX_CDATAFRAME_H
 

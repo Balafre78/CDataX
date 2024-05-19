@@ -1,3 +1,24 @@
+/* CDataX
+ * Pierre CAMELERI
+ * Raphaël GUIGNOLLE
+ * column.c -
+ * Function to manage a Column.
+ * This module shouldn't be exposed to the user if he is interacting directly with a CDataframe,
+ * because, this module doesn't include the global scope of a CDataframe.
+ * This module include these operations on columns
+ *   - Creation
+ *   - Destruction
+ *   - Printing
+ *   - Modification (addition)
+ *   - Sort management
+ *   - Converters (value -> string & string -> value)
+ *   - Getters
+ *   - Setters
+ *   - Comparators
+ *   - Sorting
+ *   - Interaction with IO
+ * Also include some internal function (not declared in header) especially for sorting algorithm.
+ */
 #include "column.h"
 
 Column *create_column(Enum_type type, char *title) {
