@@ -1,3 +1,15 @@
+/* CDataX
+ * Pierre CAMELERI
+ * Raphaël GUIGNOLLE
+ * llc.c -
+ * Function to manage a "Liste Linéaire Doublement Chainée".
+ * Doesn't come from us, all credits to Halim Djerroud, Asma Gabis, March 2024.
+ * This module include these operations on list and nodes :
+ *   - Creation
+ *   - Destruction
+ *   - Modification (addition)
+ *   - Getters
+ */
 #ifndef CDATAX_LLC_H
 #define CDATAX_LLC_H
 

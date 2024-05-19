@@ -1,18 +1,19 @@
-#include "cdataframe.h"
-
-/* Internal functions */
-
-/**
- * @brief Empty the stdin buffer the right way
+/* CDataX
+ * Pierre CAMELERI
+ * Raphaël GUIGNOLLE
+ * cdataframe.c -
+ * Function to manage a CDataframe
+ *   - Creation
+ *   - Destruction
+ *   - Printing
+ *   - Modification (addition)
+ *   - Getters
+ *   - Setters
+ *   - Sorting
+ *   - Interaction with IO
+ * Also include some internal function (not declared in header).
  */
-void fflush_stdin();
-
-void fflush_stdin() {
-    int c;
-    while ((c = getchar()) != '\n' && c != EOF) putchar(c);
-}
-
-/* API functions */
+#include "cdataframe.h"
 
 CDataframe *create_empty_cdataframe() {
     CDataframe *ptr = (CDataframe *) malloc(sizeof(CDataframe));

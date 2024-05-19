@@ -1,3 +1,24 @@
+/* CDataX
+ * Pierre CAMELERI
+ * Raphaël GUIGNOLLE
+ * column.c -
+ * Function to manage a Column.
+ * This module shouldn't be exposed to the user if he is interacting directly with a CDataframe,
+ * because, this module doesn't include the global scope of a CDataframe.
+ * This module include these operations on columns
+ *   - Creation
+ *   - Destruction
+ *   - Printing
+ *   - Modification (addition)
+ *   - Sort management
+ *   - Converters (value -> string & string -> value)
+ *   - Getters
+ *   - Setters
+ *   - Comparators
+ *   - Sorting
+ *   - Interaction with IO
+ * Also include some internal function (not declared in header) especially for sorting algorithm.
+ */
 #include "column.h"
 
 Column *create_column(Enum_type type, char *title) {
@@ -96,17 +117,16 @@ int check_index(Column *col) {
     if (col->index == NULL)
         return INVALID;
 
+    int cmp;
     for (indexation i = 1; i < col->size; i++) {
-        if (col->sort_dir == ASC &&
-            compare_Col_type(col->data[col->index[i]], col->data[col->index[i - 1]], col->column_type) < 0) {
+        cmp = compare_Col_type(col->data[col->index[i]], col->data[col->index[i - 1]], col->column_type);
+        if (col->sort_dir == ASC && cmp < 0) {
             return ALMOST_SORT;
-        } else if (col->sort_dir == DESC &&
-                   compare_Col_type(col->data[col->index[i]], col->data[col->index[i - 1]], col->column_type) > 0) {
+        } else if (col->sort_dir == DESC && cmp > 0) {
             return ALMOST_SORT;
         }
-
-        return SORTED;
     }
+    return SORTED;
 }
 
 void delete_column(Column **col) {
@@ -356,13 +376,17 @@ void quicksort_reverse(Column *column, indexation left, indexation right) {
     }
 }
 
+void reverse_col(Column *column) {
+    indexation n = column->size / 2;
+    for (indexation i = 0; i < n; i++) {
+        swap_idx(column, i, column->size - i - 1);
+    }
+}
 
 void sort(Column *col, int sort_dir) {
-    //swap(col->index, 0, 2);
-    //for (indexation i = 0; i < col->size; i++)
-    //    printf("%lld ", col->index[i]);
-    //printf("\n");
-    if (col->valid_index == INVALID && sort_dir == ASC) {
+    if (col->valid_index == SORTED && col->sort_dir == !sort_dir) {
+        reverse_col(col);
+    } else if (col->valid_index == INVALID && sort_dir == ASC) {
         quicksort(col, 0, col->size - 1);
     } else if (col->valid_index == ALMOST_SORT && sort_dir == ASC) {
         insertion_sort(col);

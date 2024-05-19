@@ -144,7 +144,7 @@ int main() {
     print_all(fromwrite, NULL);
     save_into_csv(fromwrite, "save.csv");*/
 
-    /*Enum_type cdftype [] = {INT,STRING,FLOAT};
+    Enum_type cdftype [] = {INT,STRING,FLOAT};
     CDataframe *fromcsv = load_from_csv("example.csv", cdftype, 3);
     // exemple de fonction qui permet un affichage partiel du CDataframe
     //if (fromcsv != NULL)
@@ -154,7 +154,7 @@ int main() {
     sorting_column(fromcsv, "Age", ASC);
     print_all(fromcsv, "Age");
 
-    delete_cdataframe(&fromcsv);*/
+    delete_cdataframe(&fromcsv);
 
 
 
