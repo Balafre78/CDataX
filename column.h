@@ -111,8 +111,9 @@ int check_index(Column *col);
 /**
  * @brief Update the index
  * @param col Pointer to the column
+ * @param sort_dir Sort direction
  * */
-void update_index(Column *col);
+void update_index(Column *col, int sort_dir);
 
 /*Printing functions*/
 

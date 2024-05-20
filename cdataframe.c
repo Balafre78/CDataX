@@ -353,7 +353,7 @@ void sorting_column(CDataframe *cdf, char *col_title, int sort_dir) {
     if (ptr == NULL)
         return;
 
-    sort(ptr, sort_dir);
+    update_index(ptr, sort_dir);
 }
 
 void sort_all_columns(CDataframe *cdf, int sort_dir) {
@@ -362,7 +362,7 @@ void sort_all_columns(CDataframe *cdf, int sort_dir) {
 
     lnode *node = get_first_node(cdf->data);
     while (node != NULL) {
-        sort(node->data, sort_dir);
+        update_index(node->data, sort_dir);
         node = get_next_node(node);
     }
 }

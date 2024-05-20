@@ -24,6 +24,7 @@
 Column *create_column(Enum_type type, char *title) {
     Column *col = malloc(sizeof(Column));
     if (col != NULL) {
+        // strlen doesn't include last '\0' char
         col->title = malloc((strlen(title) + 1) * sizeof(char));
         strcpy(col->title, title);
         col->max_size = 0;
@@ -57,10 +58,12 @@ int append_value(Column *col, void *value) {
         col->max_size += REALOC_SIZE;
     }
 
+    // Modify sorting
     col->index[col->size] = (indexation) col->size;
     if (col->valid_index != INVALID)
         col->valid_index = ALMOST_SORT;
 
+    // Special case for NULL value
     if (value == NULL) {
         col->data[col->size] = malloc(sizeof(void *));
         col->data[col->size]->struct_value = NULL;
@@ -70,6 +73,7 @@ int append_value(Column *col, void *value) {
 
     switch (col->column_type) {
         case INT:
+            // Copy data into heap and cdf
             col->data[col->size] = malloc(sizeof(signed int));
             signed int *sint = (signed int *) value;
             col->data[col->size]->int_value = *sint;
@@ -131,6 +135,7 @@ int check_index(Column *col) {
 }
 
 void delete_column(Column **col) {
+    // Be aware of strings
     if ((*col)->column_type == STRING)
         for (indexation i = 0; i < (*col)->size; i++)
             free((*col)->data[i]->string_value);
@@ -174,6 +179,8 @@ int convert_value(Column *col, indexation i, char *str, indexation size) {
             case STRING:
                 rc = snprintf(str, size, "%s", col->data[i]->string_value);
                 break;
+
+            // both are pointers
             case NULLVAL:
             case STRUCTURE:
                 rc = snprintf(str, size, "%p", col->data[i]->struct_value);
@@ -190,6 +197,7 @@ int convert_value(Column *col, indexation i, char *str, indexation size) {
 }
 
 int print_col_raw(Column *col) {
+    // First alloc std buff size
     int buffer_size = STD_BUFF_SIZE, rc;
     char *buffer = malloc(buffer_size * sizeof(char)), *newPtr;
     if (buffer == NULL) {
@@ -198,6 +206,7 @@ int print_col_raw(Column *col) {
     printf("%s\n", col->title);
     for (indexation i = 0; i < col->size; i++) {
         while ((rc = convert_value(col, i, buffer, buffer_size)) == 1) {
+            // Realloc if it's too short
             newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
             if (newPtr == NULL) {
                 free(buffer);
@@ -221,6 +230,7 @@ Col_type *get_value(Column *col, indexation index) {
 }
 
 int compare_Col_type(Col_type *A, Col_type *B, Enum_type type) {
+    // Works like strcmp
     switch (type) {
         case UINT:
             if (A->uint_value > B->uint_value)
@@ -259,6 +269,7 @@ int compare_Col_type(Col_type *A, Col_type *B, Enum_type type) {
                 return 0;
         case STRING:
             return strcmp(A->string_value, B->string_value);
+            // cannot compare pointers
         case NULLVAL:
         case STRUCTURE:
             return 0;
@@ -285,6 +296,8 @@ int format_value(Col_type *ptr, char *str, Enum_type type) {
         case STRING:
             //strcpy(ptr->string_value, str);
             return sscanf(str, "%s", ptr->string_value);
+
+            // Pointers cannot be real from a csv or userinput
         case NULLVAL:
             ptr->struct_value = NULL;
             return 1;
@@ -325,6 +338,7 @@ void insertion_sort_reverse(Column *column) {
 }
 
 void swap_idx(Column *column, indexation i, indexation j) {
+    // Modify indexs
     indexation tmp = column->index[i];
     column->index[i] = column->index[j];
     column->index[j] = tmp;
@@ -382,6 +396,7 @@ void reverse_col(Column *column) {
 }
 
 void sort(Column *col, int sort_dir) {
+    // Sort anyway
     if (col->valid_index == SORTED && col->sort_dir == !sort_dir) {
         reverse_col(col);
     } else if (col->valid_index == INVALID && sort_dir == ASC) {
@@ -393,6 +408,7 @@ void sort(Column *col, int sort_dir) {
     } else if (col->valid_index == ALMOST_SORT && sort_dir == DESC) {
         insertion_sort_reverse(col);
     }
+    // Upadte col infos
     col->sort_dir = sort_dir;
     col->valid_index = SORTED;
 }
@@ -405,6 +421,7 @@ int print_col_by_index(Column *col) {
     }
     printf("%s\n", col->title);
     for (indexation i = 0; i < col->size; i++) {
+        // Only differ there col->index[i]
         while ((rc = convert_value(col, col->index[i], buffer, buffer_size)) == 1) {
             newPtr = realloc(buffer, buffer_size + STD_BUFF_SIZE);
             if (newPtr == NULL) {
@@ -421,9 +438,11 @@ int print_col_by_index(Column *col) {
     return 0;
 }
 
-void update_index(Column *col) {
-    sort(col, ASC);
-    col->valid_index = check_index(col);
+void update_index(Column *col, int sort_dir) {
+    if (col->index != NULL) {
+        sort(col, sort_dir);
+        //col->valid_index = check_index(col);
+    }
 }
 
 int get_occurrences_inferior_raw(Column *col, void *x) {

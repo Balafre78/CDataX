@@ -82,14 +82,14 @@ void test_column_sorting() {
     append_value(withindex, &vh);
     append_value(withindex, &vi);
 
-    sort(withindex, ASC);
+    update_index(withindex, ASC);
 
     printf("Column content before sorting : \n");
     print_col_raw(withindex);
     printf("\nColumn content after sorting : \n");
     print_col_by_index(withindex);
     printf("\nColumn content after reverse sorting : \n");
-    sort(withindex, DESC);
+    update_index(withindex, DESC);
     print_col_by_index(withindex);
 
     delete_column(&withindex);
