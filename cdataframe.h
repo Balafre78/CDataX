@@ -19,7 +19,7 @@
 #include "llc.h"
 #include "column.h"
 
-// Should be inferrior as an int
+// Should be inferior as an int
 #define USER_INPUT_SIZE 255
 
 #define MAX_COL 1024
@@ -35,7 +35,7 @@ typedef struct cadataframe {
 /**
  * @brief Create an empty Cdataframe (no data provided only the an empty list is created)
  * @return Pointer to the newly created Cdataframe or the NULL pointer if it cannot allocate memory
- */
+ * */
 CDataframe *create_empty_cdataframe();
 
 /**
@@ -44,31 +44,31 @@ CDataframe *create_empty_cdataframe();
  * @param colNames list og names that will be used
  * @param size size of the above list
  * @return Pointer to the newly created Cdataframe or the NULL pointer if it cannot allocate memory
- */
+ * */
 CDataframe *create_cdataframe(Enum_type *cdfTypes, char **colNames, indexation size);
 
 /**
-* @brief: Column deletion
-* @param cdf Pointer to the CDataframe to delete
-*/
+ * @brief Column deletion
+ * @param cdf Pointer to the CDataframe to delete
+ * */
 void delete_cdataframe(CDataframe **cdf);
 
 /**
  * @brief Write all data to a new Cdataframe (from user input)
  * @param cdf Cdataframe pointer (should be empty)
- * @warning since, write interracts with IO, it doesn't check memeory allocation.
- */
+ * @warning Since, write interacts with IO, it doesn't check memory allocation.
+ * */
 void write(CDataframe **cdf);
 
 /**
  * @brief Print all data of an existing Cdataframe
  * @param cdf Cdataframe pointer
- * @param ref_col Reference column used for sort, NULL if object is prefered
+ * @param ref_col Reference column used for sort, NULL if object is preferred
  * @return 3, if a ref_col is mentioned but the col isn't sorted
  *         2 if ref_col is unknown
  *         1 with internal memory allocation,
  *         0 else
- */
+ * */
 int print_all(CDataframe *cdf, char *ref_col);
 
 /**
@@ -77,39 +77,39 @@ int print_all(CDataframe *cdf, char *ref_col);
  * @param from Starting line
  * @param to Ending line (excluded)
  * @return 2 if there's an error with the section selected, 0 else
- */
+ * */
 int print_columns_names_partial(CDataframe *cdf, indexation from, indexation to);
 
 /**
  * @brief Print all column names
  * @param cdf Cdataframe pointer
- */
+ * */
 void print_columns_names(CDataframe *cdf);
 
 /**
  * @brief Print all lines from a start to an end from an existing Cdataframe
  * @param cdf Cdataframe pointer
- * @param ref_col Reference column used for sort, NULL if object is prefered
+ * @param ref_col Reference column used for sort, NULL if object is preferred
  * @param from Starting line
  * @param to Ending line (excluded)
  * @return 3, if a ref_col is mentioned but the col isn't sorted
  *         2 if there's an error with the section selected or name of ref_col,
  *         1 with internal memory allocation,
  *         0 else
- */
+ * */
 int print_lines(CDataframe *cdf, char *ref_col, indexation from, indexation to);
 
 /**
  * @brief Print all columns from a start to an end from an existing Cdataframe
  * @param cdf Cdataframe pointer
- * @param ref_col Reference column used for sort, NULL if object is prefered
+ * @param ref_col Reference column used for sort, NULL if object is preferred
  * @param from Starting column
  * @param to Ending column (excluded)
  * @return 3, if a ref_col is mentioned but the col isn't sorted
  *         2 if there's an error with the section selected or name of ref_col,
  *         1 with internal memory allocation,
  *         0 else
- */
+ * */
 int print_columns(CDataframe *cdf, char *ref_col, indexation from, indexation to);
 
 /**
@@ -121,7 +121,7 @@ int print_columns(CDataframe *cdf, char *ref_col, indexation from, indexation to
  *         2 if it's the size,
  *         1 if it's the memory allocation,
  *         0 else
- */
+ * */
 int add_newline(CDataframe *cdf, Col_type *values, indexation size);
 
 /**
@@ -133,91 +133,91 @@ int add_newline(CDataframe *cdf, Col_type *values, indexation size);
  * @return 2 if it's the size,
  *         1 if there's an error with memory allocation,
  *         0 else
- */
+ * */
 int add_newcolumn(CDataframe *cdf, Enum_type type, Col_type *values, indexation size, char *title);
 
 /**
  * @brief Query column by his name
  * @param cdf Cdataframe pointer
- * @param title name of the column
- * @return the pointer to that column (may be NULL if nothing is found)
- */
+ * @param title Name of the column
+ * @return A pointer to that column (may be NULL if nothing is found)
+ * */
 Column *query_column_by_name(CDataframe *cdf, char *title);
 
 /**
  * @brief Delete one line of the Cdataframe
  * @param cdf Cdataframe pointer
- * @param line line to remove
- * @warning line represent object, no sorting
+ * @param line Line to remove
+ * @warning Line represent object, no sorting
  * @return 0 on success, 2 if there's an error the line parameter
- */
+ * */
 int del_line(CDataframe *cdf, indexation line);
 
 /**
  * @brief Delete one column of the Cdataframe, query by names
  * @param cdf Cdataframe pointer
- * @param col_title column name to remove
+ * @param col_title Column name to remove
  * @return 0 on success, 2 if there's an error the col_name parameter
- */
+ * */
 int del_column(CDataframe *cdf, char *col_title);
 
 /**
  * @brief Rename one column name
  * @param cdf Cdataframe pointer
- * @param col_title column name to rename
- * @param newTitle new title of the column
+ * @param col_title Column name to rename
+ * @param newTitle New title of the column
  * @return 0 on success,
- *         1 if there's an arror with the memory allocation
+ *         1 if there's an error with the memory allocation
  *         2 if there's an error the col_title parameter
- */
+ * */
 int rename_column(CDataframe *cdf, char *col_title, char *newTitle);
 
 /**
  * @brief Give a pointer to the first cell with the matching value
  * @param cdf Cdataframe pointer
- * @param var value to find
+ * @param var Value to find
  * @return A pointer to the value (first found by column) if it's found, the NULL pointer else
- */
+ * */
 Col_type *find_in(CDataframe *cdf, void *var);
 
 /**
  * @brief Give a pointer to the value at the line and column wanted
  * @param cdf Cdataframe pointer
- * @param line the line index
+ * @param line The line index
  * @param col_title column name to find in
- * @warning line is ordered according to objects (no sorting)
+ * @warning Line is ordered according to objects (no sorting)
  * @return A pointer to the value if it's found, the NULL pointer else
- */
+ * */
 Col_type *get_var(CDataframe *cdf, char *col_title, indexation line);
 
 /**
  * @brief Get the amount of lines
  * @param cdf Cdataframe pointer
- * @return number of lines
- */
+ * @return Number of lines
+ * */
 indexation get_lines_amount(CDataframe *cdf);
 
 /**
  * @brief Get the amount of lines
  * @param cdf Cdataframe pointer
- * @return number of columns
- */
+ * @return Number of columns
+ * */
 indexation get_columns_amount(CDataframe *cdf);
 
 /**
  * @brief Get the occurrences of a var in a Cdataframe
  * @param cdf Cdataframe pointer
- * @param var variable to compare
- * @return number of occurrences
- */
+ * @param var Variable to compare
+ * @return Number of occurrences
+ * */
 int get_occurrences(CDataframe *cdf, void *var);
 
 /**
  * @brief Get the occurrences of a var superior to a var in a Cdataframe
  * @param cdf Cdataframe pointer
- * @param var variable to compare
- * @return number of occurrences
- */
+ * @param var Variable to compare
+ * @return Number of occurrences
+ * */
 int get_superior_occurrences(CDataframe *cdf, void *var);
 
 /**
@@ -225,41 +225,40 @@ int get_superior_occurrences(CDataframe *cdf, void *var);
  * @param cdf Cdataframe pointer
  * @param var variable to compare
  * @return number of occurrences
- */
+ * */
 int get_inferior_occurrences(CDataframe *cdf, void *var);
 
 /**
  * @brief Sort 1 column
  * @param cdf Cdataframe pointer
- * @param col_title name of the column to align sort on
- * @param sort_dir direction to sort either ASC or DESC is accepted
- * @warning fail if col_title is not found or sort_dir is incorrect !
- */
+ * @param col_title Name of the column to align sort on
+ * @param sort_dir Direction to sort either ASC or DESC is accepted
+ * @warning Fail if col_title is not found or sort_dir is incorrect !
+ * */
 void sorting_column(CDataframe *cdf, char *col_title, int sort_dir);
 
 /**
  * @brief Sort all columns
  * @param cdf Cdataframe pointer
- * @param sort_dir direction to sort either ASC or DESC is accepted
- * @warning fail if sort_dir is incorrect !
- */
+ * @param sort_dir Direction to sort either ASC or DESC is accepted
+ * @warning Fail if sort_dir is incorrect !
+ * */
 void sort_all_columns(CDataframe *cdf, int sort_dir);
 
-
 /**
-* @brief: Export into a csvfile
-* @param1: Pointer to the CDataframe
-* @param2: csv filename where export file, if the file exists,
-* it will be overwritten
-*/
+ * @brief Export into a csvfile
+ * @param cdf Pointer to the CDataframe
+ * @param file_name Csv filename where export file
+ * @warning If the file exists it will be overwritten
+ * */
 void save_into_csv(CDataframe *cdf, char *file_name);
 
 /**
-* @brief: Create a CDataframe from csvfile
-* @param1: CSV filename
-* @param2: Array of types
-* @param3: Size of array in param2
-*/
+ * @brief Create a CDataframe from csvfile
+ * @param file_name CSV filename
+ * @param dftype Array of types
+ * @param size Size of the types array
+ * */
 CDataframe *load_from_csv(char *file_name, Enum_type *dftype, int size);
 
 #endif //CDATAX_CDATAFRAME_H
