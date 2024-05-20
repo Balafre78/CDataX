@@ -59,7 +59,7 @@ Ces décisions font suite aux problématiques suivantes :
 
 1. Il n'est pas possible de comparer deux pointeurs étant deux addresses mémoires. Il faudrait comparer les valeurs
    pointées, mais cela est impossible, car elles ne sont pas nécessairement homogènes. On ne peut
-   pas comparer pommes de terres et les macabos de manière binaire !
+   pas comparer les pommes de terres et les macabos de manière binaire !
 2. Les pointeurs étant propre à l'état de la mémoire du programme spécifique, il n'y a aucun sens à pointer un espace
    mémoire spécifique, qui est de plus, protégé ou bien randomisé par le système d'exploitation.
 3. L'affichage est supporté et nous invitons à implémenter en dur toute utilisation de ces pointeurs qui reste des
@@ -115,4 +115,4 @@ avec les fonctions qui manipule le buffer d'entrée `stdin` soit dégradée. Cep
 données saisies qui sont toujours traitées de manière régulière sans bugs connus à ce jour. **Nous conseillons donc
 fortement d'interagir avec les fichiers CSV au lieu de l'input utilisateur.**
 
-Si vous en trouvez, n'hésitez pas à les reporter via [issues](https://github.com/Balafre78/CDataX/issues)
+Si vous trouvez d'autres bugs, n'hésitez pas à les reporter via [issues](https://github.com/Balafre78/CDataX/issues)

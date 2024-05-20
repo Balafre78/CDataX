@@ -64,6 +64,7 @@ int append_value(Column *col, void *value) {
     if (value == NULL) {
         col->data[col->size] = malloc(sizeof(void *));
         col->data[col->size]->struct_value = NULL;
+        col->size++;
         return 1;
     }
 
@@ -402,10 +403,6 @@ int print_col_by_index(Column *col) {
     if (buffer == NULL) {
         return 1;
     }
-    //printf("Indexation ");
-    //for (int i = 0; i < col->size; i++)
-    //    printf("%lld ", col->index[i]);
-    printf("\n");
     printf("%s\n", col->title);
     for (indexation i = 0; i < col->size; i++) {
         while ((rc = convert_value(col, col->index[i], buffer, buffer_size)) == 1) {

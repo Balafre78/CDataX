@@ -529,7 +529,10 @@ void write(CDataframe **cdf) {
         colnames[i] = malloc(USER_INPUT_SIZE * sizeof(char));
         printf("Quel nom doit porter la colonne %lld :", i);
         fgets(colnames[i], USER_INPUT_SIZE, stdin);
-        sscanf(colnames[i], "%s", colnames[i]);
+        // Delete fgets last return carriage
+        int delzero = 0;
+        while (colnames[i][delzero] != '\n' && delzero < USER_INPUT_SIZE) delzero++;
+        colnames[i][delzero] = '\0';
         //printf("Nom : '%s'\n", colnames[i]);
     }
     // Creation du cdf
@@ -666,7 +669,7 @@ CDataframe *load_from_csv(char *file_name, Enum_type *dftype, int size) {
          cc = fgetc(fptr)) {
         if (cc == ',') {
             // add an end char
-            csvinput[inputsize + 1] = '\0';
+            csvinput[inputsize] = '\0';
 
             // allocate the size for the name and cpy
             colnames[lcdfsize - 1] = malloc((inputsize + 1) * sizeof(char));
@@ -682,7 +685,7 @@ CDataframe *load_from_csv(char *file_name, Enum_type *dftype, int size) {
     }
     if (cc == '\n') {
         // Add last line
-        csvinput[inputsize + 1] = '\0';
+        csvinput[inputsize] = '\0';
 
         colnames[lcdfsize - 1] = malloc((inputsize + 1) * sizeof(char));
         inputsize = 0;
@@ -738,7 +741,7 @@ CDataframe *load_from_csv(char *file_name, Enum_type *dftype, int size) {
         while (cc != '\n' && cc != EOF && inputsize < USER_INPUT_SIZE && node != NULL) {
             // use same method describe above
             if (cc == ',') {
-                csvinput[inputsize + 1] = '\0';
+                csvinput[inputsize] = '\0';
 
                 format_value(&values[j], csvinput, node->data->column_type);
 
@@ -765,7 +768,7 @@ CDataframe *load_from_csv(char *file_name, Enum_type *dftype, int size) {
             return NULL;
         }
         if (cc == '\n') {
-            csvinput[inputsize + 1] = '\0';
+            csvinput[inputsize] = '\0';
 
             format_value(&values[j], csvinput, node->data->column_type);
         }
